@@ -10,6 +10,10 @@
 - have an button to turn every thing of + that button has pre set function to select (everything on, cosy mode, etc.)
 
 ### Gui 
+Andriod app for controlling only (could run locally, onlocal network)
+webgui for everything (can be accest form the internet)
+
+
 - plot with data useage and sunlight
 - public transport times 
 - calender that shows the routines + add and remove function
@@ -21,6 +25,7 @@
 - embedded units: used to control the actors and sensors. Small units that are connected to the local server via Wifi (c++)
 - local server: Raspberry pi that is connected to the remote server via the internet. the local server controlles all the embedded units and upload their data to the remote server (python)
 - remote server: Runs the webserver (javaScript)
+- small touch screen at the entrance that shows the webqui, the overview contains the weather, bus departures, etc. 
 
 
 
