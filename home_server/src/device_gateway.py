@@ -6,7 +6,7 @@ import datetime
 
 # used for ...
 class DeviceGateway:
-    MQTT_BROKER_ADDRESS = "10.42.0.25"
+    MQTT_BROKER_ADDRESS = "192.168.1.125"
     MQTT_PORT = 1883
     MQTT_STAYALIVE = 60
 
