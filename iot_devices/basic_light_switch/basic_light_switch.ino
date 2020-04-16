@@ -12,52 +12,52 @@ PubSubClient client(espClient);
  
 void setup() 
 {
-  Serial.begin(115200);
+    Serial.begin(115200);
 
-  // Connect to wifi
-  WiFi.begin(wifi_ssid, wifi_pwd);
-  while (WiFi.status() != WL_CONNECTED) 
-  {
-    delay(500);
-    Serial.println("Connecting to WiFi..");
-  }
-  Serial.println("Connected to the WiFi network");
-
-  // Connect to mqtt
-  client.setServer(mqtt_broker_address, mqtt_Port);
-  client.setCallback(callback);
-  while (!client.connected()) 
-  {
-    Serial.println("Connecting to MQTT...");
-    if (client.connect(device_id)) 
+    // Connect to wifi
+    WiFi.begin(wifi_ssid, wifi_pwd);
+    while (WiFi.status() != WL_CONNECTED)
     {
-      Serial.println("connected");  
-    } 
-    else 
-    {
-      Serial.print("failed with state ");
-      Serial.print(client.state());
-      delay(2000);
+        delay(500);
+        Serial.println("Connecting to WiFi..");
     }
-  }
+    Serial.println("Connected to the WiFi network");
+
+    // Connect to mqtt
+    client.setServer(mqtt_broker_address, mqtt_Port);
+    client.setCallback(callback);
+    while (!client.connected())
+    {
+        Serial.println("Connecting to MQTT...");
+        if (client.connect(device_id))
+        {
+            Serial.println("connected");
+        }
+        else
+        {
+            Serial.print("failed with state ");
+            Serial.print(client.state());
+            delay(2000);
+        }
+    }
  
-  client.publish("topic/data", "hello"); //Topic name
-  client.subscribe("topic/data");
- 
+    client.publish("topic/data", "hello");
+    client.subscribe("topic/data");
 }
  
 void callback(char* topic, byte* payload, unsigned int length) 
 { 
-  Serial.print("Message arrived in topic: ");
-  Serial.print(topic);
-  Serial.print("\t Message: \"");
-  for (int i = 0; i < length; i++) 
-  {
-    Serial.print((char)payload[i]);
-  }
-  Serial.println("\""); 
+    Serial.print("Message arrived in topic: ");
+    Serial.print(topic);
+    Serial.print("\t Message: \"");
+    for (int i = 0; i < length; i++)
+    {
+        Serial.print((char)payload[i]);
+    }
+    Serial.println("\"");
 }
  
-void loop() {
-  client.loop();
+void loop()
+{
+    client.loop();
 }
