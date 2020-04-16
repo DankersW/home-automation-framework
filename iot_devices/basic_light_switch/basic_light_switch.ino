@@ -1,30 +1,29 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
- 
+
 const char* wifi_ssid = "SaveOurWinters";
 const char* wifi_pwd =  "prettyflyforawifi";
 const char* mqtt_broker_address = "192.168.1.125";
-const int mqtt_Port = 1883;
+const int mqtt_port = 1883;
 const char* device_id = "001";
- 
+
 WiFiClient espClient;
 PubSubClient client(espClient);
- 
-void setup() 
-{
-    Serial.begin(115200);
 
-    // Connect to wifi
+bool connectToWifi()
+{
     WiFi.begin(wifi_ssid, wifi_pwd);
     while (WiFi.status() != WL_CONNECTED)
     {
         delay(500);
         Serial.println("Connecting to WiFi..");
     }
-    Serial.println("Connected to the WiFi network");
+    return true;
+}
 
-    // Connect to mqtt
-    client.setServer(mqtt_broker_address, mqtt_Port);
+bool connectToMqttBroker()
+{
+    client.setServer(mqtt_broker_address, mqtt_port);
     client.setCallback(callback);
     while (!client.connected())
     {
@@ -40,13 +39,29 @@ void setup()
             delay(2000);
         }
     }
- 
+    return true;
+}
+
+void setup()
+{
+    Serial.begin(115200);
+
+    if (connectToWifi())
+    {
+        Serial.println("Connected to the WiFi network");
+    }
+
+    if (connectToMqttBroker())
+    {
+        Serial.println("Connected to the MQTT broker")
+    }
+
     client.publish("topic/data", "hello");
     client.subscribe("topic/data");
 }
- 
-void callback(char* topic, byte* payload, unsigned int length) 
-{ 
+
+void callback(char* topic, byte* payload, unsigned int length)
+{
     Serial.print("Message arrived in topic: ");
     Serial.print(topic);
     Serial.print("\t Message: \"");
@@ -56,7 +71,7 @@ void callback(char* topic, byte* payload, unsigned int length)
     }
     Serial.println("\"");
 }
- 
+
 void loop()
 {
     client.loop();
