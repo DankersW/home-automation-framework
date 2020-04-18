@@ -42,7 +42,9 @@ iot/device-001/state
 ```
 
 ### Configuration topic
-TBD
+<b>TBD</b>
+
+
 
 ## Message content
 To keep the messages as short as possible, the content will consists of only one single binary number. For example if 
