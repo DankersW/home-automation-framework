@@ -26,8 +26,7 @@ class DeviceGateway:
 
     def on_connect(self, client, userdata, flags, rc):
         print("Connected with result code " + str(rc))
-        self.client.subscribe("topic/data")
-        self.client.subscribe("topic/control")
+        self.client.subscribe("iot/#")
 
     def on_message(self, client, userdata, msg):
         time = datetime.datetime.now()
