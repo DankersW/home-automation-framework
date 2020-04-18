@@ -41,6 +41,7 @@ on the state topic so that the device gateway knows of the change.
 iot/device-001/state
 ```
 
+
 ### Configuration topic
 TBD
 
