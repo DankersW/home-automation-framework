@@ -13,6 +13,10 @@ String device_id = "device-001";
 String mqtt_control_topic = "iot/" + device_id + "/control";
 String mqtt_state_topic = "iot/" + device_id + "/state";
 bool mqtt_state = 0;
+bool light_state = 0;
+bool light_state_prev = 0;
+bool switch_state_prev = 0;
+bool mqtt_state_set = 0;
  
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -40,11 +44,6 @@ void setup()
     client.subscribe(mqtt_control_topic.c_str());
     digitalWrite(ONBOARD_LED, HIGH); // Active low
 }
-
-bool light_state = 0;
-bool light_state_prev = 0;
-bool switch_state_prev = 0;
-bool mqtt_state_set = 0;
 
 void loop()
 {
