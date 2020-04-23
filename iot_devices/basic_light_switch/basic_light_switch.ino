@@ -1,21 +1,26 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 
-#define RELAY_OUTPUT_PORT 2
-#define SWITCH_INPUT_PORT 12
+#define RELAY_OUTPUT_PORT D1
+#define SWITCH_INPUT_PORT D2
+#define ONBOARD_LED 2
 
 const char* wifi_ssid = "SaveOurWinters";
 const char* wifi_pwd =  "prettyflyforawifi";
 const char* mqtt_broker_address = "192.168.1.125";
 const int mqtt_port = 1883;
-const char* device_id = "deivce-001";
-
+String device_id = "device-001";
+String mqtt_control_topic = "iot/" + device_id + "/control";
+String mqtt_state_topic = "iot/" + device_id + "/state";
+bool mqtt_state = 0;
+ 
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+void setupIo();
 bool connectToWifi();
 bool connectToMqttBroker();
-void setupIo();
+
 
 void setup()
 {
@@ -31,16 +36,62 @@ void setup()
     {
         Serial.println("Connected to the MQTT broker");
     }
-
-    client.publish("iot/data", "hello");
-    client.subscribe("iot/data");
-
-    digitalWrite(RELAY_OUTPUT_PORT, HIGH); // Active low
+    
+    client.subscribe(mqtt_control_topic.c_str());
+    digitalWrite(ONBOARD_LED, HIGH); // Active low
 }
+
+bool light_state = 0;
+bool light_state_prev = 0;
+bool switch_state_prev = 0;
+bool mqtt_state_set = 0;
 
 void loop()
 {
+    bool switch_state = digitalRead(SWITCH_INPUT_PORT);
+
+    if (switch_state != switch_state_prev)
+    {
+        light_state = switch_state;
+    }
+    if (mqtt_state_set)
+    {
+        light_state = mqtt_state;
+    }
+
+    Serial.print("Switch state: ");
+    Serial.print(switch_state, DEC);
+    Serial.print(" - prev: ");
+    Serial.print(switch_state_prev, DEC);
+    Serial.print("\t mqtt state: ");
+    Serial.print(mqtt_state, DEC);
+    Serial.print(" - set: ");
+    Serial.print(mqtt_state_set, DEC);
+    Serial.print("\t light state: ");
+    Serial.println(light_state, DEC);
+
+    digitalWrite(RELAY_OUTPUT_PORT, light_state);
+    if (light_state != light_state_prev)
+    {
+        const char* mqtt_data = light_state ? "1" : "0";
+        client.publish(mqtt_state_topic.c_str(), mqtt_data);
+    }
+
+    switch_state_prev = switch_state;
+    mqtt_state_set = false;
+    light_state_prev = light_state;
+    
     client.loop();
+    delay(500);
+}
+
+void setupIo()
+{
+     pinMode(ONBOARD_LED, OUTPUT);
+     pinMode(RELAY_OUTPUT_PORT, OUTPUT);
+     pinMode(SWITCH_INPUT_PORT, INPUT);
+     digitalWrite(ONBOARD_LED, LOW); // Active low
+     digitalWrite(RELAY_OUTPUT_PORT, LOW); 
 }
 
 bool connectToWifi()
@@ -61,7 +112,7 @@ bool connectToMqttBroker()
     while (!client.connected())
     {
         Serial.println("Connecting to MQTT...");
-        if (client.connect(device_id))
+        if (client.connect(device_id.c_str()))
         {
             Serial.println("connected");
         }
@@ -85,10 +136,13 @@ void callback(char* topic, byte* payload, unsigned int length)
         Serial.print((char)payload[i]);
     }
     Serial.println("\"");
-}
-
-void setupIo()
-{
-     pinMode(RELAY_OUTPUT_PORT, OUTPUT);
-     digitalWrite(RELAY_OUTPUT_PORT, LOW); // Active low
+    
+    if (strcmp(topic, mqtt_control_topic.c_str()) == 0)
+    {
+        if (length == sizeof(bool))
+        {
+            mqtt_state = (char)payload[0] != '0';
+            mqtt_state_set = true;
+        }
+    }
 }
