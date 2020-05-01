@@ -1,5 +1,8 @@
 # Home Automation
 
+## Architecture
+![Architecture](images/architecture_home_automation.png "Architectural overview")
+
 ## Brain storming
 
 ### Functionalitty
