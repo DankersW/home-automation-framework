@@ -1,5 +1,6 @@
 from src.device_gateway import DeviceGateway
 
+
 class HomeServer:
     def __init__(self):
         # start listing for connected devices
