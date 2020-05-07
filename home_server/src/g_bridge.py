@@ -118,8 +118,9 @@ class MqttGcpDevice(object):
 
 
 class GBridge:
-    def __init__(self):
-        self.device = MqttGcpDevice("light_switch_001")
+    def __init__(self, device_list):
+        device_id = device_list
+        self.device = MqttGcpDevice(device_id)
         self.main()
 
     def __del__(self):
