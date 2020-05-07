@@ -133,9 +133,5 @@ class GBridge:
         time.sleep(15)
 
 
-def main():
-    GBridge()
-
-
 if __name__ == '__main__':
-    main()
+    GBridge("light_switch_001")
