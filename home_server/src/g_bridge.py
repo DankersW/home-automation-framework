@@ -2,7 +2,6 @@ import datetime
 import json
 import ssl
 import time
-
 import jwt
 import paho.mqtt.client as mqtt
 from dataclasses import dataclass
@@ -21,7 +20,7 @@ class MqttBridgeConfiguration:
     message_type: str = "event"
 
 
-def create_jwt(project_id, private_key_file, algorithm):
+def create_jwt(device_id, project_id, private_key_file, algorithm):
     token = {
         'iat': datetime.datetime.utcnow(),
         'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
@@ -29,12 +28,13 @@ def create_jwt(project_id, private_key_file, algorithm):
     }
     with open(private_key_file, 'r') as f:
         private_key = f.read()
-    print('Creating JWT using {} from private key file {}'.format(algorithm, private_key_file))
+    current_time = datetime.datetime.now()
+    print("{} - {} | Creating JWT from private key file using {} algorithm.".format(current_time, device_id, algorithm))
     return jwt.encode(token, private_key, algorithm=algorithm)
 
 
 def error_str(rc):
-    return '{}: {}'.format(rc, mqtt.error_string(rc))
+    return '{} - {}'.format(rc, mqtt.error_string(rc))
 
 
 class MqttGcpDevice(object):
@@ -49,13 +49,17 @@ class MqttGcpDevice(object):
         self.client.disconnect()
         self.client.loop_stop()
 
+    def disconnect(self):
+        self.client.disconnect()
+        self.client.loop_stop()
+
     def create_client(self):
         client_id = 'projects/{}/locations/{}/registries/{}/devices/{}'.format(self.args.project_id,
                                                                                self.args.cloud_region,
                                                                                self.args.registry_id,
                                                                                self.device_id)
         client = mqtt.Client(client_id)
-        jwt_pwd = create_jwt(self.args.project_id, self.args.private_key_file, self.args.algorithm)
+        jwt_pwd = create_jwt(self.device_id, self.args.project_id, self.args.private_key_file, self.args.algorithm)
         client.username_pw_set(username='unused', password=jwt_pwd)
         client.tls_set(ca_certs=self.args.ca_certs, tls_version=ssl.PROTOCOL_TLSv1_2)
         return client
@@ -77,7 +81,8 @@ class MqttGcpDevice(object):
             total_time += 1
 
         if not self.connected:
-            raise RuntimeError('Could not connect to MQTT bridge.')
+            current_time = datetime.datetime.now()
+            raise RuntimeError("{} - {} | Could not connect to MQTT bridge.".format(current_time, self.device_id))
 
     def subscribe_to_topics(self):
         mqtt_config_topic = '/devices/{}/config'.format(self.device_id)
@@ -85,53 +90,74 @@ class MqttGcpDevice(object):
 
     def publish_telemetry_event(self, payload):
         mqtt_telemetry_topic = '/devices/{}/events'.format(self.device_id)
-        print('Publishing payload: {} - Topic: {}'.format(payload, mqtt_telemetry_topic))
+        current_time = datetime.datetime.now()
+        print("{} - {} | Publishing payload: \"{}\" on Topic: \"{}\".".format(current_time, self.device_id, payload,
+                                                                             mqtt_telemetry_topic))
         self.client.publish(mqtt_telemetry_topic, payload, qos=1)
 
     def publish_state_event(self, payload):
         mqtt_state_topic = '/devices/{}/state'.format(self.device_id)
-        print('Publishing payload: {} - Topic: {}'.format(payload, mqtt_state_topic))
+        current_time = datetime.datetime.now()
+        print("{} - {} | Publishing payload: \"{}\" on Topic: \"{}\".".format(current_time, self.device_id, payload,
+                                                                             mqtt_state_topic))
         self.client.publish(mqtt_state_topic, payload, qos=1)
 
     def on_connect(self, unused_client, unused_userdata, unused_flags, rc):
-        print('Connection Result:', error_str(rc))
+        current_time = datetime.datetime.now()
+        print("{} - {} | Connection Result: {}".format(current_time, self.device_id, error_str(rc)))
         self.connected = True
 
     def on_disconnect(self, unused_client, unused_userdata, rc):
-        print('Disconnected:', error_str(rc))
+        current_time = datetime.datetime.now()
+        print("{} - {} | Disconnected: {}".format(current_time, self.device_id, error_str(rc)))
         self.connected = False
 
     def on_publish(self, unused_client, unused_userdata, unused_mid):
-        print('Published message acked.')
+        current_time = datetime.datetime.now()
+        print("{} - {} | Published message acknowledged.".format(current_time, self.device_id))
 
     def on_subscribe(self, unused_client, unused_userdata, unused_mid, granted_qos):
-        print('Subscribed: ', granted_qos)
+        current_time = datetime.datetime.now()
         if granted_qos[0] == 128:
-            print('Subscription failed.')
+            subscription_result = "{} - Subscription failed".format(granted_qos[0])
+        else:
+            subscription_result = "{} - Subscribed".format(granted_qos)
+        print("{} - {} | Subscription result: {}.".format(current_time, self.device_id, subscription_result))
 
     def on_message(self, unused_client, unused_userdata, message):
         payload = message.payload.decode('utf-8')
         if not payload:
             return
         data = json.loads(payload)
-        print('Received message \'{}\' on topic \'{}\' with Qos {}'.format(payload, message.topic, str(message.qos)))
+        current_time = datetime.datetime.now()
+        print("{} - {} | Received message \'{}\' on topic \'{}\' with Qos {}.".format(current_time, self.device_id,
+                                                                                      payload, message.topic,
+                                                                                      str(message.qos)))
 
 
 class GBridge:
     def __init__(self, device_list):
-        device_id = device_list
-        self.device = MqttGcpDevice(device_id)
+        self.device_list = device_list
+        self.device = []
+        for device_id in self.device_list:
+            current_time = datetime.datetime.now()
+            print("{} - {} | Creating device".format(current_time, device_id))
+            self.device.append(MqttGcpDevice(device_id))
+
         self.main()
 
     def __del__(self):
-        pass
+        for device_index in range(len(self.device_list)):
+            self.device[device_index].disconnect()
 
     def main(self):
-        self.device.publish_telemetry_event("temp: 11")
-        self.device.publish_telemetry_event("temp: 12")
-        self.device.publish_telemetry_event("temp: 13")
-        time.sleep(15)
+        for i in range(len(self.device_list)):
+            val = int((i + 1 * 0.05) * 147)
+            self.device[i].publish_telemetry_event("temp: {}".format(val))
+        time.sleep(7)
 
 
 if __name__ == '__main__':
-    GBridge("light_switch_001")
+    devices = ["light_switch_001", "light_switch_002"]
+    #devices = ["light_switch_001"]
+    GBridge(devices)
