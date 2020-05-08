@@ -17,7 +17,6 @@ class MqttBridgeConfiguration:
     ca_certs: str = "../certificates/roots.pem"
     mqtt_bridge_hostname: str = "mqtt.googleapis.com"
     mqtt_bridge_port: int = 8883
-    message_type: str = "event"
 
 
 def create_jwt(device_id, project_id, private_key_file, algorithm):
@@ -37,7 +36,33 @@ def error_str(rc):
     return '{} - {}'.format(rc, mqtt.error_string(rc))
 
 
-class MqttGcpDevice(object):
+class GBridge:
+    def __init__(self, device_list):
+        self.device_list = device_list
+        self.device = []
+        for device_id in self.device_list:
+            current_time = datetime.datetime.now()
+            print("{} - G-Bridge | Creating device {}".format(current_time, device_id))
+            self.device.append(MqttGcpDevice(device_id))
+
+    def __del__(self):
+        for device_index in range(len(self.device_list)):
+            self.device[device_index].disconnect()
+
+    def publish_data(self, device, event, data):
+        device_index = self.device_list.index(device) if device in self.device_list else -1
+        if device_index > -1:
+            self.device[device_index].publish_data(event, data)
+        else:
+            print("G-Bridge | device does not exist")
+            # todo: create the new device
+
+    def receive_data(self, device, data):
+        current_time = datetime.datetime.now()
+        print("{} - G-Bridge | Received {} from {}.".format(current_time, data, device))
+
+
+class MqttGcpDevice(GBridge):
     def __init__(self, device_id):
         self.args = MqttBridgeConfiguration()
         self.connected = False
@@ -88,6 +113,15 @@ class MqttGcpDevice(object):
         mqtt_config_topic = '/devices/{}/config'.format(self.device_id)
         self.client.subscribe(mqtt_config_topic)
 
+    def publish_data(self, event, data):
+        if event == "telemetry":
+            self.publish_telemetry_event(data)
+        elif event == "state":
+            self.publish_state_event(data)
+        else:
+            current_time = datetime.datetime.now()
+            print("{} - {} | Error: Unknown event type {}.".format(current_time, self.device_id, event))
+
     def publish_telemetry_event(self, payload):
         mqtt_telemetry_topic = '/devices/{}/events'.format(self.device_id)
         current_time = datetime.datetime.now()
@@ -133,31 +167,12 @@ class MqttGcpDevice(object):
         print("{} - {} | Received message \'{}\' on topic \'{}\' with Qos {}.".format(current_time, self.device_id,
                                                                                       payload, message.topic,
                                                                                       str(message.qos)))
-
-
-class GBridge:
-    def __init__(self, device_list):
-        self.device_list = device_list
-        self.device = []
-        for device_id in self.device_list:
-            current_time = datetime.datetime.now()
-            print("{} - {} | Creating device".format(current_time, device_id))
-            self.device.append(MqttGcpDevice(device_id))
-
-        self.main()
-
-    def __del__(self):
-        for device_index in range(len(self.device_list)):
-            self.device[device_index].disconnect()
-
-    def main(self):
-        for i in range(len(self.device_list)):
-            val = int((i + 1 * 0.05) * 147)
-            self.device[i].publish_telemetry_event("temp: {}".format(val))
-        time.sleep(7)
+        super().receive_data(self.device_id, payload)
 
 
 if __name__ == '__main__':
     devices = ["light_switch_001", "light_switch_002"]
-    #devices = ["light_switch_001"]
-    GBridge(devices)
+    gbridge = GBridge(devices)
+    gbridge.publish_data(devices[0], "telemetry", "hello! does it work?")
+    time.sleep(10)
+    del gbridge

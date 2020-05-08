@@ -6,7 +6,7 @@ class IotGateway:
         device_list = ["light_switch_001", "light_switch_002"]
         # start listing for connected devices
         #device_gateway = DeviceGateway()
-        g_bridge = GBridge(device_list[0])
+        g_bridge = GBridge(device_list)
 
 
 if __name__ == '__main__':
