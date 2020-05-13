@@ -26,3 +26,9 @@ SUBSCRIPTION_ID="test_home_automation_light_switches_event_subsription"
 gcloud pubsub subscriptions create ${SUBSCRIPTION_ID} --topic=${EVENT_PUBSUB_TOPIC} --project=${PROJECT_ID}
 gcloud pubsub subscriptions pull --auto-ack projects/${PROJECT_ID}/subscriptions/${SUBSCRIPTION_ID} --limit=100
 
+# Create simple cloud function
+FUNCTION_NAME="print_home_automation_light_switches_state_data"
+SOURCE="/home/wouter_dankers/cloud_function_sources/"
+ENTRY_POINT="print_mqtt_pubsub_data"
+gcloud functions deploy ${FUNCTION_NAME} --region=${REGION} --runtime python37 --trigger-topic=${STATE_PUBSUB_TOPIC} --allow-unauthenticated --entry-point=${ENTRY_POINT} --source=${SOURCE}
+gcloud functions logs read ${FUNCTION_NAME} --limit=50

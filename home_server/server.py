@@ -1,10 +1,10 @@
-from src.device_gateway import DeviceGateway
+from home_server.src.iot_gateway import IotGateway
 
 
 class HomeServer:
     def __init__(self):
         # start listing for connected devices
-        device_gateway = DeviceGateway()
+        iot_gateway = IotGateway()
 
 
 if __name__ == '__main__':
