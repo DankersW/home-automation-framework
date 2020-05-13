@@ -2,10 +2,12 @@
 
 import paho.mqtt.client as mqtt
 import datetime
+import threading
+
+INSTANCE_NAME = "Device-gateway"
 
 
-# used for ...
-class DeviceGateway:
+class DeviceGateway(threading.Thread):
     MQTT_BROKER_ADDRESS = "10.42.0.25"#"192.168.1.125"
     MQTT_PORT = 1883
     MQTT_STAYALIVE = 60
@@ -13,30 +15,34 @@ class DeviceGateway:
     received_message_queue = []
 
     def __init__(self):
+        threading.Thread.__init__(self)
         self.client = mqtt.Client()
         self.client.connect(self.MQTT_BROKER_ADDRESS, self.MQTT_PORT, self.MQTT_STAYALIVE)
 
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
 
-        self.client.loop_forever()
-
     def __del__(self):
         self.client.disconnect()
 
+    def run(self):
+        self.client.loop_forever()
+
     def on_connect(self, client, userdata, flags, rc):
         current_time = datetime.datetime.now()
-        print("{} - device-gateway | Connected to MQTT broker with result code {}".format(current_time, str(rc)))
+        print("{} - {} | Connected to MQTT broker with result code {}".format(current_time, INSTANCE_NAME, str(rc)))
         self.client.subscribe("iot/#")
 
     def on_message(self, client, userdata, msg):
         current_time = datetime.datetime.now()
         payload = msg.payload.decode('utf-8')
         topic = msg.topic
-        print("{} - device-gateway | Received message \'{}\' on topic \'{}\'.".format(current_time, payload, topic))
+        event = "state"
+        print("{} - {} | Received message \'{}\' on topic \'{}\'.".format(current_time, INSTANCE_NAME, payload, topic))
         device_id = get_id_from_topic(topic)
-        if device_id != None and payload != None:
-            message = [device_id, payload]
+        valid_topic = device_id is not None and payload is not None
+        if valid_topic:
+            message = [device_id, payload, event]
             self.received_message_queue.append(message)
         else:
             pass

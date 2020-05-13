@@ -40,9 +40,10 @@ class GBridge:
     def __init__(self, device_list):
         self.device_list = device_list
         self.device = []
+        self.received_message_queue = []
         for device_id in self.device_list:
             current_time = datetime.datetime.now()
-            print("{} - G-Bridge | Creating device {}".format(current_time, device_id))
+            print("{} - G-Bridge | Creating device \'{}\'".format(current_time, device_id))
             self.device.append(MqttGcpDevice(device_id))
 
     def __del__(self):
@@ -60,6 +61,8 @@ class GBridge:
     def receive_data(self, device, data):
         current_time = datetime.datetime.now()
         print("{} - G-Bridge | Received {} from {}.".format(current_time, data, device))
+        message = [device, data]
+        self.received_message_queue.append(message)
 
 
 class MqttGcpDevice(GBridge):
