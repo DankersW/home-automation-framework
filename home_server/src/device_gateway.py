@@ -54,6 +54,12 @@ class DeviceGateway(threading.Thread):
         else:
             return None
 
+    def publish_control_message(self, device, data):
+        topic = "iot/{}/control".format(device)
+        current_time = datetime.datetime.now()
+        print("{} - {} | Publishing message \'{}\' on topic \'{}\'.".format(current_time, INSTANCE_NAME, data, topic))
+        self.client.publish(topic, data)
+
 
 def get_id_from_topic(topic):
     index_device_id = 1
