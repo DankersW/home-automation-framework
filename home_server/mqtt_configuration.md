@@ -1,71 +1,51 @@
 # MQTT Configuration
+The Home Server has two MQTT instances, one that forwards messages from Device Gateway to the GCP IoT core and vice 
+versa. And One that forwards messages from the IoT devices to and from the G-bridge.
 
-## IoT devices - Home server
+## IoT devices - G-bridge
 
-## Home server - Google Cloud Platform
-* /devices/{}/config
-* /devices/{}/state
-* /devices/{}/events
-* /devices/{}/events/some/other/topic
+## Device Gateway - GCP IoT
+Google's IoT core MQTT broker has 4 predefined topics. 
+* **Configuration:** Sent from the cloud to the device, up to one message per second. Configuration messages are guaranteed
+ to be delivered to the device.
+* **Commands:** Send up to 100 messages per second from the cloud to the device. Commands are only delivered if the device
+ is online.
+* **State:** Sent from the device to the cloud, up to one message per second. State updates are delivered to active Pub/Sub
+ subscribers and recent updates are persisted inside Cloud IoT Core.
+* **Telemetry:** Send up to 100 messages per second from the device to the cloud. Telemetry events are only delivered to
+ active Pub/Sub subscribers.
 
+![Google_Mqtt](../recources/images/google_mqtt.png "Google MQTT overview")
 
-
-
-This document specifies how MQTT between our IoT deviced and the on-site server is setup. These devices are at the 
-using a not-sercured version of MQTT because of the security overhead on the IoT devices as well as these devices are 
-not directly connected to the internet. 
-
-|               | Info          |
-| ------------- |:-------------:|
-| MQTT broker   | Mosquitto     |
-| MQTT address  | 192.168.1.125 |
-| MQTT port     | 1883          |
-
-
-Each device has its own device id e.q. (device-001). There exist 3 topics, one subscription, one publish, and one
-general topic. 
-The general structure of the topics follows the pattern:
-```
-iot/device_id/topic
-```
+|               | Info                  |
+| ------------- |:---------------------:|
+| MQTT broker   | Cloud IoT core        |
+| MQTT address  | mqtt.googleapis.com   |
+| MQTT port     | 8883                  |
+| Security      | RS256                 |
 
 ## Topics
-/devices/{}/config
-/devices/{}/state
-/devices/{}/events
-/devices/{}/events/some/other/topic
-
-### Wildcard topic
-Used <b> only </b> by the device gateway running on the home server. In this way the server can subscribe to all the connected 
-devices at once. It distinguishes between which device has sends what by using the device ID
+### Configuration
 ```
-iot/#
+/devices/{device-id}/config
 ```
-
-### Control topic
-Used by device gateway to send control messages to a particular device. These control messages could be for example; 
-set the light state to True. Every device listens to this topic (one topic per device) for things to do.
+### Commands
 ```
-iot/device-001/control
+/devices/{device-id}/commands
 ```
-
-### State topic
-Used by a device to publish information to the device gateway. Each device publishes state information on this topic. 
-For example; the state of the light switch has changed via input by the user. The device will now publish this change 
-on the state topic so that the device gateway knows of the change.
+### State
 ```
-iot/device-001/state
+/devices/{device-id}/state
 ```
-
-### Configuration topic
-<b>TBD</b>
-
-
+### Telemetry
+```
+/devices/{device-id}/events
+```
 
 ## Message content
-To keep the messages as short as possible, the content will consists of only one single binary number. For example if 
-the user changes the state of the light switch from OFF to ON which is connected to device 001. Then device 001 will publish to the 
-following topic with payload of 1
+The messages contain a JSON string with explenatory key value pairs. For example, in the case of of a light switch 
+updating its status to the cloud. It could send the following message on the topic 
+``` /devices/lightswitch-001/state ```.
 ```
-iot/device-001/state --> payload "1"
+{"light_state": 1}
 ```
