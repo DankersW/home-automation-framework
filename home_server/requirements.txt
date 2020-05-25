@@ -1,0 +1,5 @@
+###### Requirements without Version Specifiers ######
+paho-mqtt
+
+###### Requirements with Version Specifiers ######
+PyJWT >= 1.7.1
