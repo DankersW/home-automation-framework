@@ -2,7 +2,7 @@
 
 ## Architecture
 ![Architecture](recources/images/architecture_home_automation.png "Architectural overview")
-
+Architectural design made via  [Lucidchart](https://app.lucidchart.com/documents/edit/2025f710-b9e7-49ac-844c-e21cea54473a/0_0)
 ## Brain storming
 
 ### Functionalitty
