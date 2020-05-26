@@ -196,7 +196,7 @@ if __name__ == '__main__':
     devices = ["light_switch_001", "light_switch_002"]
     gbridge = GBridge(devices)
     gbridge.publish_data(devices[0], "telemetry", "hello! does it work?")
-    gbridge.publish_data(devices[0], "state", "{lights_state: 1}")
-    gbridge.publish_data(devices[1], "state", "{lights_state: 0}")
+    gbridge.publish_data(devices[0], "state", '{"lights_state": 1}')
+    gbridge.publish_data(devices[1], "state", '{"lights_state": 0}')
     time.sleep(7)
     del gbridge
