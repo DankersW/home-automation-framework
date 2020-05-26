@@ -27,8 +27,10 @@ gcloud pubsub subscriptions create ${SUBSCRIPTION_ID} --topic=${EVENT_PUBSUB_TOP
 gcloud pubsub subscriptions pull --auto-ack projects/${PROJECT_ID}/subscriptions/${SUBSCRIPTION_ID} --limit=100
 
 # Create simple cloud function
-FUNCTION_NAME="print_home_automation_light_switches_state_data"
+FUNCTION_NAME="home_automation_light_switches_write_pubsub_message_to_firebase"
 SOURCE="/home/wouter_dankers/cloud_function_sources/"
-ENTRY_POINT="print_mqtt_pubsub_data"
+ENTRY_POINT="lightswitches_pubsub_to_firebase"
+STATE_PUBSUB_TOPIC="home_automation_light_switches_state_topic"
+REGION="europe-west1"
 gcloud functions deploy ${FUNCTION_NAME} --region=${REGION} --runtime python37 --trigger-topic=${STATE_PUBSUB_TOPIC} --allow-unauthenticated --entry-point=${ENTRY_POINT} --source=${SOURCE}
 gcloud functions logs read ${FUNCTION_NAME} --limit=50
