@@ -2,7 +2,7 @@
 
 ## Cloud
 - [ ] GCP commands to create firebase
-- [ ] Include all cloud functions into 1 main and have each cloud function orginized in one .py file
+- [x] Include all cloud functions into 1 main and have each cloud function orginized in one .py file
 
 ## Gateway
 - [ ] Re-write G-bridge to serve as a gateway instead of mocking each device
