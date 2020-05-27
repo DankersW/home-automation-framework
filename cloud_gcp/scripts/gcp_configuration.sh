@@ -17,6 +17,23 @@ wget https://pki.goog/roots.pem
 DEVICE_ID="light_switch_001"
 gcloud iot devices create ${DEVICE_ID} --project=${PROJECT_ID} --region=${REGION} --registry=${REGISTRY_ID} --log-level=info --public-key path=/home/wouter_dankers/certificates/rsa_light_switch_public.pem,type=rsa-pem
 
+# Create iot-gateway
+PROJECT_ID="dankers"
+REGION="europe-west1"
+REGISTRY_ID="home_automation_light_switches"
+GATEWAY_ID="home_automation_light_switches_gateway"
+gcloud iot devices create ${GATEWAY_ID} --device-type=gateway --project=${PROJECT_ID} --region=${REGION} --registry=${REGISTRY_ID} --public-key path=/home/wouter_dankers/certificates/rsa_light_switch_public.pem,type=rsa-pem --auth-method=ASSOCIATION_ONLY
+
+# Bind device to iot-gateway
+GATEWAY_ID="home_automation_light_switches_gateway"
+DEVICE_ID="light_switch_001"
+PROJECT_ID="dankers"
+REGION="europe-west1"
+REGISTRY_ID="home_automation_light_switches"
+gcloud iot devices gateways bind --gateway=${GATEWAY_ID} --device=${DEVICE_ID} --project=${PROJECT_ID} --device-region=${REGION} --device-registry=${REGISTRY_ID} --gateway-region=${REGION} --gateway-registry=${REGISTRY_ID}
+# Unbind a device
+gcloud iot devices gateways unbind --gateway=${GATEWAY_ID} --device=${DEVICE_ID} --project=${PROJECT_ID} --device-region=${REGION} --device-registry=${REGISTRY_ID} --gateway-region=${REGION} --gateway-registry=${REGISTRY_ID}
+
 # Create the pubsub topics
 gcloud pubsub topics create ${EVENT_PUBSUB_TOPIC} --project=${PROJECT_ID}
 gcloud pubsub topics create ${STATE_PUBSUB_TOPIC} --project=${PROJECT_ID}
