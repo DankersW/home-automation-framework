@@ -1,20 +1,17 @@
 import datetime
-import json
 import ssl
 import time
+import threading
+from dataclasses import dataclass
 import jwt
 import paho.mqtt.client as mqtt
-from dataclasses import dataclass
-import threading
 
-
-UPDATE_RATE_SECONDS = 0.1
-received_message_queue = []
 
 @dataclass
-class MqttBridgeConfiguration:
+class MqttGatewayConfiguration:
     project_id: str = "dankers"
     registry_id: str = "home_automation_light_switches"
+    gateway_id: str = "home_automation_light_switches_gateway"
     private_key_file: str = "../certificates/rsa_light_switch_private.pem"
     algorithm: str = "RS256"
     cloud_region: str = "europe-west1"
@@ -23,7 +20,12 @@ class MqttBridgeConfiguration:
     mqtt_bridge_port: int = 8883
 
 
-def create_jwt(device_id, project_id, private_key_file, algorithm):
+GATEWAY_NAME = 'GCP_GATEWAY'
+ONE_MILLISECOND_SECONDS = 0.001
+
+
+def create_jwt(project_id, private_key_file, algorithm):
+    """Create a JWT (https://jwt.io) to establish an MQTT connection."""
     token = {
         'iat': datetime.datetime.utcnow(),
         'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
@@ -31,8 +33,8 @@ def create_jwt(device_id, project_id, private_key_file, algorithm):
     }
     with open(private_key_file, 'r') as f:
         private_key = f.read()
-    current_time = datetime.datetime.now()
-    print("{} - GCP_{} | Creating JWT from private key file using {} algorithm.".format(current_time, device_id, algorithm))
+        current_time = datetime.datetime.now()
+    print("{} - {} | Creating JWT from private key file using {}.".format(current_time, GATEWAY_NAME, algorithm))
     return jwt.encode(token, private_key, algorithm=algorithm)
 
 
@@ -40,163 +42,238 @@ def error_str(rc):
     return '{} - {}'.format(rc, mqtt.error_string(rc))
 
 
-class GBridge:
-    def __init__(self, device_list):
-        self.device_list = device_list
-        self.devices = []
-        global received_message_queue
-        for i, device_id in enumerate(self.device_list):
-            current_time = datetime.datetime.now()
-            print("{} - G-Bridge | Creating device \'{}\'".format(current_time, device_id))
-            self.devices.append(MqttGcpDevice(device_id))
-            time.sleep(1)
-            self.devices[i].start()
+class GBridge(threading.Thread):
+    mqtt_client = None
+    g_bridge_connected = False
 
-    def __del__(self):
-        for device_index in range(len(self.device_list)):
-            self.devices[device_index].disconnect()
+    attached_devices = []
+    pending_messages = []
+    pending_subscribed_topics = []
 
-    def publish_data(self, device, event, data):
-        device_index = self.device_list.index(device) if device in self.device_list else -1
-        if device_index > -1:
-            self.devices[device_index].publish_data(event, data)
-        else:
-            print("G-Bridge | device does not exist")
-            # todo: create the new device
+    received_messages_queue = []
 
-    def receive_data(self, device, data):
-        current_time = datetime.datetime.now()
-        print("{} - G-Bridge | Received \'{}\' from GCP for \'{}\'.".format(current_time, data, device))
-        message = [device, data]
-        received_message_queue.append(message)
-
-    def get_last_message(self):
-        if len(received_message_queue) > 0:
-            return received_message_queue.pop(0)
-        else:
-            return None
-
-
-class MqttGcpDevice(GBridge, threading.Thread):
-    def __init__(self, device_id):
+    def __init__(self):
         threading.Thread.__init__(self)
-        self.args = MqttBridgeConfiguration()
-        self.connected = False
-        self.device_id = device_id
-        self.instance_name = "GCP_{}".format(device_id)
-        self.client = self.create_client()
-        self.setup_connection()
+        gateway_configuration = MqttGatewayConfiguration()
+        self.gateway_id = gateway_configuration.gateway_id
+        self.connect_to_iot_core_broker(gateway_configuration)
 
     def __del__(self):
-        self.client.disconnect()
-        self.client.loop_stop()
-
-    def disconnect(self):
-        self.client.disconnect()
-        self.client.loop_stop()
-
-    def create_client(self):
-        client_id = 'projects/{}/locations/{}/registries/{}/devices/{}'.format(self.args.project_id,
-                                                                               self.args.cloud_region,
-                                                                               self.args.registry_id,
-                                                                               self.device_id)
-        client = mqtt.Client(client_id)
-        jwt_pwd = create_jwt(self.device_id, self.args.project_id, self.args.private_key_file, self.args.algorithm)
-        client.username_pw_set(username='unused', password=jwt_pwd)
-        client.tls_set(ca_certs=self.args.ca_certs, tls_version=ssl.PROTOCOL_TLSv1_2)
-        return client
-
-    def setup_connection(self):
-        self.client.on_connect = self.on_connect
-        self.client.on_publish = self.on_publish
-        self.client.on_disconnect = self.on_disconnect
-        self.client.on_subscribe = self.on_subscribe
-        self.client.on_message = self.on_message
-        self.client.connect(self.args.mqtt_bridge_hostname, self.args.mqtt_bridge_port)
-        self.client.loop_start()
-        self.wait_for_connection(5)
-        mqtt_command_topic = '/devices/{}/commands/#'.format(self.device_id)
-        self.client.subscribe(mqtt_command_topic, qos=1)
+        self.detach_all_devices()
+        self.mqtt_client.disconnect()
+        self.mqtt_client.loop_stop()
 
     def run(self):
-        while self.connected:
-            time.sleep(UPDATE_RATE_SECONDS)
+        self.mqtt_client.loop_start()
+        self.wait_for_connection(5)
+        while self.g_bridge_connected:
+            time.sleep(ONE_MILLISECOND_SECONDS)
+
+    def connect_to_iot_core_broker(self, conf):
+        # Create the MQTT client and connect to Cloud IoT.
+        gateway_id = 'projects/{}/locations/{}/registries/{}/devices/{}'.format(conf.project_id, conf.cloud_region,
+                                                                                conf.registry_id, conf.gateway_id)
+        self.mqtt_client = mqtt.Client(gateway_id)
+        jwt_pwd = create_jwt(conf.project_id, conf.private_key_file, conf.algorithm)
+        self.mqtt_client.username_pw_set(username='unused', password=jwt_pwd)
+        self.mqtt_client.tls_set(ca_certs=conf.ca_certs, tls_version=ssl.PROTOCOL_TLSv1_2)
+
+        self.mqtt_client.on_connect = self.on_connect
+        self.mqtt_client.on_publish = self.on_publish
+        self.mqtt_client.on_disconnect = self.on_disconnect
+        self.mqtt_client.on_subscribe = self.on_subscribe
+        self.mqtt_client.on_message = self.on_message
+
+        self.mqtt_client.connect(conf.mqtt_bridge_hostname, conf.mqtt_bridge_port)
 
     def wait_for_connection(self, timeout):
         total_time = 0
-        while not self.connected and total_time < timeout:
+        while not self.g_bridge_connected and total_time < timeout:
             time.sleep(1)
             total_time += 1
-
-        if not self.connected:
+        if not self.g_bridge_connected:
             current_time = datetime.datetime.now()
-            raise RuntimeError("{} - {} | Could not connect to MQTT bridge.".format(current_time, self.instance_name))
-
-    def subscribe_to_topics(self):
-        mqtt_config_topic = '/devices/{}/config'.format(self.device_id)
-        self.client.subscribe(mqtt_config_topic)
-
-    def publish_data(self, event, data):
-        if event == "telemetry":
-            self.publish_telemetry_event(data)
-        elif event == "state":
-            self.publish_state_event(data)
-        else:
-            current_time = datetime.datetime.now()
-            print("{} - {} | Error: Unknown event type {}.".format(current_time, self.instance_name, event))
-
-    def publish_telemetry_event(self, payload):
-        mqtt_telemetry_topic = '/devices/{}/events'.format(self.device_id)
-        current_time = datetime.datetime.now()
-        print("{} - {} | Publishing payload: \"{}\" on Topic: \"{}\".".format(current_time, self.instance_name, payload,
-                                                                             mqtt_telemetry_topic))
-        self.client.publish(mqtt_telemetry_topic, payload, qos=1)
-
-    def publish_state_event(self, payload):
-        mqtt_state_topic = '/devices/{}/state'.format(self.device_id)
-        current_time = datetime.datetime.now()
-        print("{} - {} | Publishing payload: \"{}\" on Topic: \"{}\".".format(current_time, self.instance_name, payload,
-                                                                             mqtt_state_topic))
-        self.client.publish(mqtt_state_topic, payload, qos=1)
+            raise RuntimeError("{} - {} | Could not connect to Iot Core MQTT bridge.".format(current_time,
+                                                                                             GATEWAY_NAME))
 
     def on_connect(self, unused_client, unused_userdata, unused_flags, rc):
         current_time = datetime.datetime.now()
-        print("{} - {} | Connection Result: {}".format(current_time, self.instance_name, error_str(rc)))
-        self.connected = True
+        print("{} - {} | Connected to GCP IoT core MQTT Broker with connection Result: {}".format(current_time,
+                                                                                                  GATEWAY_NAME,
+                                                                                                  error_str(rc)))
+        self.g_bridge_connected = True
+        self.subscribe_to_topics(self.gateway_id, True)
+
+    def subscribe_to_topics(self, dev_id, gateway):
+        config_topic = '/devices/{}/config'.format(dev_id)
+        command_topic = '/devices/{}/commands/#'.format(dev_id)
+        subscriptions = [{'topic': config_topic, 'qos': 1}, {'topic': command_topic, 'qos': 1}]
+        if gateway:
+            gateway_error_topic = '/devices/{}/errors'.format(dev_id)
+            subscriptions.append({'topic': gateway_error_topic, 'qos': 0})
+
+        for subscription in subscriptions:
+            self.subscribe(subscription.get('topic'), subscription.get('qos'))
+
+    def subscribe(self, topic, qos):
+        _, mid = self.mqtt_client.subscribe(topic, qos)
+        self.pending_subscribed_topics.append(mid)
+        while topic in self.pending_subscribed_topics:
+            time.sleep(0.01)
+        current_time = datetime.datetime.now()
+        print('{} - {} | Successfully subscribed to topic \'{}\' with Qos \'{}\'.'.format(current_time, GATEWAY_NAME,
+                                                                                          topic, qos))
 
     def on_disconnect(self, unused_client, unused_userdata, rc):
         current_time = datetime.datetime.now()
-        print("{} - {} | Disconnected: {}".format(current_time, self.instance_name, error_str(rc)))
-        self.connected = False
+        print("{} - {} | Disconnected: {}".format(current_time, GATEWAY_NAME, error_str(rc)))
+        self.g_bridge_connected = False
 
-    def on_publish(self, unused_client, unused_userdata, unused_mid):
+    def on_publish(self, unused_client, unused_userdata, mid):
         current_time = datetime.datetime.now()
-        print("{} - {} | Published message acknowledged.".format(current_time, self.instance_name))
+        print("{} - {} | ACK received for message \'{}\'".format(current_time, GATEWAY_NAME, mid))
+        if mid in self.pending_messages:
+            self.pending_messages.remove(mid)
 
-    def on_subscribe(self, unused_client, unused_userdata, unused_mid, granted_qos):
-        current_time = datetime.datetime.now()
+    def on_subscribe(self, unused_client, unused_userdata, mid, granted_qos):
         if granted_qos[0] == 128:
-            subscription_result = "{} - Subscription failed".format(granted_qos[0])
+            current_time = datetime.datetime.now()
+            print("{} - {} | Subscription result: {} - Subscription failed".format(current_time, GATEWAY_NAME,
+                                                                                   granted_qos[0]))
         else:
-            subscription_result = "{} - Subscribed".format(granted_qos)
-        print("{} - {} | Subscription result: {}.".format(current_time, self.instance_name, subscription_result))
+            if mid in self.pending_subscribed_topics:
+                self.pending_subscribed_topics.remove(mid)
 
     def on_message(self, unused_client, unused_userdata, message):
-        current_time = datetime.datetime.now()
         payload = message.payload.decode('utf-8')
-        print("{} - {} | Received message \'{}\' on topic \'{}\' with Qos {}.".format(current_time, self.instance_name,
-                                                                                      payload, message.topic,
-                                                                                      str(message.qos)))
+        current_time = datetime.datetime.now()
+        print('{} - {} | Received message \'{}\' on topic \'{}\'.'.format(current_time, GATEWAY_NAME,payload,
+                                                                          message.topic))
         if not payload:
             return
-        super().receive_data(self.device_id, payload)
 
+        # todo: fix this so that is better
+        if message.topic.split('/')[3] == "commands":
+            device_id = GBridge.get_id_from_topic(message.topic)
+            message = [device_id, payload]
+            self.received_messages_queue.append(message)
+
+    def attach_device(self, device_id):
+        current_time = datetime.datetime.now()
+        print('{} - {} | Attaching device \'{}\'.'.format(current_time, GATEWAY_NAME, device_id))
+        attach_topic = '/devices/{}/attach'.format(device_id)
+        if device_id not in self.attached_devices:
+            self.attached_devices.append(device_id)
+        self.publish(attach_topic, "")  # Message content is empty because gateway auth-method=ASSOCIATION_ONLY
+        self.subscribe_to_topics(device_id, False)
+
+    def detach_device(self, device_id):
+        current_time = datetime.datetime.now()
+        print('{} - {} | Detaching device \'{}\'.'.format(current_time, GATEWAY_NAME, device_id))
+        detach_topic = '/devices/{}/detach'.format(device_id)
+        if device_id in self.attached_devices:
+            self.attached_devices.remove(device_id)
+        self.publish(detach_topic, "")  # Message content is empty because gateway auth-method=ASSOCIATION_ONLY
+
+    def detach_all_devices(self):
+        current_time = datetime.datetime.now()
+        print('{} - {} | Detaching all devices. Currently all connected devices: \'{}\'.'.format(current_time,
+                                                                                                 GATEWAY_NAME,
+                                                                                                 self.attached_devices))
+        for device in self.attached_devices[:]:
+            self.detach_device(device)
+        while self.attached_devices:  # Make sure all devices have been detached
+            time.sleep(0.01)
+
+    def publish(self, topic, payload):
+        message_info = self.mqtt_client.publish(topic, payload, qos=1)
+        self.pending_messages.append(message_info.mid)
+        current_time = datetime.datetime.now()
+        print('{} - {} | Publishing payload: \'{}\' on Topic \'{}\' with mid \'{}\'.'.format(current_time, GATEWAY_NAME,
+                                                                                             payload, topic,
+                                                                                             message_info.mid))
+        while message_info.mid in self.pending_messages:  # Waiting for message ACK to arrive
+            time.sleep(0.01)
+
+    def send_data(self, device_id, event_type, payload):
+        if event_type == "telemetry":
+            topic = '/devices/{}/events'.format(device_id)
+        elif event_type == "state":
+            topic = '/devices/{}/state'.format(device_id)
+        else:
+            current_time = datetime.datetime.now()
+            print("{} - {} | Error: Unknown event type {}.".format(current_time, GATEWAY_NAME, event_type))
+            return
+        self.publish(topic, payload)
+
+    def get_last_message(self):
+        if len(self.received_messages_queue) > 0:
+            return self.received_messages_queue.pop(0)
+        else:
+            return None
+
+    @staticmethod
+    def get_id_from_topic(topic):
+        index_device_id = 2
+        dir_tree = topic.split('/')
+        if len(dir_tree) != 4 or dir_tree[1] != "devices":
+            return None
+        return dir_tree[index_device_id]
+
+
+# todo: include a time off to wait for pending messages and resend
+# todo: if a device is going to be detached make sure that device does not have any pending messages
+
+
+# Quick Tests
+def attach_detach_with_2_devices():
+    g_bridge = GBridge()
+    g_bridge.start()
+    device_list = ["light_switch_001", "light_switch_002"]
+
+    g_bridge.attach_device(device_list[0])
+    g_bridge.attach_device(device_list[1])
+
+    g_bridge.detach_device(device_list[0])
+    g_bridge.attach_device(device_list[1])
+
+    time.sleep(2)
+    g_bridge.__del__()
+    del g_bridge
+
+
+def keep_running_for_messages():
+    g_bridge = GBridge()
+    g_bridge.start()
+    device_list = ["light_switch_001", "light_switch_002"]
+    g_bridge.attach_device(device_list[0])
+
+    for _ in range(30):
+        message = g_bridge.get_last_message()
+        if message is not None:
+            print("received message queue: {}".format(message))
+        time.sleep(1)
+
+    g_bridge.__del__()
+    del g_bridge
+
+
+def send_data():
+    g_bridge = GBridge()
+    g_bridge.start()
+    device_list = ["light_switch_001", "light_switch_002"]
+    g_bridge.attach_device(device_list[0])
+    g_bridge.attach_device(device_list[1])
+
+    g_bridge.send_data(device_list[0], "state", "{\"test\": 123}")
+    g_bridge.send_data(device_list[1], "telemetry", "{\"test\": 123}")
+    g_bridge.send_data(device_list[0], "telemetry", "{\"test\": 123}")
+    g_bridge.send_data(device_list[1], "state", "{\"test\": 123}")
+    g_bridge.send_data(device_list[0], "state", "{\"test\": 14}")
+
+    time.sleep(10)
+    g_bridge.__del__()
+    del g_bridge
 
 if __name__ == '__main__':
-    devices = ["light_switch_001", "light_switch_002"]
-    gbridge = GBridge(devices)
-    gbridge.publish_data(devices[0], "telemetry", "hello! does it work?")
-    gbridge.publish_data(devices[0], "state", '{"lights_state": 1}')
-    gbridge.publish_data(devices[1], "state", '{"lights_state": 0}')
-    time.sleep(7)
-    del gbridge
+    keep_running_for_messages()
