@@ -11,20 +11,27 @@ class IotGateway:
     def __init__(self):
         device_list = ["light_switch_001"]
 
-        self.device_gateway = DeviceGateway()
-        self.device_gateway.start()
-        self.g_bridge = GBridge(device_list)
+        #self.device_gateway = DeviceGateway()
+        # self.device_gateway.start()
+
+        self.g_bridge = GBridge()
+        self.g_bridge.start()
+
+        # todo: if a devices boots up attach it to gbridge and on shutdown detach it
+        for device in device_list:
+            self.g_bridge.attach_device(device)
 
         self.run()
 
     def __del__(self):
         del self.g_bridge
-        self.device_gateway.join()
+        #self.device_gateway.join()
 
     def run(self):
+
         while self.running:
-            self.device_to_cloud_communication()
-            self.cloud_to_device_communication()
+            #self.device_to_cloud_communication()
+            #self.cloud_to_device_communication()
             time.sleep(1)
 
     def device_to_cloud_communication(self):
@@ -34,7 +41,7 @@ class IotGateway:
             device = message[0]
             data = "light_state: " + message[1]
             event = message[2]
-            self.g_bridge.publish_data(device, event, data)
+            self.g_bridge.send_data(device, event, data)
 
     def cloud_to_device_communication(self):
         message = self.g_bridge.get_last_message()
