@@ -9,6 +9,7 @@
 ## Gateway
 - [x] Re-write G-bridge to serve as a gateway instead of mocking each device
 - [ ] Attach and detach devices when they turn on or off
+- [ ] Reattach all connected devices when the gateway disconnects
 
 ## Full chain
 - [ ] Fix crash when the cloud controls a device and device updates its status back
