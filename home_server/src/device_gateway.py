@@ -4,7 +4,7 @@ import paho.mqtt.client as mqtt
 import datetime
 import threading
 
-INSTANCE_NAME = "Device-gateway"
+INSTANCE_NAME = "Iot_dev_gateway"
 
 
 class DeviceGateway(threading.Thread):
