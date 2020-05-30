@@ -32,7 +32,7 @@ class IotGateway:
         while self.running:
             self.device_to_cloud_communication()
             self.cloud_to_device_communication()
-            time.sleep(1)
+            time.sleep(0.001)
 
     def device_to_cloud_communication(self):
         # Take oldest message from device_gateway gueue and poss it to the Gbridge
