@@ -11,8 +11,8 @@ class IotGateway:
     def __init__(self):
         device_list = ["light_switch_001"]
 
-        #self.device_gateway = DeviceGateway()
-        # self.device_gateway.start()
+        self.device_gateway = DeviceGateway()
+        self.device_gateway.start()
 
         self.g_bridge = GBridge()
         self.g_bridge.start()
@@ -25,13 +25,13 @@ class IotGateway:
 
     def __del__(self):
         del self.g_bridge
-        #self.device_gateway.join()
+        self.device_gateway.join()
 
     def run(self):
 
         while self.running:
-            #self.device_to_cloud_communication()
-            #self.cloud_to_device_communication()
+            self.device_to_cloud_communication()
+            self.cloud_to_device_communication()
             time.sleep(1)
 
     def device_to_cloud_communication(self):
