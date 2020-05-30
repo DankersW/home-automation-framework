@@ -12,7 +12,7 @@
 - [ ] Reattach all connected devices when the gateway disconnects
 
 ## Full chain
-- [ ] Fix crash when the cloud controls a device and device updates its status back
+- [x] Fix crash when the cloud controls a device and device updates its status back
 - [ ] Disconnecting of a device on all places + firebase state onile
 
 ## Embedded
