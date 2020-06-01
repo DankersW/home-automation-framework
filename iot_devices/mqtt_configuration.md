@@ -41,6 +41,13 @@ on the state topic so that the device gateway knows of the change.
 iot/device-001/state
 ```
 
+### Attach topic
+Used by the iot device to notify the gateway that it has come alive. 
+The content of the message is empty
+```
+iot/device-001/attach
+```
+
 ### Configuration topic
 <b>TBD</b>
 

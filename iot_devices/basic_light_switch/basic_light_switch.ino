@@ -12,6 +12,7 @@ const int mqtt_port = 1883;
 String device_id = "light_switch_001";
 String mqtt_control_topic = "iot/" + device_id + "/control";
 String mqtt_state_topic = "iot/" + device_id + "/state";
+String mqtt_attach_topic = "iot/" + device_id + "/attach";
 bool mqtt_state = 0;
 bool light_state = 0;
 bool light_state_prev = 0;
@@ -43,6 +44,7 @@ void setup()
     
     client.subscribe(mqtt_control_topic.c_str());
     digitalWrite(ONBOARD_LED, HIGH); // Active low
+    client.publish(mqtt_attach_topic.c_str(), "");
 }
 
 void loop()
@@ -81,7 +83,7 @@ void loop()
     light_state_prev = light_state;
     
     client.loop();
-    delay(500);
+    delay(100);
 }
 
 void setupIo()
