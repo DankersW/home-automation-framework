@@ -18,8 +18,8 @@ class IotGateway:
         self.g_bridge.start()
 
         # todo: if a devices boots up attach it to gbridge and on shutdown detach it
-        for device in device_list:
-            self.g_bridge.attach_device(device)
+        #for device in device_list:
+        #    self.g_bridge.attach_device(device)
 
         self.run()
 
