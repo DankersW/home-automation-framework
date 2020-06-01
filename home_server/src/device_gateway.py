@@ -66,7 +66,6 @@ def get_item_from_topic(topic, index_type):
         'device_id': 1,
         'event': 2,
     }.get(index_type, None)
-    print(item_index)
     dir_tree = topic.split('/')
     if len(dir_tree) != 3 or dir_tree[0] != "iot" or item_index is None:
         return None
