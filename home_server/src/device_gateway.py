@@ -37,10 +37,10 @@ class DeviceGateway(threading.Thread):
         current_time = datetime.datetime.now()
         payload = msg.payload.decode('utf-8')
         topic = msg.topic
-        event = "state"
         print("{} - {} | Received message \'{}\' on topic \'{}\'.".format(current_time, INSTANCE_NAME, payload, topic))
-        device_id = get_id_from_topic(topic)
-        valid_topic = device_id is not None and payload is not None
+        device_id = get_item_from_topic(topic, 'device_id')
+        event = get_item_from_topic(topic, 'event')
+        valid_topic = device_id is not None and payload is not None and event is not None
         if valid_topic:
             message = [device_id, payload, event]
             self.received_message_queue.append(message)
@@ -61,12 +61,16 @@ class DeviceGateway(threading.Thread):
         self.client.publish(topic, data)
 
 
-def get_id_from_topic(topic):
-    index_device_id = 1
+def get_item_from_topic(topic, index_type):
+    item_index = {
+        'device_id': 1,
+        'event': 2,
+    }.get(index_type, None)
+    print(item_index)
     dir_tree = topic.split('/')
-    if len(dir_tree) != 3 or dir_tree[0] != "iot":
+    if len(dir_tree) != 3 or dir_tree[0] != "iot" or item_index is None:
         return None
-    return dir_tree[index_device_id]
+    return dir_tree[item_index]
 
 
 if __name__ == '__main__':
