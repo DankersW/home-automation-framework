@@ -39,9 +39,12 @@ class IotGateway:
         message = self.device_gateway.get_last_message()
         if message is not None:
             device = message[0]
-            data = "light_state: " + message[1]
             event = message[2]
-            self.g_bridge.send_data(device, event, data)
+            if event == 'attach':
+                self.g_bridge.attach_device(device)
+            elif event == 'state':
+                data = "light_state: " + message[1]
+                self.g_bridge.send_data(device, event, data)
 
     def cloud_to_device_communication(self):
         message = self.g_bridge.get_last_message()
