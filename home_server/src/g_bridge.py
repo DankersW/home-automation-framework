@@ -103,6 +103,10 @@ class GBridge(threading.Thread):
                                                                                                   error_str(rc)))
         self.g_bridge_connected = True
         self.subscribe_to_topics(self.gateway_id, True)
+        if self.attached_devices:  # Not empty list, Previously already had connected devices
+            current_time = datetime.datetime.now()
+            print("{} - {} | Re-connect occurred! Re-attaching all connected devices.".format(current_time,
+                                                                                              GATEWAY_NAME))
 
     def subscribe_to_topics(self, dev_id, gateway):
         config_topic = '/devices/{}/config'.format(dev_id)
@@ -220,9 +224,11 @@ class GBridge(threading.Thread):
             return None
         return dir_tree[index_device_id]
 
-
-# todo: include a time off to wait for pending messages and resend
-# todo: if a device is going to be detached make sure that device does not have any pending messages
+    def reattach_devices(self):
+        for device in self.attached_devices:
+            current_time = datetime.datetime.now()
+            print("{} - {} | Re-attaching device {}.".format(current_time, GATEWAY_NAME, device))
+            self.attach_device(device)
 
 
 # Quick Tests
@@ -274,6 +280,7 @@ def send_data():
     time.sleep(10)
     g_bridge.__del__()
     del g_bridge
+
 
 if __name__ == '__main__':
     keep_running_for_messages()
