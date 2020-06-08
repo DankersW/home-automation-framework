@@ -8,3 +8,5 @@ they can be displayed
 Send the battery level periodiaclly to the home server and make the server send out an email if
 a device is close to running out of battery
 
+## Proper logging
+Proper logging to a file (info, debug, warning, error, etc.). Make IoT devs send there logs to central server on request. 
