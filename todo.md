@@ -1,10 +1,16 @@
 # Todo
 
+## Bugs
+- [ ] g-bridge: Out of memory causes reconnection. and and up with connection code 4 - The client is not currently 
+connected. then disconnect 5 - the connection was refused. This keeps going forever. connect --> disconnect --> ... 
+1:40 hours to disconnect
+
 ## Cloud
 - [ ] GCP commands to create firebase
 - [x] Include all cloud functions into 1 main and have each cloud function organized in one .py file
-- [ ] Cloud function that is triggered on attach/detach and sets the status online status of that device in firebase
-- [ ] Get Google Asistent to work
+- [x] Cloud function that is triggered on attach/detach and sets the status online status of that device in firebase
+- [ ] Get Google Asistent to talk to firebase, dialog flow, homegraph, actions, etc...
+- [ ] If data in firebase changes, write down to that client
 
 ## Gateway
 - [x] Re-write G-bridge to serve as a gateway instead of mocking each device
