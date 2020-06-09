@@ -1,0 +1,24 @@
+name: Job_merge_test_home_server
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r Home_Automation\home_server\requirements.txt
+      - name: Test with pytest
+        run: python -m unittest discover Home_Automation\home_server\tests\
