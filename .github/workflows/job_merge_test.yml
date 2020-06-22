@@ -23,4 +23,4 @@ jobs:
           if [ -f home_server/requirements.txt ]; then pip install -r home_server/requirements.txt; fi
       - name: Test with pytest
         run:  |
-          python -m unittest discover Home_Automation/home_server/tests/
+          python -m unittest discover home_server/tests/
