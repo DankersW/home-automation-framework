@@ -1,5 +1,4 @@
-![Build Status](https://github.com/<OWNER>/<REPOSITORY>/workflows/<WORKFLOW_NAME>/badge.svg)
-
+![home_server build status](https://github.com/DankersW/Home_Automation/workflows/Job_merge_test_home_server/badge.svg)
 # Home Automation
 
 ## Architecture
