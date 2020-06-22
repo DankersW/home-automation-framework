@@ -44,4 +44,4 @@ class TestEventFromTopic(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    test_id_from_topic()
