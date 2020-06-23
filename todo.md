@@ -30,5 +30,4 @@ connected. then disconnect 5 - the connection was refused. This keeps going fore
 - [ ] On low battery send out email to recharge 
 
 ## CI
-- [ ] Implement Actions on Github that runs a job to test if all tests pass before a merge to master or push to master
-- [ ] Switch to Pytest for unit tests
+- [x] Implement Actions on Github that runs a job to test if all tests pass before a merge to master or push to master
