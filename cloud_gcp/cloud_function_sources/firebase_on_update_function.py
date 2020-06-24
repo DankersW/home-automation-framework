@@ -1,5 +1,21 @@
 from google.cloud import pubsub_v1
 
+from google.cloud import iot_v1
+
+'''
+# [START iot_send_command]
+    print('Sending command to device')
+    client = iot_v1.DeviceManagerClient()
+    device_path = client.device_path(
+        project_id, cloud_region, registry_id, device_id)
+
+    # command = 'Hello IoT Core!'
+    data = command.encode('utf-8')
+
+    return client.send_command_to_device(device_path, data)
+    
+https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/iot/api-client/manager/manager.py
+'''
 
 def firestore_on_update_to_devices_pubsub(event, context):
     """Triggered by a change to a Firestore document.
