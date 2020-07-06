@@ -3,3 +3,4 @@
 
 firebase-admin>=4.3.0
 google-cloud-pubsub>=1.5.0
+google-cloud-iot>=1.0.0
