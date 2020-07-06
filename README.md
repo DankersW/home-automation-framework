@@ -1,4 +1,4 @@
-![home_server build status](https://github.com/DankersW/Home_Automation/workflows/Job_merge_test_home_server/badge.svg)
+![home_server tests](https://github.com/DankersW/Home_Automation/workflows/home_server_tests/badge.svg)
 # Home Automation
 
 ## Architecture
