@@ -24,4 +24,3 @@ jobs:
       - name: Unit tests with unittest
         run:  |
           python -m unittest discover -s home_server/tests/ -p 'unittest_*.py'
-#python -m unittest discover home_server/tests/
