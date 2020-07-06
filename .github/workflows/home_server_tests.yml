@@ -1,4 +1,4 @@
-name: Job_merge_test_home_server
+name: home_server_tests
 
 on:
   push:
