@@ -4,6 +4,7 @@
 - [ ] g-bridge: Out of memory causes reconnection. and and up with connection code 4 - The client is not currently 
 connected. then disconnect 5 - the connection was refused. This keeps going forever. connect --> disconnect --> ... 
 1:40 hours to disconnect
+- [ ] light status not set in Firestore anylonger
 
 ## Cloud
 - [ ] GCP commands to create firebase
