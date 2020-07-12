@@ -1,21 +1,5 @@
+import time
 from google.cloud import pubsub_v1
-
-from google.cloud import iot_v1
-
-'''
-# [START iot_send_command]
-    print('Sending command to device')
-    client = iot_v1.DeviceManagerClient()
-    device_path = client.device_path(
-        project_id, cloud_region, registry_id, device_id)
-
-    # command = 'Hello IoT Core!'
-    data = command.encode('utf-8')
-
-    return client.send_command_to_device(device_path, data)
-    
-https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/iot/api-client/manager/manager.py
-'''
 
 
 def firestore_on_update_to_devices_pubsub(event, context):
@@ -24,17 +8,16 @@ def firestore_on_update_to_devices_pubsub(event, context):
          event (dict): Event payload.
          context (google.cloud.functions.Context): Metadata for the event.
     """
-    name = event['value']['name']
-    state = event['value']['fields']['state']['integerValue']
-    device_id = get_device_id_from_name(name)
-    payload = '{"state": ' + state + '}'
-    if device_id is None:
-        return
+    #name = event['value']['name']
+    #state = event['value']['fields']['state']['integerValue']
+    #device_id = get_device_id_from_name(name)
+    #payload = '{"state": ' + state + '}'
+    #if device_id is None:
+    #    return
 
     print('test abc')
-
-    print('v2: {}'.format(send_data_v2(device_id, payload)))
-    send_data_to_device(device_id, payload)
+    sending_test()
+    print("done sending")
 
 
 def get_device_id_from_name(name):
@@ -46,30 +29,44 @@ def get_device_id_from_name(name):
     return None
 
 
-def send_data_to_device(device_id, payload):
-    project_id = 'dankers'
-    topic_id = '/devices/{}/commands'.format(device_id)
-    payload = payload.encode("utf-8")
+def sending_test():
+    """Publishes multiple messages to a Pub/Sub topic with an error handler."""
+
+    # TODO(developer)
+    project_id = "dankers"
+    topic_id = "devices/light_switch_001/commands/#"
+
     publisher = pubsub_v1.PublisherClient()
     topic_path = publisher.topic_path(project_id, topic_id)
-    future = publisher.publish(topic_path, data=payload)
-    print(future.result())
 
+    futures = dict()
 
-def send_data_v2(device_id, payload):
-    print('Sending command to device')
-    project_id = 'dankers'
-    cloud_region = 'europe-west1'
-    registry_id = 'home_automation_light_switches'
-    device_id = 'light_switch_001'
-    client = iot_v1.DeviceManagerClient()
-    device_path = client.device_path(
-        project_id, cloud_region, registry_id, device_id)
+    def get_callback(f, data):
+        def callback(f):
+            try:
+                print(f.result())
+                futures.pop(data)
+            except:  # noqa
+                print("Please handle {} for {}.".format(f.exception(), data))
 
-    command = 'Hello IoT Core!'
-    data = command.encode('utf-8')
+        return callback
 
-    return client.send_command_to_device(device_path, data)
+    for i in range(10):
+        data = str(i)
+        futures.update({data: None})
+        # When you publish a message, the client returns a future.
+        future = publisher.publish(
+            topic_path, data=data.encode("utf-8")  # data must be a bytestring.
+        )
+        futures[data] = future
+        # Publish failures shall be handled in the callback function.
+        future.add_done_callback(get_callback(future, data))
+
+    # Wait for all the publish futures to resolve before exiting.
+    while futures:
+        time.sleep(5)
+
+    print("Published message with error handler.")
 
 
 if __name__ == '__main__':
