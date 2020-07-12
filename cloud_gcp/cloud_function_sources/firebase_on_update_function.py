@@ -1,5 +1,4 @@
-import time
-from google.cloud import pubsub_v1
+from google.cloud import iot_v1
 
 
 def firestore_on_update_to_devices_pubsub(event, context):
@@ -8,65 +7,34 @@ def firestore_on_update_to_devices_pubsub(event, context):
          event (dict): Event payload.
          context (google.cloud.functions.Context): Metadata for the event.
     """
-    #name = event['value']['name']
-    #state = event['value']['fields']['state']['integerValue']
-    #device_id = get_device_id_from_name(name)
-    #payload = '{"state": ' + state + '}'
-    #if device_id is None:
-    #    return
+    name = event['value']['name']
+    state = event['value']['fields']['state']['integerValue']
+    device_id = get_device_id_from_name(name)
+    payload = '{"state": ' + state + '}'
+    if device_id is None:
+        return
 
-    print('test abc')
-    sending_test()
-    print("done sending")
+    send_command_to_device(device_id, payload)
 
 
 def get_device_id_from_name(name):
-    index_device_id = 6
+    i_dev_id = 6
     dir_tree = name.split('/')
-    valid_name = len(dir_tree) is 7 and 'light_switch' in dir_tree[index_device_id]
+    valid_name = len(dir_tree) == 7 and 'light_switch' in dir_tree[i_dev_id]
     if valid_name:
-        return dir_tree[index_device_id]
+        return dir_tree[i_dev_id]
     return None
 
 
-def sending_test():
-    """Publishes multiple messages to a Pub/Sub topic with an error handler."""
+def send_command_to_device(device_id, payload):
+    project = 'dankers'
+    location = 'europe-west1'
+    registry = 'home_automation_light_switches'
+    client = iot_v1.DeviceManagerClient()
+    device_path = client.device_path(project, location, registry, device_id)
+    binary_payload = payload.encode()
+    return client.send_command_to_device(device_path, binary_payload)
 
-    # TODO(developer)
-    project_id = "dankers"
-    topic_id = "devices/light_switch_001/commands/#"
-
-    publisher = pubsub_v1.PublisherClient()
-    topic_path = publisher.topic_path(project_id, topic_id)
-
-    futures = dict()
-
-    def get_callback(f, data):
-        def callback(f):
-            try:
-                print(f.result())
-                futures.pop(data)
-            except:  # noqa
-                print("Please handle {} for {}.".format(f.exception(), data))
-
-        return callback
-
-    for i in range(10):
-        data = str(i)
-        futures.update({data: None})
-        # When you publish a message, the client returns a future.
-        future = publisher.publish(
-            topic_path, data=data.encode("utf-8")  # data must be a bytestring.
-        )
-        futures[data] = future
-        # Publish failures shall be handled in the callback function.
-        future.add_done_callback(get_callback(future, data))
-
-    # Wait for all the publish futures to resolve before exiting.
-    while futures:
-        time.sleep(5)
-
-    print("Published message with error handler.")
 
 
 if __name__ == '__main__':

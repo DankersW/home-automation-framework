@@ -43,7 +43,8 @@ SUBSCRIPTION_ID="test_home_automation_light_switches_event_subsription"
 gcloud pubsub subscriptions create ${SUBSCRIPTION_ID} --topic=${EVENT_PUBSUB_TOPIC} --project=${PROJECT_ID}
 gcloud pubsub subscriptions pull --auto-ack projects/${PROJECT_ID}/subscriptions/${SUBSCRIPTION_ID} --limit=100
 
-# Create simple cloud function
+# Cloud function creation
+# Create cloud function - listen to pubsub messages
 FUNCTION_NAME="home_automation_light_switches_write_pubsub_message_to_firebase"
 SOURCE="/home/wouter_dankers/cloud_function_sources/"
 ENTRY_POINT="lightswitches_pubsub_to_firebase"
@@ -51,3 +52,13 @@ STATE_PUBSUB_TOPIC="home_automation_light_switches_state_topic"
 REGION="europe-west1"
 gcloud functions deploy ${FUNCTION_NAME} --region=${REGION} --runtime python37 --trigger-topic=${STATE_PUBSUB_TOPIC} --allow-unauthenticated --entry-point=${ENTRY_POINT} --source=${SOURCE}
 gcloud functions logs read ${FUNCTION_NAME} --limit=50
+# Create cloud function - on firebase update
+FUNCTION_NAME="home_automation_light_switches_on_firebase_update_to_dev_pubsub"
+SOURCE="/home/wouter_dankers/cloud_function_sources/"
+ENTRY_POINT="firestore_on_update_to_devices_pubsub"
+STATE_PUBSUB_TOPIC="home_automation_light_switches_state_topic"
+REGION="europe-west1"
+RESOURCE="firestore"
+EVENT_TYPE="providers/cloud.firestore/eventTypes/document.update"
+
+gcloud functions deploy ${FUNCTION_NAME} --region=${REGION} --runtime python37 --trigger-resource=${RESOURCE} --trigger-event=${EVENT_TYPE} --allow-unauthenticated --entry-point=${ENTRY_POINT} --source=${SOURCE} --project=${PROJECT_ID}
