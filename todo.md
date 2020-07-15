@@ -19,7 +19,7 @@ connected. then disconnect 5 - the connection was refused. This keeps going fore
 - [x] Attach and detach devices when they turn on or off
 - [x] Reattach all connected devices when the gateway disconnects
 - [ ] Sending data: include a time-off that the functions waits for a ACK. after the timeout either drop the message or resend it  
-- [ ] Fix path issue
+- [x] Fix path issue
 
 ## Full chain
 - [x] Fix crash when the cloud controls a device and device updates its status back
