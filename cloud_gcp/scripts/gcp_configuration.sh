@@ -58,7 +58,6 @@ SOURCE="/home/wouter_dankers/cloud_function_sources/"
 ENTRY_POINT="firestore_on_update_to_devices_pubsub"
 STATE_PUBSUB_TOPIC="home_automation_light_switches_state_topic"
 REGION="europe-west1"
-RESOURCE="firestore"
+RESOURCE="projects/dankers/databases/(default)/documents/devices/{device_id}"
 EVENT_TYPE="providers/cloud.firestore/eventTypes/document.update"
-
 gcloud functions deploy ${FUNCTION_NAME} --region=${REGION} --runtime python37 --trigger-resource=${RESOURCE} --trigger-event=${EVENT_TYPE} --allow-unauthenticated --entry-point=${ENTRY_POINT} --source=${SOURCE} --project=${PROJECT_ID}
