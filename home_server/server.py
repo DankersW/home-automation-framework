@@ -4,7 +4,7 @@ from home_server.src.iot_gateway import IotGateway
 class HomeServer:
     def __init__(self):
         # start listing for connected devices
-        iot_gateway = IotGateway()
+        iot_gateway = IotGateway(path_cert_dir='certificates/')
 
 
 if __name__ == '__main__':
