@@ -8,13 +8,11 @@ from home_server.src.g_bridge import GBridge
 class IotGateway:
     running = True
 
-    def __init__(self):
-        device_list = ["light_switch_001"]
-
+    def __init__(self, path_cert_dir=None):
         self.device_gateway = DeviceGateway()
         self.device_gateway.start()
 
-        self.g_bridge = GBridge()
+        self.g_bridge = GBridge(path_cert_dir)
         self.g_bridge.start()
 
         self.run()
@@ -65,4 +63,4 @@ def decode_json(json_string, key):
 
 
 if __name__ == '__main__':
-    iotGateway = IotGateway()
+    iotGateway = IotGateway(path_cert_dir='../certificates/')

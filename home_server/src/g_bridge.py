@@ -12,10 +12,10 @@ class MqttGatewayConfiguration:
     project_id: str = "dankers"
     registry_id: str = "home_automation_light_switches"
     gateway_id: str = "home_automation_light_switches_gateway"
-    private_key_file: str = "../certificates/rsa_light_switch_private.pem"
+    private_key_file: str = "rsa_light_switch_private.pem"
     algorithm: str = "RS256"
     cloud_region: str = "europe-west1"
-    ca_certs: str = "../certificates/roots.pem"
+    ca_certs: str = "roots.pem"
     mqtt_bridge_hostname: str = "mqtt.googleapis.com"
     mqtt_bridge_port: int = 8883
 
@@ -52,9 +52,12 @@ class GBridge(threading.Thread):
 
     received_messages_queue = []
 
-    def __init__(self):
+    def __init__(self, path_cert_dir=None):
         threading.Thread.__init__(self)
         gateway_configuration = MqttGatewayConfiguration()
+        if path_cert_dir is not None:
+            gateway_configuration.private_key_file = path_cert_dir + gateway_configuration.private_key_file
+            gateway_configuration.ca_certs = path_cert_dir + gateway_configuration.ca_certs
         self.gateway_id = gateway_configuration.gateway_id
         self.connect_to_iot_core_broker(gateway_configuration)
 
@@ -233,7 +236,7 @@ class GBridge(threading.Thread):
 
 # Quick Tests
 def attach_detach_with_2_devices():
-    g_bridge = GBridge()
+    g_bridge = GBridge(path_cert_dir='../certificates/')
     g_bridge.start()
     device_list = ["light_switch_001", "light_switch_002"]
 
@@ -249,7 +252,7 @@ def attach_detach_with_2_devices():
 
 
 def keep_running_for_messages():
-    g_bridge = GBridge()
+    g_bridge = GBridge(path_cert_dir='../certificates/')
     g_bridge.start()
     device_list = ["light_switch_001", "light_switch_002"]
     g_bridge.attach_device(device_list[0])
@@ -265,7 +268,7 @@ def keep_running_for_messages():
 
 
 def send_data():
-    g_bridge = GBridge()
+    g_bridge = GBridge(path_cert_dir='../certificates/')
     g_bridge.start()
     device_list = ["light_switch_001", "light_switch_002"]
     g_bridge.attach_device(device_list[0])
