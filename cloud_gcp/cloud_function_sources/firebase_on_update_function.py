@@ -11,10 +11,8 @@ def firestore_on_update_to_devices_pubsub(event, context):
     state = event['value']['fields']['state']['integerValue']
     device_id = get_device_id_from_name(name)
     payload = '{"state": ' + state + '}'
-    if device_id is None:
-        return
-
-    send_command_to_device(device_id, payload)
+    if device_id is not None:
+        send_command_to_device(device_id, payload)
 
 
 def get_device_id_from_name(name):
