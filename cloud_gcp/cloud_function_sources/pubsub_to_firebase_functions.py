@@ -20,8 +20,8 @@ def lightswitches_pubsub_to_firebase(event, context):
     message_state = None
     try:
         data = json.loads(pubsub_message)
-        if 'lights_state' in data:
-            message_state = data['lights_state']
+        if 'light_state' in data:
+            message_state = data['light_state']
     except ValueError as e:
         print("JSON conversion error in message {} -- Error: {}".format(pubsub_message, e))
     if message_state is None:

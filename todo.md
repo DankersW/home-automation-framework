@@ -9,7 +9,7 @@
 connected. then disconnect 5 - the connection was refused. This keeps going forever. connect --> disconnect --> ... 
 1:40 hours to disconnect
 - [ ] cloud function: light status not set in Firestore anylonger when the device state changes
-- [ ] iot-gateway: upon receiving of the command topic it ('{"state": 1}') the state is not updated on the device.
+- [x] iot-gateway: upon receiving of the command topic it ('{"state": 1}') the state is not updated on the device.
 
 ## Logging
 - [ ] Create a logging class that logs comparable to the logging module
