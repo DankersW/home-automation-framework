@@ -10,6 +10,10 @@ connected. then disconnect 5 - the connection was refused. This keeps going fore
 1:40 hours to disconnect
 - [ ] cloud function: light status not set in Firestore anylonger when the device state changes
 - [x] iot-gateway: upon receiving of the command topic it ('{"state": 1}') the state is not updated on the device.
+- [ ] Device gets detached from the GCP cloud when the state get's published to quickly (assuming) | error log: 
+2020-07-16 10:14:28.182922 - GCP_GATEWAY | Received message '{"error_type":"GATEWAY_DETACHMENT_DEVICE_ERROR","description":"Device detached because of a device error.","device_id":"light_switch_001"}' on topic '/devices/home_automation_light_switches_gateway/errors'.
+2020-07-16 10:14:49.227127 - GCP_GATEWAY | Received message '{"error_type":"GATEWAY_DEVICE_NOT_FOUND","description":"The specified device with ID 'light_switch_001' is not attached to the gateway.","device_id":"light_switch_001","mqtt_message_info":{"message_type":"PUBLISH","topic":"/devices/light_switch_001/state","packet_id":10}}' on topic '/devices/home_automation_light_switches_gateway/errors'.
+Device needs to be reconnected when this error is handled. 
 
 ## Logging
 - [ ] Create a logging class that logs comparable to the logging module
