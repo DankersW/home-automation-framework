@@ -38,8 +38,7 @@ class IotGateway:
                 self.g_bridge.attach_device(device)
             elif event == 'state':
                 print('message: \'{}\''.format(message[1]))
-                #data = '{"light_state": ' + message[1] + '}'
-                data = '{"light_state": 3}'
+                data = '{"light_state": ' + message[1] + '}'
                 self.g_bridge.send_data(device, event, data)
 
     def cloud_to_device_communication(self):

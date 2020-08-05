@@ -37,6 +37,8 @@ def analyse_pubsub_message(event):
 
 def write_to_firestore(message):
     # Use the application default credentials to init firebase
+
+    # Something seems to be wrong with initializing the app!!! error that occurures
     cred = credentials.ApplicationDefault()
     firebase_admin.initialize_app(cred, {
         'projectId': 'dankers',
