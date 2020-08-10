@@ -39,6 +39,9 @@ def write_to_firestore(message):
     # Use the application default credentials to init firebase
 
     # Something seems to be wrong with initializing the app!!! error that occurures
+    # event: {'@type': 'type.googleapis.com/google.pubsub.v1.PubsubMessage', 'attributes': {'deviceId': 'light_switch_001', 'deviceNumId': '2833441033873397', 'deviceRegistryId': 'home_automation_light_switches', 'deviceRegistryLocation': 'europe-west1', 'gatewayId': 'home_automation_light_switches_gateway', 'projectId': 'dankers'}, 'data': 'eyJsaWdodF9zdGF0ZSI6IDF9'}
+    # context: {event_id: 1397797228920637, timestamp: 2020-08-05T15:57:31.889Z, event_type: google.pubsub.topic.publish, resource: {'service': 'pubsub.googleapis.com', 'name': 'projects/dankers/topics/home_automation_light_switches_state_topic', 'type': 'type.googleapis.com/google.pubsub.v1.PubsubMessage'}}
+    #
     cred = credentials.ApplicationDefault()
     firebase_admin.initialize_app(cred, {
         'projectId': 'dankers',
