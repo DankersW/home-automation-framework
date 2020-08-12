@@ -7,6 +7,11 @@ connected. then disconnect 5 - the connection was refused. This keeps going fore
 - [ ] cloud function: light status not set in Firestore anylonger when the device state changes
 - [ ] iot-gateway: upon receiving of the command topic it ('{"state": 1}') the state is not updated on the device.
 
+## Logging
+- [ ] Create a logging class that logs comparable to the logging module
+- [ ] Have a ylm file that specifies the logging configuration: E.Q format, log to file or terminal, etc. 
+- [ ] Unit tests for logging
+
 ## Cloud
 - [x] GCP commands to create firebase
 - [x] Include all cloud functions into 1 main and have each cloud function organized in one .py file
