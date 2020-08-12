@@ -1,11 +1,20 @@
 # Todo
 
+## Documentation
+- [ ] Update readme with recent info
+- [ ] Update architectural overview
+
 ## Bugs
 - [ ] g-bridge: Out of memory causes reconnection. and and up with connection code 4 - The client is not currently 
 connected. then disconnect 5 - the connection was refused. This keeps going forever. connect --> disconnect --> ... 
 1:40 hours to disconnect
 - [ ] cloud function: light status not set in Firestore anylonger when the device state changes
 - [ ] iot-gateway: upon receiving of the command topic it ('{"state": 1}') the state is not updated on the device.
+
+## Logging
+- [ ] Create a logging class that logs comparable to the logging module
+- [ ] Have a ylm file that specifies the logging configuration: E.Q format, log to file or terminal, etc. 
+- [ ] Unit tests for logging
 
 ## Cloud
 - [x] GCP commands to create firebase
