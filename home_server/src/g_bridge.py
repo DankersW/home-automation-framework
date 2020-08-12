@@ -291,9 +291,10 @@ def send_message_and_wait():
     device_list = ["light_switch_001"]
     g_bridge.attach_device(device_list[0])
 
-    g_bridge.send_data(device_list[0], "state", "{\"state\": 1}")
     time.sleep(5)
-    g_bridge.send_data(device_list[0], "state", "{\"test\": 4}")
+    g_bridge.send_data(device_list[0], "state", "{\"light_state\": 1}")
+    time.sleep(20)
+    g_bridge.send_data(device_list[0], "state", "{\"light_state\": 4}")
 
     time.sleep(10)
     g_bridge.__del__()

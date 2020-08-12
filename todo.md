@@ -8,7 +8,7 @@
 - [ ] g-bridge: Out of memory causes reconnection. and and up with connection code 4 - The client is not currently 
 connected. then disconnect 5 - the connection was refused. This keeps going forever. connect --> disconnect --> ... 
 1:40 hours to disconnect
-- [ ] cloud function: light status not set in Firestore anylonger when the device state changes
+- [x] cloud function: light status not set in Firestore anylonger when the device state changes
 - [x] iot-gateway: upon receiving of the command topic it ('{"state": 1}') the state is not updated on the device.
 - [ ] Device gets detached from the GCP cloud when the state get's published to quickly (assuming) | error log: 
 2020-07-16 10:14:28.182922 - GCP_GATEWAY | Received message '{"error_type":"GATEWAY_DETACHMENT_DEVICE_ERROR","description":"Device detached because of a device error.","device_id":"light_switch_001"}' on topic '/devices/home_automation_light_switches_gateway/errors'.

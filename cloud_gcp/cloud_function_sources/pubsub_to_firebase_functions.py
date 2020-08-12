@@ -20,16 +20,9 @@ def lightswitches_pubsub_to_firebase(event, context):
         event (dict): Event payload.
         context (google.cloud.functions.Context): Metadata for the event.
     """
-    print(event)
-    print(context)
-    print("triggered...")
-    # message_content = analyse_pubsub_message(event)
-    message_content = {'device_id': 'light_switch_001',
-                       'light_state': 2}
+    message_content = analyse_pubsub_message(event)
     if message_content is not None:
         write_to_firestore(message_content)
-
-    print("Done!")
 
 
 def analyse_pubsub_message(event):
@@ -50,11 +43,9 @@ def analyse_pubsub_message(event):
 
 def write_to_firestore(message):
     # Use the application default credentials to init firebase
-
     if not firebase_admin._apps:
         cred = credentials.ApplicationDefault()
         default_app = firebase_admin.initialize_app(cred, {'projectId': 'dankers', })
-
     db = firestore.client()
 
     # Writing data to Firebase
