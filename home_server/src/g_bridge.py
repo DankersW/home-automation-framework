@@ -285,5 +285,20 @@ def send_data():
     del g_bridge
 
 
+def send_message_and_wait():
+    g_bridge = GBridge(path_cert_dir='../certificates/')
+    g_bridge.start()
+    device_list = ["light_switch_001"]
+    g_bridge.attach_device(device_list[0])
+
+    g_bridge.send_data(device_list[0], "state", "{\"state\": 1}")
+    time.sleep(5)
+    g_bridge.send_data(device_list[0], "state", "{\"test\": 4}")
+
+    time.sleep(10)
+    g_bridge.__del__()
+    del g_bridge
+
+
 if __name__ == '__main__':
-    keep_running_for_messages()
+    send_message_and_wait()

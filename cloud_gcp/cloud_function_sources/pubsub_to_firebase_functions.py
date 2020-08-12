@@ -7,6 +7,12 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 import json
 
+import base64
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+import json
+
 
 def lightswitches_pubsub_to_firebase(event, context):
     """Triggered from a message on a Cloud Pub/Sub topic.
@@ -14,9 +20,16 @@ def lightswitches_pubsub_to_firebase(event, context):
         event (dict): Event payload.
         context (google.cloud.functions.Context): Metadata for the event.
     """
-    message_content = analyse_pubsub_message(event)
+    print(event)
+    print(context)
+    print("triggered...")
+    # message_content = analyse_pubsub_message(event)
+    message_content = {'device_id': 'light_switch_001',
+                       'light_state': 2}
     if message_content is not None:
         write_to_firestore(message_content)
+
+    print("Done!")
 
 
 def analyse_pubsub_message(event):
@@ -38,14 +51,10 @@ def analyse_pubsub_message(event):
 def write_to_firestore(message):
     # Use the application default credentials to init firebase
 
-    # Something seems to be wrong with initializing the app!!! error that occurures
-    # event: {'@type': 'type.googleapis.com/google.pubsub.v1.PubsubMessage', 'attributes': {'deviceId': 'light_switch_001', 'deviceNumId': '2833441033873397', 'deviceRegistryId': 'home_automation_light_switches', 'deviceRegistryLocation': 'europe-west1', 'gatewayId': 'home_automation_light_switches_gateway', 'projectId': 'dankers'}, 'data': 'eyJsaWdodF9zdGF0ZSI6IDF9'}
-    # context: {event_id: 1397797228920637, timestamp: 2020-08-05T15:57:31.889Z, event_type: google.pubsub.topic.publish, resource: {'service': 'pubsub.googleapis.com', 'name': 'projects/dankers/topics/home_automation_light_switches_state_topic', 'type': 'type.googleapis.com/google.pubsub.v1.PubsubMessage'}}
-    #
-    cred = credentials.ApplicationDefault()
-    firebase_admin.initialize_app(cred, {
-        'projectId': 'dankers',
-    })
+    if not firebase_admin._apps:
+        cred = credentials.ApplicationDefault()
+        default_app = firebase_admin.initialize_app(cred, {'projectId': 'dankers', })
+
     db = firestore.client()
 
     # Writing data to Firebase
@@ -57,6 +66,10 @@ def write_to_firestore(message):
 
 
 if __name__ == '__main__':
+    # Something seems to be wrong with initializing the app!!! error that occurures
+    # event: {'@type': 'type.googleapis.com/google.pubsub.v1.PubsubMessage', 'attributes': {'deviceId': 'light_switch_001', 'deviceNumId': '2833441033873397', 'deviceRegistryId': 'home_automation_light_switches', 'deviceRegistryLocation': 'europe-west1', 'gatewayId': 'home_automation_light_switches_gateway', 'projectId': 'dankers'}, 'data': 'eyJsaWdodF9zdGF0ZSI6IDF9'}
+    # context: {event_id: 1397797228920637, timestamp: 2020-08-05T15:57:31.889Z, event_type: google.pubsub.topic.publish, resource: {'service': 'pubsub.googleapis.com', 'name': 'projects/dankers/topics/home_automation_light_switches_state_topic', 'type': 'type.googleapis.com/google.pubsub.v1.PubsubMessage'}}
+    #
     event_arg_1 = {'@type': 'type.googleapis.com/google.pubsub.v1.PubsubMessage','attributes': {'deviceId': 'light_switch_001', 'deviceNumId': '2833441033873397', 'deviceRegistryId': 'home_automation_light_switches', 'deviceRegistryLocation': 'europe-west1','gatewayId': 'home_automation_light_switches_gateway', 'projectId': 'dankers'}, 'data': 'bGlnaHRfc3RhdGU6IDE='}
     event_arg_0 = {'data': 'bGlnaHRfc3RhdGU6IDE=', '@type': 'type.googleapis.com/google.pubsub.v1.PubsubMessage', 'attributes': {'deviceRegistryLocation': 'europe-west1', 'deviceNumId': '2833441033873397', 'deviceRegistryId': 'home_automation_light_switches', 'deviceId': 'light_switch_001', 'projectId': 'dankers'}}
     lightswitches_pubsub_to_firebase(event_arg_1, None)

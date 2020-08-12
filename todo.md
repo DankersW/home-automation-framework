@@ -20,6 +20,9 @@ Device needs to be reconnected when this error is handled.
 - [ ] Have a ylm file that specifies the logging configuration: E.Q format, log to file or terminal, etc. 
 - [ ] Unit tests for logging
 
+## Testing
+- [ ] Test environment for running development tests
+
 ## Cloud
 - [x] GCP commands to create firebase
 - [x] Include all cloud functions into 1 main and have each cloud function organized in one .py file
