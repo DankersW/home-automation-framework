@@ -7,10 +7,14 @@
 
 
 import datetime
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 
 
 class Logging:
+    min_log_lvl = 10
+    log_mode = 'print'
+    owner = 'LoggingModule'
+    file_location = ''
 
     @dataclass
     class LogLevels:
@@ -21,11 +25,6 @@ class Logging:
         debug: int = 10
         not_set: int = 0
 
-    min_log_lvl = 10
-    log_mode = ''
-    owner = 'LoggingModule'
-    file_location = ''
-
     def __init__(self):
         pass
 
@@ -33,7 +32,7 @@ class Logging:
         if log_lvl < self.min_log_lvl:
             return
 
-        log_msg = self.construct_log_msg(msg, log_lvl, current_time=self.get_time())
+        log_msg = self.format_log_msg(msg, log_lvl, current_time=self.get_time(), source=self.owner)
         if self.log_mode == 'print':
             print(log_msg)
         elif self.log_mode == 'file':
@@ -46,9 +45,10 @@ class Logging:
     def get_time():
         return datetime.datetime.now()
 
-    @staticmethod
-    def construct_log_msg(msg, log_lvl, current_time, source):
-        return '{} - {} | {} : {}'.format(current_time, source, log_lvl, msg)
+    def format_log_msg(self, msg, log_lvl, current_time, source):
+        log_levels = asdict(self.LogLevels())
+        log_lvl_key = list(log_levels.keys())[list(log_levels.values()).index(log_lvl)]
+        return '{} - {} | {} : {}'.format(current_time, source, log_lvl_key, msg)
 
     def set_log_lvl(self, log_lvl):
         self.min_log_lvl = log_lvl
@@ -75,5 +75,8 @@ class Logging:
 if __name__ == '__main__':
     log = Logging()
     time = '2020-08-14 15:56:36.678644'
-    print(log.construct_log_msg('test123', 20, time))
+    source_ = 'test'
+    print(log.format_log_msg('test123', 20, time, source_))
+    print(log.format_log_msg('test123', 30, time, source_))
+    log.debug('test....')
     #print(log.construct_log_msg('a', '20', 20, time))
