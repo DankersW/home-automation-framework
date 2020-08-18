@@ -4,6 +4,7 @@
 # todo: set location of the output
 # todo: set owner of the msg, aka who has requested a log
 # todo: proper way of setting config
+# todo: lock on file system usage
 
 
 import datetime
@@ -12,7 +13,7 @@ from dataclasses import dataclass, asdict
 
 class Logging:
     min_log_lvl = 10
-    log_mode = 'print'
+    log_mode = 'terminal'
     owner = 'LoggingModule'
     file_location = ''
 
@@ -25,19 +26,23 @@ class Logging:
         debug: int = 10
         not_set: int = 0
 
-    def __init__(self):
-        pass
+    def __init__(self, owner, log_mode):
+        self.owner = owner
+        self.log_mode = log_mode
 
     def log(self, msg, log_lvl):
         if log_lvl < self.min_log_lvl:
-            return
+            return None
 
         log_msg = self.format_log_msg(msg, log_lvl, current_time=self.get_time(), source=self.owner)
-        if self.log_mode == 'print':
+        if self.log_mode == 'terminal':
             print(log_msg)
         elif self.log_mode == 'file':
+            # lock
             # write to file
             pass
+        elif self.log_mode == 'test':
+            return log_msg
         else:
             pass
 
