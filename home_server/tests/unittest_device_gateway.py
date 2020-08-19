@@ -1,6 +1,6 @@
 import unittest
 
-from home_server.src import device_gateway
+from home_server.src.iot_gateway import device_gateway
 
 
 class TestIdFromTopic(unittest.TestCase):

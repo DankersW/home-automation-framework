@@ -1,8 +1,8 @@
 import time
 import json
 
-from home_server.src.device_gateway import DeviceGateway
-from home_server.src.g_bridge import GBridge
+from home_server.src.iot_gateway.device_gateway import DeviceGateway
+from home_server.src.iot_gateway.g_bridge import GBridge
 
 
 class IotGateway:

@@ -3,3 +3,4 @@ paho-mqtt
 
 ###### Requirements with Version Specifiers ######
 PyJWT >= 1.7.1
+PyYALM >= 5.3.1
