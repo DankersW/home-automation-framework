@@ -20,9 +20,10 @@ class Logging:
 
     @dataclass
     class LogLevels:
-        critical: int = 50
-        error: int = 40
-        warning: int = 30
+        critical: int = 60
+        error: int = 50
+        warning: int = 40
+        success: int = 30
         info: int = 20
         debug: int = 10
         not_set: int = 0
@@ -73,6 +74,8 @@ class Logging:
             return self.Colours.red
         elif log_lvl == self.LogLevels.warning:
             return self.Colours.yellow
+        elif log_lvl == self.LogLevels.success:
+            return self.Colours.green
         elif log_lvl == self.LogLevels.info:
             return self.Colours.reset
         elif log_lvl == self.LogLevels.debug:
@@ -101,6 +104,9 @@ class Logging:
     def warning(self, msg):
         self.log(msg, log_lvl=self.LogLevels.warning)
 
+    def success(self, msg):
+        self.log(msg, log_lvl=self.LogLevels.success)
+
     def info(self, msg):
         self.log(msg, log_lvl=self.LogLevels.info)
 
@@ -124,4 +130,5 @@ if __name__ == '__main__':
     log.warning('test....')
     log.error('test....')
     log.critical('test....')
+    log.success('test....')
     #print(log.construct_log_msg('a', '20', 20, time))
