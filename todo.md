@@ -17,9 +17,11 @@ Device needs to be reconnected when this error is handled.
 - [ ] Fix folder structure
 
 ## Logging
-- [ ] Create a logging class that logs comparable to the logging module
-- [ ] Have a ylm file that specifies the logging configuration: E.Q format, log to file or terminal, etc. 
-- [ ] Unit tests for logging
+- [x] Create a logging class that logs comparable to the logging module
+- [x] Have a ylm file that specifies the logging configuration: E.Q format, log to file or terminal, etc. 
+- [x] Unit tests for logging
+- [ ] Usage YML file to set configuration
+- [ ] Set file name to date, and have all write to the same one
 
 ## Testing
 - [ ] Test environment for running development tests

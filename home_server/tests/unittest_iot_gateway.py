@@ -1,6 +1,6 @@
 import unittest
 
-from home_server.src import iot_gateway
+from home_server.src.iot_gateway import iot_gateway
 
 
 class TestDecodeJson(unittest.TestCase):

@@ -95,10 +95,14 @@ class Logging:
         return '{} - {} | {} : {}'.format(current_time, source, log_lvl_key, msg)
 
     @staticmethod
-    def get_filename_from_config():
+    def get_filename_from_config_yml():
         with open('../../src/configuration.yml') as file:
             configuration = yaml.load(file, Loader=yaml.FullLoader)
         return configuration['logging']['filename']
+
+    @staticmethod
+    def get_filename_from_config():
+        return 'log.txt'
 
     def set_log_lvl(self, log_lvl):
         self.min_log_lvl = log_lvl
@@ -126,7 +130,7 @@ class Logging:
 
 
 if __name__ == '__main__':
-    log = Logging(owner='testing', log_mode='file', min_log_lvl=LogLevels.debug)
+    log = Logging(owner='testing', log_mode='terminal', min_log_lvl=LogLevels.debug)
     log.set_log_lvl(LogLevels.debug)
     time = '2020-08-14 15:56:36.678644'
     source_ = 'test'
@@ -135,7 +139,7 @@ if __name__ == '__main__':
     log.not_set('test....')
     log.debug('test....')
     log.info('test....')
-    log1 = Logging(owner='extra', log_mode='file', min_log_lvl=LogLevels.debug)
+    log1 = Logging(owner='extra', log_mode='terminal', min_log_lvl=LogLevels.debug)
     log1.warning('test....')
     log1.error('test....')
     log1.critical('test....')
