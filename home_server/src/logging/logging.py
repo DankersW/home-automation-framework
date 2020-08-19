@@ -5,9 +5,9 @@
 # todo: proper way of setting config
 # todo: lock on file system usage
 
-
 import datetime
 import sys
+import yaml
 from dataclasses import dataclass, asdict
 
 
@@ -23,7 +23,6 @@ class LogLevels:
 
 
 class Logging:
-    file_location = ''
 
     @dataclass
     class Colours:
@@ -42,6 +41,7 @@ class Logging:
         self.owner = owner
         self.log_mode = log_mode
         self.min_log_lvl = min_log_lvl
+        self.filename = self.get_filename_from_config()
 
     def log(self, msg, log_lvl):
         if log_lvl < self.min_log_lvl:
@@ -58,9 +58,9 @@ class Logging:
             pass
 
     def write_to_file(self, log_msg):
-        f = open("demofile2.txt", "a")
-        f.write(log_msg + '\n')
-        f.close()
+        with open(self.filename, "a") as file:
+            file.write(log_msg + '\n')
+        file.close()
 
     def write_to_terminal(self, log_msg, log_lvl):
         output_format = self.get_output_format(log_lvl)
@@ -94,6 +94,12 @@ class Logging:
         log_lvl_key = list(log_levels.keys())[list(log_levels.values()).index(log_lvl)]
         return '{} - {} | {} : {}'.format(current_time, source, log_lvl_key, msg)
 
+    @staticmethod
+    def get_filename_from_config():
+        with open('../../src/configuration.yml') as file:
+            configuration = yaml.load(file, Loader=yaml.FullLoader)
+        return configuration['logging']['filename']
+
     def set_log_lvl(self, log_lvl):
         self.min_log_lvl = log_lvl
 
@@ -120,7 +126,7 @@ class Logging:
 
 
 if __name__ == '__main__':
-    log = Logging(owner='testing', log_mode='terminal', min_log_lvl=LogLevels.debug)
+    log = Logging(owner='testing', log_mode='file', min_log_lvl=LogLevels.debug)
     log.set_log_lvl(LogLevels.debug)
     time = '2020-08-14 15:56:36.678644'
     source_ = 'test'
@@ -129,9 +135,10 @@ if __name__ == '__main__':
     log.not_set('test....')
     log.debug('test....')
     log.info('test....')
-    log1 = Logging(owner='extra', log_mode='terminal', min_log_lvl=LogLevels.debug)
+    log1 = Logging(owner='extra', log_mode='file', min_log_lvl=LogLevels.debug)
     log1.warning('test....')
     log1.error('test....')
     log1.critical('test....')
     log1.success('test....')
+    log.debug('test....')
     #print(log.construct_log_msg('a', '20', 20, time))
