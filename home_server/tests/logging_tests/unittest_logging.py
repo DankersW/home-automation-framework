@@ -13,9 +13,9 @@ class TestLogging(unittest.TestCase):
                       log.LogLevels.info, log.LogLevels.debug, log.LogLevels.not_set]
         truth_list = ['1 - a | critical : a', '1 - a | error : a', '1 - a | warning : a', '1 - a | success : a',
                       '1 - a | info : a', '1 - a | debug : a', '1 - a | not_set : a']
-        for index, log_lvl in enumerate(log_levels):
+        for truth, log_lvl in zip(truth_list, log_levels):
             test_result = log.format_log_msg(msg, log_lvl, time, source)
-            self.assertEqual(test_result, truth_list[index])
+            self.assertEqual(test_result, truth)
 
     def test_set_log_lvl(self):
         log = Logging(owner='t', log_mode='test')
