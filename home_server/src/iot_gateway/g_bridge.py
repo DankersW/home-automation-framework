@@ -6,6 +6,8 @@ from dataclasses import dataclass
 import jwt
 import paho.mqtt.client as mqtt
 
+from home_server.src.logging.logging import Logging, LogLevels
+
 
 @dataclass
 class MqttGatewayConfiguration:
@@ -20,7 +22,6 @@ class MqttGatewayConfiguration:
     mqtt_bridge_port: int = 8883
 
 
-GATEWAY_NAME = 'GCP_GATEWAY'
 ONE_MILLISECOND_SECONDS = 0.001
 
 
@@ -33,8 +34,6 @@ def create_jwt(project_id, private_key_file, algorithm):
     }
     with open(private_key_file, 'r') as f:
         private_key = f.read()
-        current_time = datetime.datetime.now()
-    print("{} - {} | Creating JWT from private key file using {}.".format(current_time, GATEWAY_NAME, algorithm))
     return jwt.encode(token, private_key, algorithm=algorithm)
 
 
@@ -54,6 +53,7 @@ class GBridge(threading.Thread):
 
     def __init__(self, path_cert_dir=None):
         threading.Thread.__init__(self)
+        self.log = Logging(owner='GCP Gateway', log_mode='terminal', min_log_lvl=LogLevels.debug)
         gateway_configuration = MqttGatewayConfiguration()
         if path_cert_dir is not None:
             gateway_configuration.private_key_file = path_cert_dir + gateway_configuration.private_key_file
@@ -95,21 +95,15 @@ class GBridge(threading.Thread):
             time.sleep(1)
             total_time += 1
         if not self.g_bridge_connected:
-            current_time = datetime.datetime.now()
-            raise RuntimeError("{} - {} | Could not connect to Iot Core MQTT bridge.".format(current_time,
-                                                                                             GATEWAY_NAME))
+            self.log.critical('Could not connect to Iot Core MQTT bridge')
+            raise RuntimeError()
 
     def on_connect(self, unused_client, unused_userdata, unused_flags, rc):
-        current_time = datetime.datetime.now()
-        print("{} - {} | Connected to GCP IoT core MQTT Broker with connection Result: {}".format(current_time,
-                                                                                                  GATEWAY_NAME,
-                                                                                                  error_str(rc)))
+        self.log.success('Connected to GCP IoT core MQTT Broker with connection Result: {}'.format(error_str(rc)))
         self.g_bridge_connected = True
         self.subscribe_to_topics(self.gateway_id, True)
         if self.attached_devices:  # Not empty list, Previously already had connected devices
-            current_time = datetime.datetime.now()
-            print("{} - {} | Re-connect occurred! Re-attaching all connected devices.".format(current_time,
-                                                                                              GATEWAY_NAME))
+            self.log.warning('Re-connect occurred! Re-attaching all connected devices.')
 
     def subscribe_to_topics(self, dev_id, gateway):
         config_topic = '/devices/{}/config'.format(dev_id)
@@ -127,35 +121,27 @@ class GBridge(threading.Thread):
         self.pending_subscribed_topics.append(mid)
         while topic in self.pending_subscribed_topics:
             time.sleep(0.01)
-        current_time = datetime.datetime.now()
-        print('{} - {} | Successfully subscribed to topic \'{}\' with Qos \'{}\'.'.format(current_time, GATEWAY_NAME,
-                                                                                          topic, qos))
+        self.log.debug('Successfully subscribed to topic \'{}\' with Qos \'{}\'.'.format(topic, qos))
 
     def on_disconnect(self, unused_client, unused_userdata, rc):
-        current_time = datetime.datetime.now()
-        print("{} - {} | Disconnected: {}".format(current_time, GATEWAY_NAME, error_str(rc)))
+        self.log.warning('Disconnected: {}'.format(error_str(rc)))
         self.g_bridge_connected = False
 
     def on_publish(self, unused_client, unused_userdata, mid):
-        current_time = datetime.datetime.now()
-        print("{} - {} | ACK received for message \'{}\'".format(current_time, GATEWAY_NAME, mid))
+        self.log.debug('ACK received for message \'{}\''.format(mid))
         if mid in self.pending_messages:
             self.pending_messages.remove(mid)
 
     def on_subscribe(self, unused_client, unused_userdata, mid, granted_qos):
         if granted_qos[0] == 128:
-            current_time = datetime.datetime.now()
-            print("{} - {} | Subscription result: {} - Subscription failed".format(current_time, GATEWAY_NAME,
-                                                                                   granted_qos[0]))
+            self.log.error('Subscription result: {} - Subscription failed'.format(granted_qos[0]))
         else:
             if mid in self.pending_subscribed_topics:
                 self.pending_subscribed_topics.remove(mid)
 
     def on_message(self, unused_client, unused_userdata, message):
         payload = message.payload.decode('utf-8')
-        current_time = datetime.datetime.now()
-        print('{} - {} | Received message \'{}\' on topic \'{}\'.'.format(current_time, GATEWAY_NAME,payload,
-                                                                          message.topic))
+        self.log.info('Received message \'{}\' on topic \'{}\'.'.format(payload, message.topic))
         if not payload:
             return
 
@@ -166,8 +152,7 @@ class GBridge(threading.Thread):
             self.received_messages_queue.append(message)
 
     def attach_device(self, device_id):
-        current_time = datetime.datetime.now()
-        print('{} - {} | Attaching device \'{}\'.'.format(current_time, GATEWAY_NAME, device_id))
+        self.log.debug('Attaching device \'{}\'.'.format(device_id))
         attach_topic = '/devices/{}/attach'.format(device_id)
         if device_id not in self.attached_devices:
             self.attached_devices.append(device_id)
@@ -175,18 +160,14 @@ class GBridge(threading.Thread):
         self.subscribe_to_topics(device_id, False)
 
     def detach_device(self, device_id):
-        current_time = datetime.datetime.now()
-        print('{} - {} | Detaching device \'{}\'.'.format(current_time, GATEWAY_NAME, device_id))
+        self.log.warning('Detaching device \'{}\'.'.format(device_id))
         detach_topic = '/devices/{}/detach'.format(device_id)
         if device_id in self.attached_devices:
             self.attached_devices.remove(device_id)
         self.publish(detach_topic, "")  # Message content is empty because gateway auth-method=ASSOCIATION_ONLY
 
     def detach_all_devices(self):
-        current_time = datetime.datetime.now()
-        print('{} - {} | Detaching all devices. Currently all connected devices: \'{}\'.'.format(current_time,
-                                                                                                 GATEWAY_NAME,
-                                                                                                 self.attached_devices))
+        self.log.info('Detaching all devices. Currently all connected devices: \'{}\'.'.format(self.attached_devices))
         for device in self.attached_devices[:]:
             self.detach_device(device)
         while self.attached_devices:  # Make sure all devices have been detached
@@ -195,10 +176,8 @@ class GBridge(threading.Thread):
     def publish(self, topic, payload):
         message_info = self.mqtt_client.publish(topic, payload, qos=1)
         self.pending_messages.append(message_info.mid)
-        current_time = datetime.datetime.now()
-        print('{} - {} | Publishing payload: \'{}\' on Topic \'{}\' with mid \'{}\'.'.format(current_time, GATEWAY_NAME,
-                                                                                             payload, topic,
-                                                                                             message_info.mid))
+        self.log.info('Publishing payload: \'{}\' on Topic \'{}\' with mid \'{}\'.'.format(payload, topic,
+                                                                                           message_info.mid))
         while message_info.mid in self.pending_messages:  # Waiting for message ACK to arrive
             time.sleep(0.01)
 
@@ -208,8 +187,7 @@ class GBridge(threading.Thread):
         elif event_type == "state":
             topic = '/devices/{}/state'.format(device_id)
         else:
-            current_time = datetime.datetime.now()
-            print("{} - {} | Error: Unknown event type {}.".format(current_time, GATEWAY_NAME, event_type))
+            self.log.error('Unknown event type {}.'.format(event_type))
             return
         self.publish(topic, payload)
 
@@ -229,14 +207,13 @@ class GBridge(threading.Thread):
 
     def reattach_devices(self):
         for device in self.attached_devices:
-            current_time = datetime.datetime.now()
-            print("{} - {} | Re-attaching device {}.".format(current_time, GATEWAY_NAME, device))
+            self.log.info('Re-attaching device {}.'.format(device))
             self.attach_device(device)
 
 
 # Quick Tests
 def attach_detach_with_2_devices():
-    g_bridge = GBridge(path_cert_dir='../certificates/')
+    g_bridge = GBridge(path_cert_dir='../../certificates/')
     g_bridge.start()
     device_list = ["light_switch_001", "light_switch_002"]
 
@@ -252,7 +229,7 @@ def attach_detach_with_2_devices():
 
 
 def keep_running_for_messages():
-    g_bridge = GBridge(path_cert_dir='../certificates/')
+    g_bridge = GBridge(path_cert_dir='../../certificates/')
     g_bridge.start()
     device_list = ["light_switch_001", "light_switch_002"]
     g_bridge.attach_device(device_list[0])
@@ -268,7 +245,7 @@ def keep_running_for_messages():
 
 
 def send_data():
-    g_bridge = GBridge(path_cert_dir='../certificates/')
+    g_bridge = GBridge(path_cert_dir='../../certificates/')
     g_bridge.start()
     device_list = ["light_switch_001", "light_switch_002"]
     g_bridge.attach_device(device_list[0])
@@ -286,7 +263,7 @@ def send_data():
 
 
 def send_message_and_wait():
-    g_bridge = GBridge(path_cert_dir='../certificates/')
+    g_bridge = GBridge(path_cert_dir='../../certificates/')
     g_bridge.start()
     device_list = ["light_switch_001"]
     g_bridge.attach_device(device_list[0])

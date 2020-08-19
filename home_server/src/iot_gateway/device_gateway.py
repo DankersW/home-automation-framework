@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
 import paho.mqtt.client as mqtt
-import datetime
 import threading
 
-INSTANCE_NAME = "Iot_dev_gateway"
+from home_server.src.logging.logging import Logging, LogLevels
 
 
 class DeviceGateway(threading.Thread):
-    MQTT_BROKER_ADDRESS = "10.42.0.25"#"192.168.1.125"
+    MQTT_BROKER_ADDRESS = "192.168.1.125"#"10.42.0.25"
     MQTT_PORT = 1883
     MQTT_STAYALIVE = 60
 
@@ -16,6 +15,7 @@ class DeviceGateway(threading.Thread):
 
     def __init__(self):
         threading.Thread.__init__(self)
+        self.log = Logging(owner='IoT device gateway', log_mode='terminal', min_log_lvl=LogLevels.debug)
         self.client = mqtt.Client()
         self.client.connect(self.MQTT_BROKER_ADDRESS, self.MQTT_PORT, self.MQTT_STAYALIVE)
 
@@ -29,15 +29,13 @@ class DeviceGateway(threading.Thread):
         self.client.loop_forever()
 
     def on_connect(self, client, userdata, flags, rc):
-        current_time = datetime.datetime.now()
-        print("{} - {} | Connected to MQTT broker with result code {}".format(current_time, INSTANCE_NAME, str(rc)))
+        self.log.success('Connected to MQTT broker with result code {}.'.format(str(rc)))
         self.client.subscribe("iot/#")
 
     def on_message(self, client, userdata, msg):
-        current_time = datetime.datetime.now()
         payload = msg.payload.decode('utf-8')
         topic = msg.topic
-        print("{} - {} | Received message \'{}\' on topic \'{}\'.".format(current_time, INSTANCE_NAME, payload, topic))
+        self.log.info('Received message \'{}\' on topic \'{}\'.'.format(payload, topic))
         device_id = get_item_from_topic(topic, 'device_id')
         event = get_item_from_topic(topic, 'event')
         valid_topic = device_id is not None and payload is not None and event is not None
@@ -56,8 +54,7 @@ class DeviceGateway(threading.Thread):
 
     def publish_control_message(self, device, data):
         topic = "iot/{}/control".format(device)
-        current_time = datetime.datetime.now()
-        print("{} - {} | Publishing message \'{}\' on topic \'{}\'.".format(current_time, INSTANCE_NAME, data, topic))
+        self.log.info('Publishing message \'{}\' on topic \'{}\'.'.format(data, topic))
         self.client.publish(topic, data)
 
 

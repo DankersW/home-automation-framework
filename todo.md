@@ -14,11 +14,14 @@ connected. then disconnect 5 - the connection was refused. This keeps going fore
 2020-07-16 10:14:28.182922 - GCP_GATEWAY | Received message '{"error_type":"GATEWAY_DETACHMENT_DEVICE_ERROR","description":"Device detached because of a device error.","device_id":"light_switch_001"}' on topic '/devices/home_automation_light_switches_gateway/errors'.
 2020-07-16 10:14:49.227127 - GCP_GATEWAY | Received message '{"error_type":"GATEWAY_DEVICE_NOT_FOUND","description":"The specified device with ID 'light_switch_001' is not attached to the gateway.","device_id":"light_switch_001","mqtt_message_info":{"message_type":"PUBLISH","topic":"/devices/light_switch_001/state","packet_id":10}}' on topic '/devices/home_automation_light_switches_gateway/errors'.
 Device needs to be reconnected when this error is handled. 
+- [ ] Fix folder structure
 
 ## Logging
-- [ ] Create a logging class that logs comparable to the logging module
-- [ ] Have a ylm file that specifies the logging configuration: E.Q format, log to file or terminal, etc. 
-- [ ] Unit tests for logging
+- [x] Create a logging class that logs comparable to the logging module
+- [x] Have a ylm file that specifies the logging configuration: E.Q format, log to file or terminal, etc. 
+- [x] Unit tests for logging
+- [ ] Usage YML file to set configuration
+- [ ] Set file name to date, and have all write to the same one
 
 ## Testing
 - [ ] Test environment for running development tests
@@ -50,3 +53,4 @@ Device needs to be reconnected when this error is handled.
 
 ## CI
 - [x] Implement Actions on Github that runs a job to test if all tests pass before a merge to master or push to master
+- [ ] Update tests to look for updated path to tests. and include all new tests
