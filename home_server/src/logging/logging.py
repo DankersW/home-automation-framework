@@ -53,13 +53,16 @@ class Logging:
         if self.log_mode == 'terminal':
             self.write_to_terminal(log_msg, log_lvl)
         elif self.log_mode == 'file':
-            # lock
-            # write to file
-            pass
+            self.write_to_file(log_msg)
         elif self.log_mode == 'test':
             return log_msg
         else:
             pass
+
+    def write_to_file(self, log_msg):
+        f = open("demofile2.txt", "a")
+        f.write(log_msg + '\n')
+        f.close()
 
     def write_to_terminal(self, log_msg, log_lvl):
         output_format = self.get_output_format(log_lvl)
@@ -118,7 +121,7 @@ class Logging:
 
 
 if __name__ == '__main__':
-    log = Logging(owner='testing', log_mode='terminal')
+    log = Logging(owner='testing', log_mode='file')
     log.set_log_lvl(log.LogLevels.debug)
     time = '2020-08-14 15:56:36.678644'
     source_ = 'test'
