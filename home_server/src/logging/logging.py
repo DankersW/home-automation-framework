@@ -2,7 +2,6 @@
 # 2020-08-12 15:45:23:005 | GCP-gateway | ERROR | some text here
 
 # todo: set location of the output
-# todo: set owner of the msg, aka who has requested a log
 # todo: proper way of setting config
 # todo: lock on file system usage
 
@@ -12,21 +11,19 @@ import sys
 from dataclasses import dataclass, asdict
 
 
-class Logging:
-    min_log_lvl = 10
-    log_mode = 'terminal'
-    owner = 'LoggingModule'
-    file_location = ''
+@dataclass
+class LogLevels:
+    critical: int = 60
+    error: int = 50
+    warning: int = 40
+    success: int = 30
+    info: int = 20
+    debug: int = 10
+    not_set: int = 0
 
-    @dataclass
-    class LogLevels:
-        critical: int = 60
-        error: int = 50
-        warning: int = 40
-        success: int = 30
-        info: int = 20
-        debug: int = 10
-        not_set: int = 0
+
+class Logging:
+    file_location = ''
 
     @dataclass
     class Colours:
@@ -41,9 +38,10 @@ class Logging:
         bold: str = '\033[;1m'
         reset: str = '\033[0;0m'
 
-    def __init__(self, owner, log_mode):
+    def __init__(self, owner, log_mode, min_log_lvl):
         self.owner = owner
         self.log_mode = log_mode
+        self.min_log_lvl = min_log_lvl
 
     def log(self, msg, log_lvl):
         if log_lvl < self.min_log_lvl:
@@ -71,27 +69,28 @@ class Logging:
         sys.stdout.write(self.Colours.reset)
 
     def get_output_format(self, log_lvl):
-        if log_lvl == self.LogLevels.critical:
+        if log_lvl == LogLevels.critical:
             return self.Colours.magenta
-        elif log_lvl == self.LogLevels.error:
+        elif log_lvl == LogLevels.error:
             return self.Colours.red
-        elif log_lvl == self.LogLevels.warning:
+        elif log_lvl == LogLevels.warning:
             return self.Colours.yellow
-        elif log_lvl == self.LogLevels.success:
+        elif log_lvl == LogLevels.success:
             return self.Colours.green
-        elif log_lvl == self.LogLevels.info:
+        elif log_lvl == LogLevels.info:
             return self.Colours.reset
-        elif log_lvl == self.LogLevels.debug:
+        elif log_lvl == LogLevels.debug:
             return self.Colours.bold
-        elif log_lvl == self.LogLevels.not_set:
+        elif log_lvl == LogLevels.not_set:
             return self.Colours.reset
 
     @staticmethod
     def get_time():
         return datetime.datetime.now()
 
-    def format_log_msg(self, msg, log_lvl, current_time, source):
-        log_levels = asdict(self.LogLevels())
+    @staticmethod
+    def format_log_msg(msg, log_lvl, current_time, source):
+        log_levels = asdict(LogLevels())
         log_lvl_key = list(log_levels.keys())[list(log_levels.values()).index(log_lvl)]
         return '{} - {} | {} : {}'.format(current_time, source, log_lvl_key, msg)
 
@@ -99,30 +98,30 @@ class Logging:
         self.min_log_lvl = log_lvl
 
     def critical(self, msg):
-        self.log(msg, log_lvl=self.LogLevels.critical)
+        self.log(msg, log_lvl=LogLevels.critical)
 
     def error(self, msg):
-        self.log(msg, log_lvl=self.LogLevels.error)
+        self.log(msg, log_lvl=LogLevels.error)
 
     def warning(self, msg):
-        self.log(msg, log_lvl=self.LogLevels.warning)
+        self.log(msg, log_lvl=LogLevels.warning)
 
     def success(self, msg):
-        self.log(msg, log_lvl=self.LogLevels.success)
+        self.log(msg, log_lvl=LogLevels.success)
 
     def info(self, msg):
-        self.log(msg, log_lvl=self.LogLevels.info)
+        self.log(msg, log_lvl=LogLevels.info)
 
     def debug(self, msg):
-        self.log(msg, log_lvl=self.LogLevels.debug)
+        self.log(msg, log_lvl=LogLevels.debug)
 
     def not_set(self, msg):
-        self.log(msg, log_lvl=self.LogLevels.not_set)
+        self.log(msg, log_lvl=LogLevels.not_set)
 
 
 if __name__ == '__main__':
-    log = Logging(owner='testing', log_mode='file')
-    log.set_log_lvl(log.LogLevels.debug)
+    log = Logging(owner='testing', log_mode='terminal', min_log_lvl=LogLevels.debug)
+    log.set_log_lvl(LogLevels.debug)
     time = '2020-08-14 15:56:36.678644'
     source_ = 'test'
     #print(log.format_log_msg('test123', 20, time, source_))
@@ -130,8 +129,9 @@ if __name__ == '__main__':
     log.not_set('test....')
     log.debug('test....')
     log.info('test....')
-    log.warning('test....')
-    log.error('test....')
-    log.critical('test....')
-    log.success('test....')
+    log1 = Logging(owner='extra', log_mode='terminal', min_log_lvl=LogLevels.debug)
+    log1.warning('test....')
+    log1.error('test....')
+    log1.critical('test....')
+    log1.success('test....')
     #print(log.construct_log_msg('a', '20', 20, time))
