@@ -17,26 +17,18 @@ jobs:
         python -m pip install --upgrade pip
         pip install pylint
         if [ -f home_server/requirements.txt ]; then pip install -r home_server/requirements.txt; fi
-    - name: Static code analysis iot_gateway with pytest
+    - name: Stage 1/2 Static code analysis iot_gateway with pytest
       run: |
         home_dir=$(pwd)
         pwd
         echo "Stage 1/2: Static code analysis iot_gateway"
         cd home_server/src/iot_gateway/
-        pylint -j 2 `ls -R | grep .py$ | xargs`
-#cd $home_dir
+        pylint -j 2 --rcfile=./github/workflows/setup.cfg `ls -R | grep .py$ | xargs`
 
-
-    - name: Static code analysis logging with pytest
+    - name: Stage 2/2 Static code analysis logging with pytest
       run: |
         home_dir=$(pwd)
         pwd
         echo "Stage 2/2: Static code analysis logging"
         cd home_server/src/logging/
-        pylint -j 2 `ls -R | grep .py$ | xargs`
-#cd $home_dir
-#echo "Static code analysis iot_gateway"
-#        pwd
-#        pylint `ls -R home_server/src/iot_gateway/ | grep .py$ | xargs`
-
-#pylint `ls -R | grep .py$ | xargs`
+        pylint -j 2 --rcfile=./github/workflows/setup.cfg `ls -R | grep .py$ | xargs`
