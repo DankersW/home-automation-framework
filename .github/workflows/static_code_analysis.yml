@@ -18,4 +18,5 @@ jobs:
         pip install pylint
     - name: Test with pytest
       run: |
-        pylint `ls -R | grep .py$ | xargs`
+        pylint home_server/src/logging/logging.py
+#pylint `ls -R | grep .py$ | xargs`
