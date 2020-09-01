@@ -1,4 +1,4 @@
-name: Pylint
+name: static_code_analysis
 
 on: [push]
 
@@ -23,7 +23,7 @@ jobs:
         pwd
         echo "Stage 1/2: Static code analysis iot_gateway"
         cd home_server/src/iot_gateway/
-        pylint -j 2 --rcfile=./github/workflows/setup.cfg `ls -R | grep .py$ | xargs`
+        pylint -j 2 --rcfile=.github/workflows/setup.cfg `ls -R | grep .py$ | xargs`
 
     - name: Stage 2/2 Static code analysis logging with pytest
       run: |
@@ -31,4 +31,4 @@ jobs:
         pwd
         echo "Stage 2/2: Static code analysis logging"
         cd home_server/src/logging/
-        pylint -j 2 --rcfile=./github/workflows/setup.cfg `ls -R | grep .py$ | xargs`
+        pylint -j 2 --rcfile=.github/workflows/setup.cfg `ls -R | grep .py$ | xargs`
