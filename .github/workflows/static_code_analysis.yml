@@ -20,10 +20,12 @@ jobs:
       run: |
         echo "Static code analysis logging"
         pwd
-        pylint `ls -R home_server/src/logging/ | grep .py$ | xargs`
-
-        echo "Static code analysis iot_gateway"
+        cd home_server/src/logging/
+        pylint `ls -R | grep .py$ | xargs`
         pwd
-        pylint `ls -R home_server/src/iot_gateway/ | grep .py$ | xargs`
+
+#echo "Static code analysis iot_gateway"
+#        pwd
+#        pylint `ls -R home_server/src/iot_gateway/ | grep .py$ | xargs`
 
 #pylint `ls -R | grep .py$ | xargs`
