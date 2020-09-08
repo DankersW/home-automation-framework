@@ -29,3 +29,4 @@ Entities are used to map values to synonyms that are detected in the users phras
 | 1     | "1"   | "Turn on","Power on","Switch on"    |
 
 ### Fulfilment
+
