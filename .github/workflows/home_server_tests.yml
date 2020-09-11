@@ -24,7 +24,7 @@ jobs:
       - name: Unit tests with unittest
         run:  |
           python -m unittest discover -s home_server/tests/ -p 'unittest_*.py'
-      uses: romeovs/lcov-reporter-action@v0.2.16
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        lcov-file: ./coverage/lcov.inf
+      - uses: romeovs/lcov-reporter-action@v0.2.16
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lcov-file: ./coverage/lcov.inf
