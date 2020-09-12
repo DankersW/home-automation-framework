@@ -24,6 +24,7 @@ jobs:
       - name: Unit tests with unittest
         run:  |
           coverage run -m unittest discover -s home_server/tests/ -p 'unittest_*.py'
+          coverage report -m
 #python -m unittest discover -s home_server/tests/ -p 'unittest_*.py'
 #pytest --cov=./
       - uses: romeovs/lcov-reporter-action@v0.2.16
