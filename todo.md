@@ -64,6 +64,7 @@ Device needs to be reconnected when this error is handled.
 - [x] Update tests to look for updated path to tests. and include all new tests
 - [x] Static code analyisis with Lint
 - [x] Code test coverage
+- [ ] Create a first release
 
 ## Enviroment
 - [ ] Setup a vertiual enviroment
