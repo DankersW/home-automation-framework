@@ -23,7 +23,9 @@ jobs:
         pwd
         echo "Stage 1/2: Static code analysis iot_gateway"
         cd home_server/src/iot_gateway/
-        pylint -j 2 --rcfile=.github/workflows/setup.cfg `ls -R | grep .py$ | xargs`
+        pwd
+        echo $home_dir
+        pylint -j 2 --rcfile=$home_dir/.github/workflows/setup.cfg `ls -R | grep .py$ | xargs`
 
     - name: Stage 2/2 Static code analysis logging with pytest
       run: |
