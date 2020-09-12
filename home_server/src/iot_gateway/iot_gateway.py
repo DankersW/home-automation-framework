@@ -54,12 +54,12 @@ class IotGateway:
 
 def decode_json(json_string, key):
     try:
-        data = json.loads(json_string)
-        if key in data:
-            return data[key]
-        else:
-            return None
-    except ValueError as e:
+        json_data = json.loads(json_string)
+        data = None
+        if key in json_data:
+            data = json_data[key]
+        return data
+    except ValueError:
         return None
 
 
