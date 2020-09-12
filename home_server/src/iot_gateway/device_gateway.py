@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import paho.mqtt.client as mqtt
 import threading
+import paho.mqtt.client as mqtt
 
 from home_server.src.logging.logging import Logging, LogLevels
 
