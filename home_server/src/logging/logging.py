@@ -7,8 +7,10 @@
 
 import datetime
 import sys
-import yaml
 from dataclasses import dataclass, asdict
+
+import yaml
+
 
 
 @dataclass
@@ -56,6 +58,7 @@ class Logging:
             return log_msg
         else:
             pass
+        return None
 
     def write_to_file(self, log_msg):
         with open(self.filename, "a") as file:
@@ -69,20 +72,16 @@ class Logging:
         sys.stdout.write(self.Colours.reset)
 
     def get_output_format(self, log_lvl):
-        if log_lvl == LogLevels.critical:
-            return self.Colours.magenta
-        elif log_lvl == LogLevels.error:
-            return self.Colours.red
-        elif log_lvl == LogLevels.warning:
-            return self.Colours.yellow
-        elif log_lvl == LogLevels.success:
-            return self.Colours.green
-        elif log_lvl == LogLevels.info:
-            return self.Colours.reset
-        elif log_lvl == LogLevels.debug:
-            return self.Colours.bold
-        elif log_lvl == LogLevels.not_set:
-            return self.Colours.reset
+        mapper = {
+            LogLevels.critical: self.Colours.magenta,
+            LogLevels.error: self.Colours.red,
+            LogLevels.warning: self.Colours.yellow,
+            LogLevels.success: self.Colours.green,
+            LogLevels.info: self.Colours.reset,
+            LogLevels.debug: self.Colours.bold,
+            LogLevels.not_set: self.Colours.reset
+        }
+        return mapper.get(log_lvl, self.Colours.reset)
 
     @staticmethod
     def get_time():
@@ -132,8 +131,8 @@ class Logging:
 if __name__ == '__main__':
     log = Logging(owner='testing', log_mode='terminal', min_log_lvl=LogLevels.debug)
     log.set_log_lvl(LogLevels.debug)
-    time = '2020-08-14 15:56:36.678644'
-    source_ = 'test'
+    time_test = '2020-08-14 15:56:36.678644'
+    source_test = 'test'
     #print(log.format_log_msg('test123', 20, time, source_))
     #print(log.format_log_msg('test123', 30, time, source_))
     log.not_set('test....')
