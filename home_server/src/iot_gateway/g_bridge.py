@@ -98,7 +98,7 @@ class GBridge(threading.Thread):
             self.log.critical('Could not connect to Iot Core MQTT bridge')
             raise RuntimeError()
 
-    def on_connect(self, unused_client, unused_userdata, unused_flags, rc):
+    def on_connect(self, _unused_client, _unused_userdata, _unused_flags, rc):
         self.log.success('Connected to GCP IoT core MQTT Broker with connection Result: {}'.format(error_str(rc)))
         self.g_bridge_connected = True
         self.subscribe_to_topics(self.gateway_id, True)
@@ -123,23 +123,23 @@ class GBridge(threading.Thread):
             time.sleep(0.01)
         self.log.debug('Successfully subscribed to topic \'{}\' with Qos \'{}\'.'.format(topic, qos))
 
-    def on_disconnect(self, unused_client, unused_userdata, rc):
+    def on_disconnect(self, _unused_client, _unused_userdata, rc):
         self.log.warning('Disconnected: {}'.format(error_str(rc)))
         self.g_bridge_connected = False
 
-    def on_publish(self, unused_client, unused_userdata, mid):
+    def on_publish(self, _unused_client, _unused_userdata, mid):
         self.log.debug('ACK received for message \'{}\''.format(mid))
         if mid in self.pending_messages:
             self.pending_messages.remove(mid)
 
-    def on_subscribe(self, unused_client, unused_userdata, mid, granted_qos):
+    def on_subscribe(self, _unused_client, _unused_userdata, mid, granted_qos):
         if granted_qos[0] == 128:
             self.log.error('Subscription result: {} - Subscription failed'.format(granted_qos[0]))
         else:
             if mid in self.pending_subscribed_topics:
                 self.pending_subscribed_topics.remove(mid)
 
-    def on_message(self, unused_client, unused_userdata, message):
+    def on_message(self, _unused_client, _unused_userdata, message):
         payload = message.payload.decode('utf-8')
         self.log.info('Received message \'{}\' on topic \'{}\'.'.format(payload, message.topic))
         if not payload:
@@ -192,10 +192,10 @@ class GBridge(threading.Thread):
         self.publish(topic, payload)
 
     def get_last_message(self):
+        message_queue = None
         if len(self.received_messages_queue) > 0:
-            return self.received_messages_queue.pop(0)
-        else:
-            return None
+            message_queue = self.received_messages_queue.pop(0)
+        return message_queue
 
     @staticmethod
     def get_id_from_topic(topic):

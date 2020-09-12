@@ -28,11 +28,11 @@ class DeviceGateway(threading.Thread):
     def run(self):
         self.client.loop_forever()
 
-    def on_connect(self, client, userdata, flags, rc):
+    def on_connect(self, _client, _userdata, _flags, rc):
         self.log.success('Connected to MQTT broker with result code {}.'.format(str(rc)))
         self.client.subscribe("iot/#")
 
-    def on_message(self, client, userdata, msg):
+    def on_message(self, _client, _userdata, msg):
         payload = msg.payload.decode('utf-8')
         topic = msg.topic
         self.log.info('Received message \'{}\' on topic \'{}\'.'.format(payload, topic))
@@ -47,10 +47,10 @@ class DeviceGateway(threading.Thread):
             # todo: print invalid dev_id or payload
 
     def get_last_message(self):
+        message_queue = None
         if len(self.received_message_queue) > 0:
-            return self.received_message_queue.pop(0)
-        else:
-            return None
+            message_queue = self.received_message_queue.pop(0)
+        return message_queue
 
     def publish_control_message(self, device, data):
         topic = "iot/{}/control".format(device)
