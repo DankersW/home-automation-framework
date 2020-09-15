@@ -22,6 +22,8 @@ Device needs to be reconnected when this error is handled.
 - [x] Unit tests for logging
 - [ ] Usage YML file to set configuration
 - [ ] Set file name to date, and have all write to the same one
+- [ ] Set logging name via __repr__ 
+- [ ] Switch to f string printing
 
 ## Testing
 - [ ] Test environment for running development tests
@@ -54,5 +56,5 @@ Device needs to be reconnected when this error is handled.
 ## CI
 - [x] Implement Actions on Github that runs a job to test if all tests pass before a merge to master or push to master
 - [x] Update tests to look for updated path to tests. and include all new tests
-- [ ] Static code analyisis with Lint
-- [ ] Code test coverage
+- [x] Static code analyisis with Lint
+- [x] Code test coverage
