@@ -22,11 +22,11 @@ jobs:
         echo "Stage 1/2: Static code analysis iot_gateway"
         home_dir=$(pwd)
         cd home_server/src/iot_gateway/
-        pylint -j 2 --rcfile=$home_dir/.github/workflows/setup.cfg `ls -R | grep .py$ | xargs`
+        pylint -j 2 --rcfile=$home_dir/.github/workflows/setup.cfg --output-format=colorized `ls -R | grep .py$ | xargs`
 
     - name: Stage 2/2 Static code analysis logging with pytest
       run: |
         echo "Stage 2/2: Static code analysis logging"
         home_dir=$(pwd)
         cd home_server/src/logging/
-        pylint -j 2 --rcfile=$home_dir/.github/workflows/setup.cfg `ls -R | grep .py$ | xargs`
+        pylint -j 2 --rcfile=$home_dir/.github/workflows/setup.cfg --output-format=colorized `ls -R | grep .py$ | xargs`
