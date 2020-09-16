@@ -6,7 +6,7 @@
 
     var admin = require("firebase-admin");
 
-    //var serviceAccount = require("dankers-firebase-adminsdk-r85r7-df645bc8df.json");
+    var serviceAccount = require("./dankers-firebase-adminsdk-r85r7-df645bc8df.json");
     //admin.initializeApp({
     //  credential: admin.credential.cert(serviceAccount),
     //  databaseURL: "https://dankers.firebaseio.com"
