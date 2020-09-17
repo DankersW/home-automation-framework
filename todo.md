@@ -22,7 +22,7 @@ Device needs to be reconnected when this error is handled.
 - [x] Unit tests for logging
 - [ ] Usage YML file to set configuration
 - [ ] Set file name to date, and have all write to the same one
-- [ ] Set logging name via __repr__ 
+- [ ] Set logging name via __repr__ or __name__ 
 - [ ] Switch to f string printing
 
 ## Testing
