@@ -4,15 +4,13 @@
     const {WebhookClient} = require('dialogflow-fulfillment');
     const {Card, Suggestion} = require('dialogflow-fulfillment');
 
-    var admin = require("firebase-admin");
-
     var serviceAccount = require("./dankers-firebase-adminsdk-r85r7-df645bc8df.json");
-    //admin.initializeApp({
-    //  credential: admin.credential.cert(serviceAccount),
-    //  databaseURL: "https://dankers.firebaseio.com"
-    //});
-
-    //var db = admin.firestore();
+    var admin = require("firebase-admin");
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      databaseURL: "https://dankers.firebaseio.com"
+    });
+    var db = admin.firestore();
 
     process.env.DEBUG = 'dialogflow:debug'; // enables lib debugging statements
 
@@ -35,9 +33,8 @@
 
         process.stdout.write("hello: ");
 
-        //let devices = db.collection("devices");
-
-        //process.stdout.write("devices: %j", devices);
+        let devices = db.collection("devices");
+        process.stdout.write("devices: %j", devices);
       }
 
       // Run the proper function handler based on the matched Dialogflow intent name
