@@ -29,4 +29,5 @@ Entities are used to map values to synonyms that are detected in the users phras
 | 1     | "1"   | "Turn on","Power on","Switch on"    |
 
 ### Fulfilment
-
+Fulfilment is handled by the webhook which runs as a cloud function. It fetches the state from the request body and 
+writes this one to the Firestore DB.
