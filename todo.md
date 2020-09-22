@@ -35,9 +35,10 @@ Device needs to be reconnected when this error is handled.
 - [x] GCP commands to create firebase
 - [x] Include all cloud functions into 1 main and have each cloud function organized in one .py file
 - [x] Cloud function that is triggered on attach/detach and sets the status online status of that device in firebase
-- [ ] Get Google Asistent to talk to firebase, via dialog flow, homegraph, actions, etc...
+- [x] POC: Get Google Asistant to talk to firebase, via dialog flow, homegraph, actions, etc...
+- [ ] Integrate Dialogflow on my own google assistant. 
 - [ ] Setup Homegraph 
-- [ ] Make Google Assistent listen for a specific device
+- [ ] Make Google Dialogflow listen for a specific device
 - [x] If data in firebase changes, write down to that client
 
 ## Gateway
