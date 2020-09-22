@@ -1,5 +1,8 @@
 # Todo
 
+## General
+- [ ] Clean-up repo and create new repo's depending on the 'product'. E.Q. HomeAutomation --> home_automation_framwork (home-server), IotDevices --> iot-devices, cloud ... etc.
+
 ## Documentation
 - [ ] Update readme with recent info
 - [ ] Update architectural overview
