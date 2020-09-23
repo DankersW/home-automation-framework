@@ -31,16 +31,6 @@ Device needs to be reconnected when this error is handled.
 ## Testing
 - [ ] Test environment for running development tests
 
-## Cloud
-- [x] GCP commands to create firebase
-- [x] Include all cloud functions into 1 main and have each cloud function organized in one .py file
-- [x] Cloud function that is triggered on attach/detach and sets the status online status of that device in firebase
-- [x] POC: Get Google Asistant to talk to firebase, via dialog flow, homegraph, actions, etc...
-- [ ] Integrate Dialogflow on my own google assistant. 
-- [ ] Setup Homegraph 
-- [ ] Make Google Dialogflow listen for a specific device
-- [x] If data in firebase changes, write down to that client
-
 ## Gateway
 - [x] Re-write G-bridge to serve as a gateway instead of mocking each device
 - [x] Attach and detach devices when they turn on or off
@@ -68,5 +58,5 @@ Device needs to be reconnected when this error is handled.
 - [ ] Create a first release
 
 ## Enviroment
-- [ ] Setup a vertiual enviroment
-- [ ] Dockerize enviroment
+- [ ] Setup a virtual environment
+- [ ] Docker-ize environment
