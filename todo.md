@@ -44,12 +44,6 @@ Device needs to be reconnected when this error is handled.
 - [ ] Map device id to physical placement in the apartment 
 - [ ] Let a device generate it's own random ID when it boots up for the first time, check a local file if this ID is already used or not.
 
-## Embedded
-- [x] If a devices boots up send a message to attach and if it is going down a detach message
-- [ ] Get battery status of device
-- [ ] On low battery call a disconnect function
-- [ ] On low battery send out email to recharge 
-
 ## CI
 - [x] Implement Actions on Github that runs a job to test if all tests pass before a merge to master or push to master
 - [x] Update tests to look for updated path to tests. and include all new tests
