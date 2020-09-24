@@ -16,17 +16,17 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pylint
-        if [ -f home_server/requirements.txt ]; then pip install -r home_server/requirements.txt; fi
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Stage 1/2 Static code analysis iot_gateway with pytest
       run: |
         echo "Stage 1/2: Static code analysis iot_gateway"
         home_dir=$(pwd)
-        cd home_server/src/iot_gateway/
+        cd src/iot_gateway/
         pylint -j 2 --rcfile=$home_dir/.github/workflows/setup.cfg --output-format=colorized `ls -R | grep .py$ | xargs`
 
     - name: Stage 2/2 Static code analysis logging with pytest
       run: |
         echo "Stage 2/2: Static code analysis logging"
         home_dir=$(pwd)
-        cd home_server/src/logging/
+        cd src/logging/
         pylint -j 2 --rcfile=$home_dir/.github/workflows/setup.cfg --output-format=colorized `ls -R | grep .py$ | xargs`

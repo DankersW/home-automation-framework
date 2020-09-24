@@ -95,7 +95,7 @@ class Logging:
 
     @staticmethod
     def get_filename_from_config_yml():
-        with open('../../src/configuration.yml') as file:
+        with open('../configuration.yml') as file:
             configuration = yaml.load(file, Loader=yaml.FullLoader)
         return configuration['logging']['filename']
 
