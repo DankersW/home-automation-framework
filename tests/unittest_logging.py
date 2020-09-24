@@ -1,6 +1,6 @@
 import unittest
 
-from home_server.src.logging.logging import Logging, LogLevels
+from src.logging.logging import Logging, LogLevels
 
 
 class TestLogging(unittest.TestCase):

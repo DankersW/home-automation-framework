@@ -1,8 +1,8 @@
 import time
 import json
 
-from home_server.src.iot_gateway.device_gateway import DeviceGateway
-from home_server.src.iot_gateway.g_bridge import GBridge
+from src.iot_gateway.device_gateway import DeviceGateway
+from src.iot_gateway.g_bridge import GBridge
 
 
 class IotGateway:
@@ -47,20 +47,20 @@ class IotGateway:
             json_key = 'light_state'
             json_string = message[1]
             device = message[0]
-            data = decode_json(json_string, json_key)
+            data = self.decode_json(json_string, json_key)
             if data is not None:
                 self.device_gateway.publish_control_message(device, data)
 
-
-def decode_json(json_string, key):
-    try:
-        json_data = json.loads(json_string)
-        data = None
-        if key in json_data:
-            data = json_data[key]
-        return data
-    except ValueError:
-        return None
+    @staticmethod
+    def decode_json(json_string, key):
+        try:
+            json_data = json.loads(json_string)
+            data = None
+            if key in json_data:
+                data = json_data[key]
+            return data
+        except ValueError:
+            return None
 
 
 if __name__ == '__main__':
