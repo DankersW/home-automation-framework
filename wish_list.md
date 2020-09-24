@@ -8,5 +8,11 @@ they can be displayed
 Send the battery level periodiaclly to the home server and make the server send out an email if
 a device is close to running out of battery
 
-## Proper logging
-Proper logging to a file (info, debug, warning, error, etc.). Make IoT devs send there logs to central server on request. 
+## GUI (mobile)
+A simple mobile gui that visualizes; state of appliances on a interactive map of the apartment
+
+## Weather station
+message inside and outside temp, sunlight inside and outside, predict sunset and rise
+
+## Public transportation 
+Show the departure times of public transportation near me. 
