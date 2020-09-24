@@ -28,6 +28,7 @@ Device needs to be reconnected when this error is handled.
 - [ ] Set file name to date, and have all write to the same one
 - [ ] Set logging name via __repr__ or __name__ | or # Create a logger with the same name as this file logger = logging.getLogger(Path(__file__).name)
 - [ ] Switch to f string printing
+- [ ] Log to DB aswell
 
 ## Testing
 - [ ] Test environment for running development tests
