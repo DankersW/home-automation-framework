@@ -5,8 +5,8 @@
 - [ ] Handle file path's correctly, maybe using a path translator file or the __init__.py
 
 ## Documentation
-- [ ] Update readme with recent info
-- [ ] Update architectural overview
+- [x] Update readme with recent info
+- [x] Update architectural overview
 
 ## Bugs
 - [ ] g-bridge: Out of memory causes reconnection. and and up with connection code 4 - The client is not currently 
@@ -18,7 +18,7 @@ connected. then disconnect 5 - the connection was refused. This keeps going fore
 2020-07-16 10:14:28.182922 - GCP_GATEWAY | Received message '{"error_type":"GATEWAY_DETACHMENT_DEVICE_ERROR","description":"Device detached because of a device error.","device_id":"light_switch_001"}' on topic '/devices/home_automation_light_switches_gateway/errors'.
 2020-07-16 10:14:49.227127 - GCP_GATEWAY | Received message '{"error_type":"GATEWAY_DEVICE_NOT_FOUND","description":"The specified device with ID 'light_switch_001' is not attached to the gateway.","device_id":"light_switch_001","mqtt_message_info":{"message_type":"PUBLISH","topic":"/devices/light_switch_001/state","packet_id":10}}' on topic '/devices/home_automation_light_switches_gateway/errors'.
 Device needs to be reconnected when this error is handled. 
-- [ ] Fix folder structure
+- [x] Fix folder structure
 
 ## Logging
 - [x] Create a logging class that logs comparable to the logging module
