@@ -1,4 +1,4 @@
-from src import IotGateway
+from src.iot_gateway.iot_gateway import IotGateway
 
 
 class HomeServer:

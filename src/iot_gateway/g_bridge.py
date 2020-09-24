@@ -6,7 +6,7 @@ from dataclasses import dataclass
 import jwt
 import paho.mqtt.client as mqtt
 
-from src import Logging, LogLevels
+from src.logging.logging import Logging, LogLevels
 
 
 @dataclass
