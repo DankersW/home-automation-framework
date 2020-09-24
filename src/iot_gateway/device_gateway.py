@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import threading
 import paho.mqtt.client as mqtt
 
