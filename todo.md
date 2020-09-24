@@ -26,7 +26,7 @@ Device needs to be reconnected when this error is handled.
 - [x] Unit tests for logging
 - [ ] Usage YML file to set configuration
 - [ ] Set file name to date, and have all write to the same one
-- [ ] Set logging name via __repr__ or __name__ 
+- [ ] Set logging name via __repr__ or __name__ | or # Create a logger with the same name as this file logger = logging.getLogger(Path(__file__).name)
 - [ ] Switch to f string printing
 
 ## Testing
