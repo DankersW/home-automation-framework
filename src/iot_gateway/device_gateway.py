@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
+from src.logging.logging import Logging, LogLevels
+
+
 import threading
 import paho.mqtt.client as mqtt
 
-from src.logging.logging import Logging, LogLevels
 
 
 class DeviceGateway(threading.Thread):
