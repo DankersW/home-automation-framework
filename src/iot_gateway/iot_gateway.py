@@ -3,12 +3,15 @@ import json
 
 from src.iot_gateway.device_gateway import DeviceGateway
 from src.iot_gateway.g_bridge import GBridge
+from src.logging.logging import Logging
 
 
 class IotGateway:
     running = True
 
     def __init__(self, path_cert_dir=None):
+        self.log = Logging(owner=__file__, log_mode='terminal')
+        self.log.info('Starting up all gateways')
         self.device_gateway = DeviceGateway()
         self.device_gateway.start()
 
@@ -37,7 +40,7 @@ class IotGateway:
             if event == 'attach':
                 self.g_bridge.attach_device(device)
             elif event == 'state':
-                print('message: \'{}\''.format(message[1]))
+                self.log.info(f'message: {message[1]!r}')
                 data = '{"light_state": ' + message[1] + '}'
                 self.g_bridge.send_data(device, event, data)
 

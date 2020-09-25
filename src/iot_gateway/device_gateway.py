@@ -14,7 +14,7 @@ class DeviceGateway(threading.Thread):
 
     def __init__(self):
         threading.Thread.__init__(self)
-        self.log = Logging(owner='IoT device gateway', log_mode='terminal', min_log_lvl=LogLevels.debug)
+        self.log = Logging(owner=__file__, log_mode='terminal', min_log_lvl=LogLevels.debug)
         self.client = mqtt.Client()
         self.client.connect(self.MQTT_BROKER_ADDRESS, self.MQTT_PORT, self.MQTT_STAYALIVE)
 
@@ -28,13 +28,13 @@ class DeviceGateway(threading.Thread):
         self.client.loop_forever()
 
     def on_connect(self, _client, _userdata, _flags, rc):
-        self.log.success('Connected to MQTT broker with result code {}.'.format(str(rc)))
+        self.log.success(f'Connected to MQTT broker with result code {str(rc)}.')
         self.client.subscribe("iot/#")
 
     def on_message(self, _client, _userdata, msg):
         payload = msg.payload.decode('utf-8')
         topic = msg.topic
-        self.log.info('Received message \'{}\' on topic \'{}\'.'.format(payload, topic))
+        self.log.info(f'Received message {payload!r} on topic {topic!r}.')
         device_id = get_item_from_topic(topic, 'device_id')
         event = get_item_from_topic(topic, 'event')
         valid_topic = device_id is not None and payload is not None and event is not None
@@ -52,8 +52,8 @@ class DeviceGateway(threading.Thread):
         return message_queue
 
     def publish_control_message(self, device, data):
-        topic = "iot/{}/control".format(device)
-        self.log.info('Publishing message \'{}\' on topic \'{}\'.'.format(data, topic))
+        topic = f'iot/{device}/control'
+        self.log.info(f'Publishing message {data!r} on topic {topic!r}.')
         self.client.publish(topic, data)
 
 
