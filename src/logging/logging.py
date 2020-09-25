@@ -8,9 +8,9 @@
 import datetime
 import sys
 from dataclasses import dataclass, asdict
+from ntpath import split, basename
 
 import yaml
-
 
 
 @dataclass
@@ -39,8 +39,8 @@ class Logging:
         bold: str = '\033[;1m'
         reset: str = '\033[0;0m'
 
-    def __init__(self, owner, log_mode, min_log_lvl):
-        self.owner = owner
+    def __init__(self, owner, log_mode='test', min_log_lvl=LogLevels.debug):
+        self.owner = self.path_leaf(path=owner)
         self.log_mode = log_mode
         self.min_log_lvl = min_log_lvl
         self.filename = self.get_filename_from_config()
@@ -91,7 +91,7 @@ class Logging:
     def format_log_msg(msg, log_lvl, current_time, source):
         log_levels = asdict(LogLevels())
         log_lvl_key = list(log_levels.keys())[list(log_levels.values()).index(log_lvl)]
-        return '{} - {} | {} : {}'.format(current_time, source, log_lvl_key, msg)
+        return f'{current_time} - {source} | {log_lvl_key} : {msg}'
 
     @staticmethod
     def get_filename_from_config_yml():
@@ -127,14 +127,16 @@ class Logging:
     def not_set(self, msg):
         self.log(msg, log_lvl=LogLevels.not_set)
 
+    @staticmethod
+    def path_leaf(path):
+        head, tail = split(path)
+        file_name = tail or basename(head)
+        return file_name.split('.')[0]
 
-if __name__ == '__main__':
-    log = Logging(owner='testing', log_mode='terminal', min_log_lvl=LogLevels.debug)
+
+def run_loglvls():
+    log = Logging(owner=__file__, log_mode='terminal', min_log_lvl=LogLevels.debug)
     log.set_log_lvl(LogLevels.debug)
-    time_test = '2020-08-14 15:56:36.678644'
-    source_test = 'test'
-    #print(log.format_log_msg('test123', 20, time, source_))
-    #print(log.format_log_msg('test123', 30, time, source_))
     log.not_set('test....')
     log.debug('test....')
     log.info('test....')
@@ -144,4 +146,7 @@ if __name__ == '__main__':
     log1.critical('test....')
     log1.success('test....')
     log.debug('test....')
-    #print(log.construct_log_msg('a', '20', 20, time))
+
+
+if __name__ == '__main__':
+    run_loglvls()

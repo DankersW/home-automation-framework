@@ -40,3 +40,12 @@ class TestLogging(unittest.TestCase):
         for truth, log_lvl in zip(truth_list, log_levels):
             test_result = log.get_output_format(log_lvl)
             self.assertEqual(test_result, truth)
+
+    def test_leaf_path(self):
+        paths = ['a/b/c/', 'a/b/c', '\\a\\b\\c', '\\a\\b\\c\\', 'a\\b\\c', 'a/b/../../a/b/c/', 'a/b/../../a/b/c.py',
+                 'c', '/c.py', '//c.py', 'a.py/b/c']
+        filenames = ['c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c']
+        for path, filename in zip(paths,filenames):
+            result = Logging.path_leaf(path)
+            print(result)
+            self.assertEqual(result, filename)
