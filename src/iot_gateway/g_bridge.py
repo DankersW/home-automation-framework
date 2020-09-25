@@ -212,7 +212,7 @@ class GBridge(threading.Thread):
 
 # Quick Tests
 def attach_detach_with_2_devices():
-    g_bridge = GBridge(path_cert_dir='../../certificates/')
+    g_bridge = GBridge(path_cert_dir='../../keys/')
     g_bridge.start()
     device_list = ["light_switch_001", "light_switch_002"]
 
@@ -228,7 +228,7 @@ def attach_detach_with_2_devices():
 
 
 def keep_running_for_messages():
-    g_bridge = GBridge(path_cert_dir='../../certificates/')
+    g_bridge = GBridge(path_cert_dir='../../keys/')
     g_bridge.start()
     device_list = ["light_switch_001", "light_switch_002"]
     g_bridge.attach_device(device_list[0])
@@ -244,7 +244,7 @@ def keep_running_for_messages():
 
 
 def send_data():
-    g_bridge = GBridge(path_cert_dir='../../certificates/')
+    g_bridge = GBridge(path_cert_dir='../../keys/')
     g_bridge.start()
     device_list = ["light_switch_001", "light_switch_002"]
     g_bridge.attach_device(device_list[0])
@@ -262,7 +262,7 @@ def send_data():
 
 
 def send_message_and_wait():
-    g_bridge = GBridge(path_cert_dir='../../certificates/')
+    g_bridge = GBridge(path_cert_dir='../../keys/')
     g_bridge.start()
     device_list = ["light_switch_001"]
     g_bridge.attach_device(device_list[0])
