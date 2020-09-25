@@ -67,4 +67,4 @@ class IotGateway:
 
 
 if __name__ == '__main__':
-    iotGateway = IotGateway(path_cert_dir='../../certificates/')
+    iotGateway = IotGateway(path_cert_dir='../../keys/')
