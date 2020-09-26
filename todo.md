@@ -3,6 +3,7 @@
 ## General
 - [x] Clean-up repo and create new repo's depending on the 'product'.
 - [ ] Handle file path's correctly, maybe using a path translator file or the __init__.py
+- [ ] Licensing
 
 ## Documentation
 - [x] Update readme with recent info
