@@ -32,6 +32,10 @@ Device needs to be reconnected when this error is handled.
 - [x] Switch to f string printing
 - [ ] Log to DB aswell
 
+## Storage
+- [ ] DB that stores current state data
+- [ ] DB that stores data for a long time
+
 ## Testing
 - [ ] Verification environment for running development tests
 
