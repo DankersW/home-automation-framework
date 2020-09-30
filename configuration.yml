@@ -1,0 +1,9 @@
+---
+general:
+  gcp: false
+  logging_mode: terminal
+
+logging:
+  filename: log.txt
+
+

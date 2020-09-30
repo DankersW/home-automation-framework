@@ -4,9 +4,11 @@ import time
 import threading
 from dataclasses import dataclass
 import jwt
+
 import paho.mqtt.client as mqtt
 
 from src.logging.logging import Logging, LogLevels
+
 
 
 @dataclass
