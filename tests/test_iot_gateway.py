@@ -1,7 +1,5 @@
 import unittest
 
-#from src.iot_gateway import iot_gateway
-
 from src.iot_gateway.iot_gateway import IotGateway
 
 
