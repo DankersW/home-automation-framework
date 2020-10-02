@@ -1,4 +1,4 @@
-from os import path, remove
+from os import path, remove, system
 from pathlib import Path
 import unittest
 import yaml
@@ -11,6 +11,7 @@ class TestConfigurationParser(unittest.TestCase):
 
     def test_get_path_to_conf_file(self):
         file_path = self.conf_parser.get_path_to_conf_file()
+        print(f'from test {system("ls -lS")}')
         if path.isfile(file_path):
             assert True
         else:

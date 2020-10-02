@@ -1,5 +1,5 @@
 from pathlib import Path
-from os import path, sep
+from os import path, sep, system
 import yaml
 
 
@@ -13,6 +13,7 @@ class ConfigurationParser:
     def get_path_to_conf_file(self):
         dir_structure = path.normpath(Path.cwd()).split(sep)
         print(dir_structure)
+        print(f'from lib {system("ls -lS")}')
         if dir_structure[0] == 'C:' or dir_structure[0] == 'D:' or dir_structure[0] == 'E:':
             dir_structure[0] += f'\\'
         index_repo_name = [i for i, x in enumerate(dir_structure) if x == self.repo_name][-1]
