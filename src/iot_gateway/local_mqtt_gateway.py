@@ -1,22 +1,30 @@
 #!/usr/bin/env python3
+from dataclasses import dataclass
+
 import threading
 import paho.mqtt.client as mqtt
 
 from src.logging.logging import Logging, LogLevels
+from src.lib.configuration_parser import ConfigurationParser
 
 
-class DeviceGateway(threading.Thread):
-    MQTT_BROKER_ADDRESS = "192.168.1.125"#"10.42.0.25"
-    MQTT_PORT = 1883
-    MQTT_STAYALIVE = 60
+class LocalMqttGateway(threading.Thread):
+
+    @dataclass
+    class MqttConfiguration:
+        port: int = 1883
+        stay_alive: int = 60
 
     received_message_queue = []
 
     def __init__(self):
         threading.Thread.__init__(self)
-        self.log = Logging(owner=__file__, log_mode='terminal', min_log_lvl=LogLevels.debug)
+        self.config = ConfigurationParser().get_config()
+        self.log = Logging(owner=__file__, config=True)
+
+        broker_address = self.config['local_mqtt_gateway']['broker_address']
         self.client = mqtt.Client()
-        self.client.connect(self.MQTT_BROKER_ADDRESS, self.MQTT_PORT, self.MQTT_STAYALIVE)
+        self.client.connect(broker_address, self.MqttConfiguration.port, self.MqttConfiguration.stay_alive)
 
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
@@ -69,4 +77,4 @@ def get_item_from_topic(topic, index_type):
 
 
 if __name__ == '__main__':
-    device_gateway = DeviceGateway()
+    mqtt_gateway = LocalMqttGateway()

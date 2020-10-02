@@ -2,13 +2,16 @@
 
 ## General
 - [x] Clean-up repo and create new repo's depending on the 'product'.
-- [ ] Handle file path's correctly, maybe using a path translator file or the __init__.py
+- [x] Handle file path's correctly, maybe using a path translator file or the __init__.py
 - [ ] Licensing
 - [ ] Docs folder
 
 ## Documentation
 - [x] Update readme with recent info
 - [x] Update architectural overview
+
+## IOT-gateway
+- [ ] Find and implement a good pattern to run the message shuffeling based on active gateways
 
 ## Bugs
 - [ ] g-bridge: Out of memory causes reconnection. and and up with connection code 4 - The client is not currently 
@@ -26,7 +29,7 @@ Device needs to be reconnected when this error is handled.
 - [x] Create a logging class that logs comparable to the logging module
 - [x] Have a ylm file that specifies the logging configuration: E.Q format, log to file or terminal, etc. 
 - [x] Unit tests for logging
-- [ ] Usage YML file to set configuration
+- [x] Usage YML file to set configuration
 - [ ] Set file name to date, and have all write to the same one
 - [x] Set logging name via __repr__ or __name__ or __file__
 - [x] Switch to f string printing
@@ -35,6 +38,10 @@ Device needs to be reconnected when this error is handled.
 ## Storage
 - [ ] DB that stores current state data (E.Q. Document DB like mongodb)
 - [ ] DB that stores data for a long time (E.Q. wide column db like Apache Cassandra or Apache HBase)
+
+## GUI
+- [ ] Front-end to visualize db data
+- [ ] way to send data to iot-framework
 
 ## Testing
 - [ ] Verification environment for running development tests

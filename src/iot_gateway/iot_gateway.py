@@ -3,37 +3,45 @@ import json
 
 from src.logging.logging import Logging
 from src.iot_gateway.g_bridge import GBridge
-from src.iot_gateway.device_gateway import DeviceGateway
+from src.iot_gateway.local_mqtt_gateway import LocalMqttGateway
+from src.lib.configuration_parser import ConfigurationParser
 
 
 class IotGateway:
     running = True
 
     def __init__(self, path_cert_dir=None):
-        self.log = Logging(owner=__file__, log_mode='terminal')
-        self.log.info('Starting up all gateways')
-        self.device_gateway = DeviceGateway()
-        self.device_gateway.start()
+        self.log = Logging(owner=__file__, config=True)
+        self.config = ConfigurationParser().get_config()
+        self.gcp = self.config['general']['gcp']
+        if self.gcp:
+            self.log.info('Starting up G-Bridge')
+            self.g_bridge = GBridge(path_cert_dir)
+            self.g_bridge.start()
 
-        self.g_bridge = GBridge(path_cert_dir)
-        self.g_bridge.start()
+        self.local_mqtt = self.config['general']['local_mqtt_gateway']
+        if self.local_mqtt:
+            self.log.info('Starting up Local MQTT gateway')
+            self.local_mqtt_gateway = LocalMqttGateway()
+            self.local_mqtt_gateway.start()
 
         self.run()
 
     def __del__(self):
         del self.g_bridge
-        self.device_gateway.join()
+        self.local_mqtt_gateway.join()
 
     def run(self):
 
         while self.running:
-            self.device_to_cloud_communication()
-            self.cloud_to_device_communication()
-            time.sleep(0.001)
+            if self.gcp and self.local_mqtt:
+                self.device_to_cloud_communication()
+                self.cloud_to_device_communication()
+                time.sleep(0.001)
 
     def device_to_cloud_communication(self):
         # Take oldest message from device_gateway gueue and poss it to the Gbridge
-        message = self.device_gateway.get_last_message()
+        message = self.local_mqtt_gateway.get_last_message()
         if message is not None:
             device = message[0]
             event = message[2]
@@ -52,7 +60,7 @@ class IotGateway:
             device = message[0]
             data = self.decode_json(json_string, json_key)
             if data is not None:
-                self.device_gateway.publish_control_message(device, data)
+                self.local_mqtt_gateway.publish_control_message(device, data)
 
     @staticmethod
     def decode_json(json_string, key):

@@ -1,20 +1,12 @@
 ---
 general:
   gcp: false
+  local_mqtt_gateway: true
   logging_mode: terminal
 
 logging:
   filename: log.txt
+  min_log_level: debug
 
-###
-from pathlib import Path
-from os import path, sep
-repo_name = 'ci-util'
-dir_structure = path.normpath(Path.cwd()).split(sep)
-index_repo_name = dir_structure.index(repo_name)
-project_home = Path(*dir_structure[:index_repo_name+1])
-conf_file_location = Path.joinpath(project_home, 'configuration.yml')
-print(project_home)
-print(conf_file_location)
-###
-
+local_mqtt_gateway:
+  broker_address: "192.168.1.125" #"10.42.0.25"
