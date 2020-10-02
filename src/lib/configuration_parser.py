@@ -12,6 +12,7 @@ class ConfigurationParser:
 
     def get_path_to_conf_file(self):
         dir_structure = path.normpath(Path.cwd()).split(sep)
+        print(dir_structure)
         if dir_structure[0] == 'C:' or dir_structure[0] == 'D:' or dir_structure[0] == 'E:':
             dir_structure[0] += f'\\'
         index_repo_name = dir_structure.index(self.repo_name)
