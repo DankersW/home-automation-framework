@@ -15,7 +15,7 @@ class TestConfigurationParser(unittest.TestCase):
             assert True
         else:
             assert False
-
+    """
     def test_yml_to_dict_mock_conf_file(self):
         test_content = {'a': 123, 'b': 456}
         filename = 'test.yaml'
@@ -23,5 +23,7 @@ class TestConfigurationParser(unittest.TestCase):
         with open(yml_path, 'w') as file:
             yaml.dump(test_content, file)
         result = self.conf_parser.yml_to_dict(file_path=yml_path)
+        print(result)
         assert result == test_content
         remove(yml_path)
+    """

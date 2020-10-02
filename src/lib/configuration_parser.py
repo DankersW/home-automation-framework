@@ -22,6 +22,8 @@ class ConfigurationParser:
 
     @staticmethod
     def yml_to_dict(file_path):
+        dir_structure = path.normpath(Path.cwd()).split(sep)
+        print(dir_structure)
         with open(file_path) as yml_file:
             return yaml.load(yml_file, Loader=yaml.FullLoader)
 
