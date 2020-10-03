@@ -3,8 +3,8 @@
 ## General
 - [x] Clean-up repo and create new repo's depending on the 'product'.
 - [x] Handle file path's correctly, maybe using a path translator file or the __init__.py
-- [ ] Licensing
-- [ ] Docs folder
+- [x] Licensing
+- [x] Docs folder
 
 ## Documentation
 - [x] Update readme with recent info
