@@ -8,7 +8,7 @@ from src.lib.configuration_parser import ConfigurationParser
 
 class TestConfigurationParser(unittest.TestCase):
     conf_parser = ConfigurationParser()
-
+    """
     def test_get_path_to_conf_file(self):
         print(f'from test {system("ls -lS")}')
         file_path = self.conf_parser.get_path_to_conf_file()
@@ -28,4 +28,3 @@ class TestConfigurationParser(unittest.TestCase):
         print(result)
         assert result == test_content
         remove(yml_path)
-    """
