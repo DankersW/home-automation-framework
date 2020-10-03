@@ -19,12 +19,15 @@ class ConfigurationParser:
         index_repo_name = [i for i, x in enumerate(dir_structure) if x == self.repo_name][-1]
         print(index_repo_name)
         project_home = Path(*dir_structure[:index_repo_name + 1])
-        return Path.joinpath(project_home, 'configuration.yml')
+        print(f'home location {system(f"ls -lS {project_home}")}')
+        pat = Path.joinpath(project_home, 'configuration.yml')
+        print(f'Path to file : {pat}')
+        return pat
 
     @staticmethod
     def yml_to_dict(file_path):
         dir_structure = path.normpath(Path.cwd()).split(sep)
-        print(dir_structure)
+        print(f'Dir sturct: {dir_structure}')
         with open(file_path) as yml_file:
             return yaml.load(yml_file, Loader=yaml.FullLoader)
 
