@@ -4,7 +4,7 @@ import json
 from src.logging.logging import Logging
 from src.iot_gateway.g_bridge import GBridge
 from src.iot_gateway.local_mqtt_gateway import LocalMqttGateway
-from src.lib.configuration_parser import ConfigurationParser
+from lib.configuration_parser import ConfigurationParser
 
 
 class IotGateway:

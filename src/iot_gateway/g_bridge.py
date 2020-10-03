@@ -10,7 +10,6 @@ import paho.mqtt.client as mqtt
 from src.logging.logging import Logging, LogLevels
 
 
-
 @dataclass
 class MqttGatewayConfiguration:
     project_id: str = "dankers"

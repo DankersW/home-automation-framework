@@ -5,7 +5,7 @@ import sys
 from dataclasses import dataclass, asdict
 from ntpath import split, basename
 
-from src.lib.configuration_parser import ConfigurationParser
+from lib.configuration_parser import ConfigurationParser
 
 
 @dataclass
@@ -20,10 +20,7 @@ class LogLevels:
 
 
 class Logging:
-    """
-    Log format
-    2020-08-12 15:45:23:005 | GCP-gateway | ERROR | some text here
-    """
+
     @dataclass
     class Colours:
         black: str = '\033[1;30m'

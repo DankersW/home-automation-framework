@@ -4,8 +4,8 @@ from dataclasses import dataclass
 import threading
 import paho.mqtt.client as mqtt
 
-from src.logging.logging import Logging, LogLevels
-from src.lib.configuration_parser import ConfigurationParser
+from src.logging.logging import Logging
+from lib.configuration_parser import ConfigurationParser
 
 
 class LocalMqttGateway(threading.Thread):
