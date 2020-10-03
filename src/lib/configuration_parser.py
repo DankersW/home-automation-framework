@@ -17,6 +17,8 @@ class ConfigurationParser:
         print(system("pwd"))
         if dir_structure[0] == 'C:' or dir_structure[0] == 'D:' or dir_structure[0] == 'E:':
             dir_structure[0] += f'\\'
+        elif dir_structure[0] == '':
+            dir_structure[0] = '/'
         #index_repo_name = [i for i, x in enumerate(dir_structure) if x == self.repo_name][-1]
         index_repo_name = dir_structure.index(self.repo_name)
         print(index_repo_name)
