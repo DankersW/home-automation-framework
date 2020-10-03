@@ -21,7 +21,7 @@ class ConfigurationParser:
         index_repo_name = dir_structure.index(self.repo_name)
         print(index_repo_name)
         project_home = Path(*dir_structure[:index_repo_name + 1])
-        print(f'home location {system(f"ls -lS {project_home}")}')
+        print(f'home location {system(f"ls -lS /{project_home}")}')
         pat = Path.joinpath(project_home, 'configuration.yml')
         print(f'Path to file : {pat}')
         return pat
