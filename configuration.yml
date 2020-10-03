@@ -1,0 +1,12 @@
+---
+general:
+  gcp: false
+  local_mqtt_gateway: true
+  logging_mode: terminal
+
+logging:
+  filename: log.txt
+  min_log_level: debug
+
+local_mqtt_gateway:
+  broker_address: "192.168.1.125" #"10.42.0.25"

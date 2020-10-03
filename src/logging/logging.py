@@ -1,8 +1,3 @@
-# Format
-# 2020-08-12 15:45:23:005 | GCP-gateway | ERROR | some text here
-
-# todo: set location of the output
-# todo: proper way of setting config
 # todo: lock on file system usage
 
 import datetime
@@ -10,7 +5,7 @@ import sys
 from dataclasses import dataclass, asdict
 from ntpath import split, basename
 
-import yaml
+from src.lib.configuration_parser import ConfigurationParser
 
 
 @dataclass
@@ -25,7 +20,10 @@ class LogLevels:
 
 
 class Logging:
-
+    """
+    Log format
+    2020-08-12 15:45:23:005 | GCP-gateway | ERROR | some text here
+    """
     @dataclass
     class Colours:
         black: str = '\033[1;30m'
@@ -39,11 +37,15 @@ class Logging:
         bold: str = '\033[;1m'
         reset: str = '\033[0;0m'
 
-    def __init__(self, owner, log_mode='test', min_log_lvl=LogLevels.debug):
+    def __init__(self, owner, log_mode='test', min_log_lvl=LogLevels.debug, config=False):
+        self.config = ConfigurationParser().get_config()
         self.owner = self.path_leaf(path=owner)
         self.log_mode = log_mode
         self.min_log_lvl = min_log_lvl
         self.filename = self.get_filename_from_config()
+        if config:
+            self.log_mode = self.config['general']['logging_mode']
+            self.min_log_lvl = self.get_log_lvl_from_config()
 
     def log(self, msg, log_lvl):
         if log_lvl < self.min_log_lvl:
@@ -93,15 +95,8 @@ class Logging:
         log_lvl_key = list(log_levels.keys())[list(log_levels.values()).index(log_lvl)]
         return f'{current_time} - {source} | {log_lvl_key} : {msg}'
 
-    @staticmethod
-    def get_filename_from_config_yml():
-        with open('configuration.yml') as file:
-            configuration = yaml.load(file, Loader=yaml.FullLoader)
-        return configuration['logging']['filename']
-
-    @staticmethod
-    def get_filename_from_config():
-        return 'log.txt'
+    def get_filename_from_config(self):
+        return self.config['logging']['filename']
 
     def set_log_lvl(self, log_lvl):
         self.min_log_lvl = log_lvl
@@ -133,10 +128,13 @@ class Logging:
         file_name = tail or basename(head)
         return file_name.split('.')[0]
 
+    def get_log_lvl_from_config(self):
+        conf_lvl = self.config['logging']['min_log_level']
+        return LogLevels.__dict__.get(conf_lvl)
+
 
 def run_loglvls():
-    log = Logging(owner=__file__, log_mode='terminal', min_log_lvl=LogLevels.debug)
-    log.set_log_lvl(LogLevels.debug)
+    log = Logging(owner=__file__, config=True)
     log.not_set('test....')
     log.debug('test....')
     log.info('test....')
