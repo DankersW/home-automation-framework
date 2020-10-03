@@ -25,7 +25,5 @@ class TestConfigurationParser(unittest.TestCase):
         with open(yml_path, 'w') as file:
             yaml.dump(test_content, file)
         result = self.conf_parser.yml_to_dict(file_path=yml_path)
-        print(result)
         assert result == test_content
         remove(yml_path)
-    
