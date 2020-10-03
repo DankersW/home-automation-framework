@@ -13,7 +13,7 @@ Google's IoT core MQTT broker has 4 predefined topics.
 * **Telemetry:** Send up to 100 messages per second from the device to the cloud. Telemetry events are only delivered to
  active Pub/Sub subscribers.
 
-![Google_Mqtt](resources/images/google_mqtt.png "Google MQTT overview")
+![Google_Mqtt](../resources/images/google_mqtt.png "Google MQTT overview")
 
 |               | Info                  |
 | ------------- |:---------------------:|
