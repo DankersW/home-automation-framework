@@ -9,4 +9,6 @@ logging:
   min_log_level: debug
 
 local_mqtt_gateway:
-  broker_address: "192.168.1.125" #"10.42.0.25"
+  broker_address: "127.0.0.1" # Local
+  #broker_address: "192.168.1.125" # WIFI home
+  #broker_address: "10.42.0.25" # ETH0

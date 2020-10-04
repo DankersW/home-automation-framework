@@ -5,6 +5,7 @@
 - [x] Handle file path's correctly, maybe using a path translator file or the __init__.py
 - [x] Licensing
 - [x] Docs folder
+- [ ] Handle closing down correctly
 
 ## Documentation
 - [x] Update readme with recent info
