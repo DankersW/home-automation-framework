@@ -70,3 +70,4 @@ Device needs to be reconnected when this error is handled.
 - [ ] Setup a virtual environment
 - [ ] Docker-ize environment
 - [ ] Setup.py
+- [ ] Setup ubuntu home-server with  MQTT broker and MongoDB db
