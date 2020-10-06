@@ -1,7 +1,5 @@
 # Installation Ubuntu 20.04
 
-https://roboticsbackend.com/install-ubuntu-on-raspberry-pi-without-monitor/
-
 ## Setup networking
 Add the following to ``` /etc/netplan/00-installer-config.yaml ```
 ```
