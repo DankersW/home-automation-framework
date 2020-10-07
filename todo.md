@@ -71,3 +71,6 @@ Device needs to be reconnected when this error is handled.
 - [ ] Docker-ize environment
 - [ ] Setup.py
 - [ ] Setup ubuntu home-server with  MQTT broker and MongoDB db
+
+## Server
+- [ ] Log some HW perifials
