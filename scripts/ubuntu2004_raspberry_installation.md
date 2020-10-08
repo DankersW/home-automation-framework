@@ -26,3 +26,6 @@ Then run
 ```shell script
 sudo netplan --debug apply
 ```
+
+todo: create root user dankers-iot and set pwd for ubuntu and dankers-iot in the keys repo
+
