@@ -1,4 +1,4 @@
-# Installation Ubuntu 20.04
+# Installation Ubuntu 20.04 server
 
 Follow the [Installation manual](https://roboticsbackend.com/install-ubuntu-on-raspberry-pi-without-monitor/ "Installation manual") to install Ubuntu20.04 in headless mode for Raspberry pir/
 
@@ -8,6 +8,11 @@ Create a new root user
 sudo adduser dankers-iot
 sudo usermod -aG sudo dankers-iot
 ```
+Remove automatic updates
+```
+sudo apt remove unattended-upgrades
+```
+
 
 ## Setup networking
 
@@ -16,40 +21,27 @@ Change firewall settings to allow for ssh traffic.
 sudo ufw allow ssh
 ```
 
-Set a fixed IP for ETH0
+todo: Set a fixed IP for ETH0
 
-todo!! 
-
-Add the following to ``` /etc/netplan/00-installer-config.yaml ```
-```
-network:
-  ethernets:
-    eth0:
-      addresses: [10.42.0.25/24]
-      gateway4: 10.42.0.10
-      nameservers:
-        addresses: [4.2.2.2, 8.8.8.8]
-  wifis:
-    wlan0:
-      access-points:
-        SaveOurWinters:
-          password: "prettyflyforawifi"
-      addresses: [192.168.1.125/24]
-      gateway4: 192.168.1.1	
-      dhcp4: false
-      optional: false
-  version: 2
-```
 
 ## MQTT broker
-Intall Mosquitto 
+Install Mosquitto 
+
+```
+sudo apt install mosquitto mosquitto-clients
+sudo ufw allow 8883
+sudo ufw allow 1883
+```
 
 ## MongoDB
 Install Mongodb
-
-
-
-Then run
 ```shell script
-sudo netplan --debug apply
+curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+sudo apt update
+sudo apt install mongodb-org
+sudo systemctl start mongod.service
+sudo systemctl status mongod
+sudo systemctl enable mongod
+mongo --eval 'db.runCommand({ connectionStatus: 1 })'
 ```
