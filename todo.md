@@ -74,3 +74,4 @@ Device needs to be reconnected when this error is handled.
 
 ## Server
 - [ ] Log some HW perifials
+- [ ] Monitoring of the themperature and sending out reacting on to high temp, send out warning email if it get's warm
