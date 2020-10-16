@@ -1,24 +1,19 @@
-# Raspberry
-sudo apt install -y mongodb
-systemctl status mongodb
+# create db
 
-# in /etc/mongodb.conf comment out bind_ip
-# IP address of the server is equal to the device IP
-comment bind_ip = 127.0.0.1 # bind_ip = 127.0.0.1
-sudo systemctl restart mongodb
-sudo systemctl enable mongodb
-
-# setup authentication
 mongo
---> use admin
---> db.addUser( { user: "admin", pwd: "root", roles: [ "userAdminAnyDatabase", "dbAdminAnyDatabase", "readWriteAnyDatabase"] } )
---> exit
+use iot_db
+use admin
+db.createUser({ user: "admin", pwd: "mongo_admin_iot", roles: [ "userAdminAnyDatabase", "dbAdminAnyDatabase", "readWriteAnyDatabase"] })
 
-# in /etc/mongodb.conf uncomment security
-auth = true
 
-sudo systemctl restart mongodb
+sudo nano /etc/mongod.conf
+# These two lines must be uncommented and in the file together:
+security:
+   authorization: enabled
+# Change the bindIp to '0.0.0.0':
+net:
+   port: 27017
+   bindIp: 0.0.0.0
 
-# check to see that auth is enabled
-mongo
---> db.adminCommand({listDatabases: 1})
+sudo systemctl restart mongod
+sudo ufw allow 27017/tcp
