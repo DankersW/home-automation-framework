@@ -21,8 +21,21 @@ Change firewall settings to allow for ssh traffic.
 sudo ufw allow ssh
 ```
 
-todo: Set a fixed IP for ETH0
+fixed IP for ETH0
+```
+sudo nano /etc/netplan/99_config.yaml
+# add to file
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      addresses:
+        - 10.42.0.25/24
+      gateway4: 10.42.0.10
 
+sudo netplan apply
+```
 
 ## MQTT broker
 Install Mosquitto 
@@ -44,4 +57,12 @@ sudo systemctl start mongod.service
 sudo systemctl status mongod
 sudo systemctl enable mongod
 mongo --eval 'db.runCommand({ connectionStatus: 1 })'
+```
+
+## Temperature
+```shell script
+sudo apt-get install lm-sensors
+sudo sensors-detect
+sudo service kmod start
+sensors
 ```

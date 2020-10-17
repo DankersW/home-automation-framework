@@ -5,32 +5,32 @@ from pymongo import MongoClient
 from lib.configuration_parser import ConfigurationParser
 
 
-class DbHandler:
-    def get(self, query):
+class DbDriver:
+    def __init__(self):
+        mongo = MongoDriver
+
+    def __del__(self):
         pass
 
-    def write(self, data):
-        pass
 
-
-class MongoDbHandler:
+class MongoDriver:
     @dataclass
-    class MongoConf:
+    class MongoConfCloud:
         admin_pwd: str = 'testlabadmin'
         db: str = 'home_automation'
         url: str = f'mongodb+srv://admin:{admin_pwd}@cluster0.jedhb.gcp.mongodb.net/{db}?retryWrites=true&w=majority'
+
+    @dataclass
+    class MongoConfLocal:
+        host: str = ''
+        user: str = 'admin'
+        pwd: str = 'mongo_admin_iot'
+        db: str = 'iot_db'
 
     def __init__(self):
         self.config = ConfigurationParser().get_config()
 
         self.client = MongoClient(self.MongoConf.url)
-        self.insert()
-        self.retrieve()
-        print('done')
-
-    def __del__(self):
-        print('close')
-        print('after close')
 
     def insert(self):
         db = self.client.home_automation
@@ -54,4 +54,4 @@ class MongoDbHandler:
 
 
 if __name__ == '__main__':
-    db = MongoDbHandler()
+    db = MongoDriver()

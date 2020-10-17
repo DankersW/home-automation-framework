@@ -14,4 +14,4 @@ local_mqtt_gateway:
   #broker_address: '10.42.0.25' # ETH0
 
 mongo_db:
-  address: '192.168.1.125'
+  address: '192.168.1.83'
