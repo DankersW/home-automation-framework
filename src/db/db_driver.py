@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from pymongo import MongoClient, errors
 
 from lib.configuration_parser import ConfigurationParser
+from src.logging.logging import Logging
 
 
 class DbDriver:
@@ -26,25 +27,27 @@ class MongoDriver:
         user: str = 'admin'
         pwd: str = 'mongo_admin_iot'
         db: str = 'iot_db'
-        url: str = f'mongodb://{user}:{pwd}@{host}/{db}'
+        url: str = f'mongodb://{user}:{pwd}@{host}/'
 
     def __init__(self):
         self.config = ConfigurationParser().get_config()
+        self.log = Logging(owner=__file__, config=True)
 
-        self.mongo_client = self.connect_to_db()
+        self.mongo_db = self.connect_to_db()
 
     def connect_to_db(self):
         mongo_host = self.config['mongo_db']['host_ip']
         mongo_url = self.MongoConfLocal.url.replace(self.MongoConfLocal.host, mongo_host)
 
         try:
-            client = MongoClient(mongo_url, serverSelectionTimeoutMS=10)
-            client.server_info()  # force connection on a request as the
-            # connect=True parameter of MongoClient seems
-            # to be useless here
+            client = MongoClient(mongo_url, serverSelectionTimeoutMS=30)
+            client.server_info()
+            db = client[self.MongoConfLocal.db]
+            self.log.success(f'Connected to MongoDB {self.MongoConfLocal.db!r} at {mongo_url}')
         except errors.ServerSelectionTimeoutError as err:
-            # do whatever you need
-            print(err)
+            self.log.critical(f'Connection MongoDB error at {mongo_url} with error: {err}')
+            raise RuntimeError
+        return db
 
     def insert(self):
         db = self.client.home_automation
