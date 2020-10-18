@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from pymongo import MongoClient
+from pymongo import MongoClient, errors
 
 from lib.configuration_parser import ConfigurationParser
 
@@ -22,15 +22,29 @@ class MongoDriver:
 
     @dataclass
     class MongoConfLocal:
-        host: str = ''
+        host: str = 'host_ip'
         user: str = 'admin'
         pwd: str = 'mongo_admin_iot'
         db: str = 'iot_db'
+        url: str = f'mongodb://{user}:{pwd}@{host}/{db}'
 
     def __init__(self):
         self.config = ConfigurationParser().get_config()
 
-        self.client = MongoClient(self.MongoConf.url)
+        self.mongo_client = self.connect_to_db()
+
+    def connect_to_db(self):
+        mongo_host = self.config['mongo_db']['host_ip']
+        mongo_url = self.MongoConfLocal.url.replace(self.MongoConfLocal.host, mongo_host)
+
+        try:
+            client = MongoClient(mongo_url, serverSelectionTimeoutMS=10)
+            client.server_info()  # force connection on a request as the
+            # connect=True parameter of MongoClient seems
+            # to be useless here
+        except errors.ServerSelectionTimeoutError as err:
+            # do whatever you need
+            print(err)
 
     def insert(self):
         db = self.client.home_automation
@@ -51,6 +65,21 @@ class MongoDriver:
         query_result = collection.find({'device_name': 'hello_world'})
         for i, item in enumerate(query_result):
             print(f'{i}: {item}')
+
+    def get_all_collections(self):
+        pass
+
+    def get_all_documents(self, collection):
+        pass
+
+    def get_all_objects(self, document):
+        pass
+
+    def find_queury(self, collection, document):
+        pass
+
+    def update_object(self):
+        pass
 
 
 if __name__ == '__main__':
