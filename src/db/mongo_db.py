@@ -6,27 +6,7 @@ from lib.configuration_parser import ConfigurationParser
 from src.logging.logging import Logging
 
 
-class DbDriver:
-    def __init__(self):
-        mongo = MongoDriver
-
-    def __del__(self):
-        pass
-
-    def get_historical_data(self):
-        print("Call to historical db")
-
-    def set_historical_data(self, data):
-        pass
-
-    def get_data(self):
-        pass
-
-    def set_data(self):
-        pass
-
-
-class MongoDriver:
+class MongoHandler:
     @dataclass
     class MongoConfCloud:
         admin_pwd: str = 'testlabadmin'
@@ -47,10 +27,6 @@ class MongoDriver:
 
         self.mongo_db = self.connect_to_db()
 
-        print(self.mongo_db.list_collection_names())
-
-        # todo: https://www.w3schools.com/python/python_mongodb_create_collection.asp
-
     def connect_to_db(self):
         mongo_host = self.config['mongo_db']['host_ip']
         mongo_url = self.MongoConfLocal.url.replace(self.MongoConfLocal.host, mongo_host)
@@ -65,25 +41,29 @@ class MongoDriver:
             raise RuntimeError
         return db
 
-    def insert(self):
-        db = self.client.home_automation
-        collection = db.deviceStates
-        test_data = {
-            'device_name': 'hello_world',
-            'state': '1'
-        }
-        result = collection.insert_one(test_data)
-        print(f'result: {result.inserted_id}')
+    def get(self, collection_name, device_name=None):
+        collection = self.mongo_db[collection_name]
+        query = {}
+        if device_name:
+            query.update({'device': device_name})
+        self.log.info(f'Executing query {query!r} on collection {collection_name}')
+        return list(collection.find(query))
 
-    def update(self):
+    def insert(self, collection_name, data):
+        collection = self.mongo_db[collection_name]
+        collection.insert_one(data)
+
+    def update_object(self):
         pass
 
-    def retrieve(self):
-        db = self.client.home_automation
-        collection = db.deviceStates
-        query_result = collection.find({'device_name': 'hello_world'})
-        for i, item in enumerate(query_result):
-            print(f'{i}: {item}')
+    def check_existence_by_device_name(self, collection_name, device_name):
+        collection = self.mongo_db[collection_name]
+        query = {'device': device_name}
+        data = collection.find_one(query)
+        if type(data) == dict:
+            return data.get('_id')
+        else:
+            return None
 
     def get_all_collections(self):
         pass
@@ -94,13 +74,9 @@ class MongoDriver:
     def get_all_objects(self, document):
         pass
 
-    def find_queury(self, collection, document):
-        pass
 
-    def update_object(self):
-        pass
 
 
 if __name__ == '__main__':
-    db = MongoDriver()
-    db.find_queury()
+    db = MongoHandler()
+    print(db.get('states', 'test_device'))
