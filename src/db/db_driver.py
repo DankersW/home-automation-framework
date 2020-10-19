@@ -13,6 +13,18 @@ class DbDriver:
     def __del__(self):
         pass
 
+    def get_historical_data(self):
+        print("Call to historical db")
+
+    def set_historical_data(self, data):
+        pass
+
+    def get_data(self):
+        pass
+
+    def set_data(self):
+        pass
+
 
 class MongoDriver:
     @dataclass
@@ -34,6 +46,10 @@ class MongoDriver:
         self.log = Logging(owner=__file__, config=True)
 
         self.mongo_db = self.connect_to_db()
+
+        print(self.mongo_db.list_collection_names())
+
+        # todo: https://www.w3schools.com/python/python_mongodb_create_collection.asp
 
     def connect_to_db(self):
         mongo_host = self.config['mongo_db']['host_ip']
@@ -87,3 +103,4 @@ class MongoDriver:
 
 if __name__ == '__main__':
     db = MongoDriver()
+    db.find_queury()
