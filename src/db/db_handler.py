@@ -38,5 +38,5 @@ class DbHandler:
 if __name__ == '__main__':
     db_handler = DbHandler()
     db_handler.get_data()
-    data = {'device': 'light_switch_2', 'location': 'living', 'state': False}
-    db_handler.store_data(data)
+    test_data = {'device': 'light_switch_2', 'location': 'living', 'state': False}
+    db_handler.store_data(test_data)

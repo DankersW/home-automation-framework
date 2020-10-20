@@ -53,6 +53,8 @@ class Logging:
             self.write_to_terminal(log_msg, log_lvl)
         elif self.log_mode == 'file':
             self.write_to_file(log_msg)
+        elif self.log_mode == 'db':
+            pass
         elif self.log_mode == 'test':
             return log_msg
         else:

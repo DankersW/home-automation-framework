@@ -37,7 +37,7 @@ Device needs to be reconnected when this error is handled.
 - [ ] Log to DB aswell
 
 ## Storage
-- [ ] DB that stores current state data (E.Q. Document DB like mongodb)
+- [x] DB that stores current state data (E.Q. Document DB like mongodb)
 - [ ] DB that stores data for a long time (E.Q. wide column db like Apache Cassandra or Apache HBase)
 
 ## GUI

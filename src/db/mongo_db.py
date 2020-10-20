@@ -18,24 +18,22 @@ class MongoHandler:
         host: str = 'host_ip'
         user: str = 'admin'
         pwd: str = 'mongo_admin_iot'
-        db: str = 'iot_db'
         url: str = f'mongodb://{user}:{pwd}@{host}/'
 
-    def __init__(self):
+    def __init__(self, db_name):
         self.config = ConfigurationParser().get_config()
         self.log = Logging(owner=__file__, config=True)
+        self.mongo_db = self.connect_to_db(db_name=db_name)
 
-        self.mongo_db = self.connect_to_db()
-
-    def connect_to_db(self):
+    def connect_to_db(self, db_name):
         mongo_host = self.config['mongo_db']['host_ip']
         mongo_url = self.MongoConfLocal.url.replace(self.MongoConfLocal.host, mongo_host)
 
         try:
             client = MongoClient(mongo_url, serverSelectionTimeoutMS=30)
             client.server_info()
-            db = client[self.MongoConfLocal.db]
-            self.log.success(f'Connected to MongoDB {self.MongoConfLocal.db!r} at {mongo_url}')
+            db = client[db_name]
+            self.log.success(f'Connected to MongoDB {db_name!r} at {mongo_url}')
         except errors.ServerSelectionTimeoutError as err:
             self.log.critical(f'Connection MongoDB error at {mongo_url} with error: {err}')
             raise RuntimeError
@@ -71,5 +69,5 @@ class MongoHandler:
 
 
 if __name__ == '__main__':
-    db = MongoHandler()
-    print(db.get('states', 'test_device'))
+    t_db = MongoHandler(db_name='iot_db')
+    print(t_db.get('states', 'test_device'))
