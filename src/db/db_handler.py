@@ -20,18 +20,23 @@ class DbHandler:
     def set_historical_data(self, data):
         pass
 
-    def get_data(self):
-        print(self.mongo.get('states', 'test_device'))
+    def get_data(self, device_name=None):
+        data = self.mongo.get('states', device_name)
+        for item in data:
+            print(item)
 
-    def store_data(self):
-        device_exists = self.mongo.check_existence_by_device_name('states', 'test_device_')
-        if device_exists:
-            pass
+    def store_data(self, data):
+        device_name = data.get('device')
+        device_id = self.mongo.check_existence_by_device_name('states', device_name)
+        if device_id:
+            updated_data = {'$set': {'state': data.get('state')}}
+            self.mongo.update_object('states', device_id, updated_data)
         else:
-            pass
+            self.mongo.insert('states', data)
 
 
 if __name__ == '__main__':
     db_handler = DbHandler()
-    #db_handler.get_data()
-    db_handler.store_data()
+    db_handler.get_data()
+    data = {'device': 'light_switch_2', 'location': 'living', 'state': False}
+    db_handler.store_data(data)
