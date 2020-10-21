@@ -6,7 +6,7 @@ from dataclasses import dataclass, asdict
 from ntpath import split, basename
 
 from lib.configuration_parser import ConfigurationParser
-
+from src.logging.persistent_logging import DbLogging
 
 @dataclass
 class LogLevels:
@@ -44,6 +44,9 @@ class Logging:
             self.log_mode = self.config['general']['logging_mode']
             self.min_log_lvl = self.get_log_lvl_from_config()
 
+        if self.log_mode == 'db':
+            self.db = DbLogging(document_name=self.filename)
+
     def log(self, msg, log_lvl):
         if log_lvl < self.min_log_lvl:
             return None
@@ -54,7 +57,7 @@ class Logging:
         elif self.log_mode == 'file':
             self.write_to_file(log_msg)
         elif self.log_mode == 'db':
-            pass
+            self.db.log(data=log_msg)
         elif self.log_mode == 'test':
             return log_msg
         else:
