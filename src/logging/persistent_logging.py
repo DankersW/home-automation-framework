@@ -9,7 +9,8 @@ from lib.configuration_parser import ConfigurationParser
 
 # todo: create a new document name that has current timestamp as name
 
-# todo: if document name, time difference is less then 1 use that name else create a new document. in this all write to the same log
+# todo: if document name, time difference is less then 1 use that name else create a new document. in this all
+#  write to the same log
 
 # todo: data structure: time, name, log level, info
 
@@ -25,7 +26,7 @@ class DbLogging:
     def __init__(self, document_name):
         self.config = ConfigurationParser().get_config()
         self.connect_to_db()
-        print('init')
+        print(f'init-{document_name}')
 
     def connect_to_db(self):
         mongo_host = self.config['mongo_db']['host_ip']
@@ -42,4 +43,4 @@ class DbLogging:
         return db
 
     def log(self, data):
-        print('log')
+        print(f'log{data}')
