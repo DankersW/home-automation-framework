@@ -45,7 +45,8 @@ class Logging:
             self.min_log_lvl = self.get_log_lvl_from_config()
 
         if self.log_mode == 'db':
-            self.db = DbLogging(document_name=self.filename)
+            db_logging = DbLogging(document_name=self.filename)
+            self.db = db_logging.connect_to_db()
 
     def log(self, msg, log_lvl):
         if log_lvl < self.min_log_lvl:
@@ -56,7 +57,7 @@ class Logging:
             self.write_to_terminal(log_msg, log_lvl)
         elif self.log_mode == 'file':
             self.write_to_file(log_msg)
-        elif self.log_mode == 'db':
+        elif self.log_mode == 'db' and self.db:
             self.db.log(data=log_msg)
         elif self.log_mode == 'test':
             return log_msg

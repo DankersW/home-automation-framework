@@ -7,6 +7,7 @@ general:
 logging:
   filename: log.txt
   min_log_level: debug
+  log_document: logs
 
 local_mqtt_gateway:
   #broker_address: '127.0.0.1' # Local

@@ -25,7 +25,6 @@ class DbLogging:
 
     def __init__(self, document_name):
         self.config = ConfigurationParser().get_config()
-        self.connect_to_db()
         print(f'init-{document_name}')
 
     def connect_to_db(self):
@@ -40,7 +39,12 @@ class DbLogging:
         except errors.ServerSelectionTimeoutError as err:
             print(f'Connection MongoDB error at {mongo_url} with error: {err}')
             raise RuntimeError
+
         return db
+
+    def generate_document_name(self):
+        document_base_name = self.config['logging']['log_document']
+        print(f'base name {document_base_name!r}')
 
     def log(self, data):
         print(f'log{data}')
