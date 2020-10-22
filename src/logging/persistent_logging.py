@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 from pymongo import MongoClient, errors
 
@@ -23,9 +24,8 @@ class DbLogging:
         pwd: str = 'mongo_admin_iot'
         url: str = f'mongodb://{user}:{pwd}@{host}/'
 
-    def __init__(self, document_name):
+    def __init__(self):
         self.config = ConfigurationParser().get_config()
-        print(f'init-{document_name}')
 
     def connect_to_db(self):
         mongo_host = self.config['mongo_db']['host_ip']
@@ -40,11 +40,29 @@ class DbLogging:
             print(f'Connection MongoDB error at {mongo_url} with error: {err}')
             raise RuntimeError
 
+        collection_list = self.get_all_collections(db=db)
+        if collection_list == None:
+
+        print(f'colelctions: {collection_list}')
+
         return db
 
-    def generate_document_name(self):
-        document_base_name = self.config['logging']['log_document']
-        print(f'base name {document_base_name!r}')
+    @staticmethod
+    def get_all_collections(db):
+        return db.list_collection_names()
+
+    def get_collection_name(self):
+
+
+    def generate_collection_name(self, current_time):
+        collection_base_name = self.config['logging']['log_collection']
+        dt = current_time.strftime('%Y%m%d%H%M')
+        return f'{collection_base_name}_{dt}'
 
     def log(self, data):
         print(f'log{data}')
+
+
+if __name__ == '__main__':
+    db_pres = DbLogging()
+    db_pres.connect_to_db()
