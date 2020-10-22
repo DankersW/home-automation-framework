@@ -67,11 +67,18 @@ Device needs to be reconnected when this error is handled.
 - [x] Code test coverage
 - [ ] Create a first release and install https://realpython.com/pyinstaller-python/
 
+## Release
+- [ ]: when monitoring and email notifications is in place
+- [ ]: messaging gateway is running
+- [ ]: db working 
+- [ ]: proper logging
+- [ ]: observer pattern
+
 ## Enviroment
 - [ ] Setup a virtual environment
 - [ ] Docker-ize environment
 - [ ] Setup.py
-- [ ] Setup ubuntu home-server with  MQTT broker and MongoDB db
+- [x] Setup ubuntu home-server with  MQTT broker and MongoDB db
 
 ## Server
 - [ ] Log some HW perifials
