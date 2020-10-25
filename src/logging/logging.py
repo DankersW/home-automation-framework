@@ -45,7 +45,7 @@ class Logging:
             self.min_log_lvl = self.get_log_lvl_from_config()
 
         if self.log_mode == 'db':
-            db_logging = DbLogging(document_name=self.filename)
+            db_logging = DbLogging()
             self.db = db_logging.connect_to_db()
 
     def log(self, msg, log_lvl):
@@ -58,7 +58,7 @@ class Logging:
         elif self.log_mode == 'file':
             self.write_to_file(log_msg)
         elif self.log_mode == 'db' and self.db:
-            self.db.log(data=log_msg)
+            self.db.abc(source=self.owner, time=self.get_time(), log_lvl=self.get_key_from_dict(log_lvl), msg=log_msg)
         elif self.log_mode == 'test':
             return log_msg
         else:
@@ -93,9 +93,12 @@ class Logging:
         return datetime.datetime.now()
 
     @staticmethod
-    def format_log_msg(msg, log_lvl, current_time, source):
+    def get_key_from_dict(val):
         log_levels = asdict(LogLevels())
-        log_lvl_key = list(log_levels.keys())[list(log_levels.values()).index(log_lvl)]
+        return list(log_levels.keys())[list(log_levels.values()).index(val)]
+
+    def format_log_msg(self, msg, log_lvl, current_time, source):
+        log_lvl_key = self.get_key_from_dict(log_lvl)
         return f'{current_time} - {source} | {log_lvl_key} : {msg}'
 
     def get_filename_from_config(self):
@@ -141,7 +144,7 @@ def run_loglvls():
     log.not_set('test....')
     log.debug('test....')
     log.info('test....')
-    log1 = Logging(owner='extra', log_mode='terminal', min_log_lvl=LogLevels.debug)
+    log1 = Logging(owner='extra', log_mode='db', min_log_lvl=LogLevels.debug)
     log1.warning('test....')
     log1.error('test....')
     log1.critical('test....')
