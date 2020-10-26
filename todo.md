@@ -34,11 +34,11 @@ Device needs to be reconnected when this error is handled.
 - [ ] Set file name to date, and have all write to the same one
 - [x] Set logging name via __repr__ or __name__ or __file__
 - [x] Switch to f string printing
-- [ ] Log to DB aswell
+- [x] Log to DB aswell
 
 ## Storage
 - [x] DB that stores current state data (E.Q. Document DB like mongodb)
-- [ ] DB that stores data for a long time (E.Q. wide column db like Apache Cassandra or Apache HBase)
+- [x] DB that stores data for a long time (E.Q. wide column db like Apache Cassandra or Apache HBase)
 
 ## GUI
 - [ ] Front-end to visualize db data
@@ -79,6 +79,7 @@ Device needs to be reconnected when this error is handled.
 - [ ] Docker-ize environment
 - [ ] Setup.py
 - [x] Setup ubuntu home-server with  MQTT broker and MongoDB db
+- [ ] Run from same place always
 
 ## Server
 - [ ] Log some HW perifials

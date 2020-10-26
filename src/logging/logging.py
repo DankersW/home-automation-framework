@@ -38,7 +38,7 @@ class Logging:
         self.owner = self.path_leaf(path=owner)
         self.log_mode = log_mode
         self.min_log_lvl = min_log_lvl
-        self.filename = self.get_filename_from_config()
+        self.filename = self.get_filename()
         if config:
             self.log_mode = self.config['general']['logging_mode']
             self.min_log_lvl = self.get_log_lvl_from_config()
@@ -100,7 +100,7 @@ class Logging:
         log_lvl_key = self.get_key_from_dict(log_lvl)
         return f'{current_time} - {source} | {log_lvl_key} : {msg}'
 
-    def get_filename_from_config(self):
+    def get_filename(self):
         return self.config['logging']['filename']
 
     def set_log_lvl(self, log_lvl):
