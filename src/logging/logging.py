@@ -1,5 +1,3 @@
-# todo: lock on file system usage
-
 import datetime
 import sys
 from dataclasses import dataclass, asdict
@@ -7,6 +5,7 @@ from ntpath import split, basename
 
 from lib.configuration_parser import ConfigurationParser
 from src.logging.persistent_logging import DbLogging
+
 
 @dataclass
 class LogLevels:
@@ -45,8 +44,8 @@ class Logging:
             self.min_log_lvl = self.get_log_lvl_from_config()
 
         if self.log_mode == 'db':
-            db_logging = DbLogging()
-            self.db = db_logging.connect_to_db()
+            self.db = DbLogging()
+            self.db.connect()
 
     def log(self, msg, log_lvl):
         if log_lvl < self.min_log_lvl:
@@ -58,7 +57,7 @@ class Logging:
         elif self.log_mode == 'file':
             self.write_to_file(log_msg)
         elif self.log_mode == 'db' and self.db:
-            self.db.abc(source=self.owner, time=self.get_time(), log_lvl=self.get_key_from_dict(log_lvl), msg=log_msg)
+            self.db.log(source=self.owner, time=self.get_time(), log_lvl=self.get_key_from_dict(log_lvl), msg=msg)
         elif self.log_mode == 'test':
             return log_msg
         else:
@@ -144,7 +143,7 @@ def run_loglvls():
     log.not_set('test....')
     log.debug('test....')
     log.info('test....')
-    log1 = Logging(owner='extra', log_mode='db', min_log_lvl=LogLevels.debug)
+    log1 = Logging(owner='extra', log_mode='terminal', min_log_lvl=LogLevels.debug)
     log1.warning('test....')
     log1.error('test....')
     log1.critical('test....')
