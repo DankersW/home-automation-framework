@@ -5,3 +5,7 @@ paho-mqtt == 1.5.0
 PyJWT >= 1.7.1
 cryptography == 3.1.1
 PyYAML >= 5.3.1
+pymongo == 3.11.0
+mongoengine == 0.20.0
+dnspython == 2.0.0
+mock == 4.0.2

@@ -5,6 +5,7 @@
 - [x] Handle file path's correctly, maybe using a path translator file or the __init__.py
 - [x] Licensing
 - [x] Docs folder
+- [ ] Handle closing down correctly
 
 ## Documentation
 - [x] Update readme with recent info
@@ -33,11 +34,11 @@ Device needs to be reconnected when this error is handled.
 - [ ] Set file name to date, and have all write to the same one
 - [x] Set logging name via __repr__ or __name__ or __file__
 - [x] Switch to f string printing
-- [ ] Log to DB aswell
+- [x] Log to DB aswell
 
 ## Storage
-- [ ] DB that stores current state data (E.Q. Document DB like mongodb)
-- [ ] DB that stores data for a long time (E.Q. wide column db like Apache Cassandra or Apache HBase)
+- [x] DB that stores current state data (E.Q. Document DB like mongodb)
+- [x] DB that stores data for a long time (E.Q. wide column db like Apache Cassandra or Apache HBase)
 
 ## GUI
 - [ ] Front-end to visualize db data
@@ -66,11 +67,20 @@ Device needs to be reconnected when this error is handled.
 - [x] Code test coverage
 - [ ] Create a first release and install https://realpython.com/pyinstaller-python/
 
+## Release
+- [ ]: when monitoring and email notifications is in place
+- [ ]: messaging gateway is running
+- [ ]: db working 
+- [ ]: proper logging
+- [ ]: observer pattern
+
 ## Enviroment
 - [ ] Setup a virtual environment
 - [ ] Docker-ize environment
 - [ ] Setup.py
-- [ ] Setup ubuntu home-server with  MQTT broker and MongoDB db
+- [x] Setup ubuntu home-server with  MQTT broker and MongoDB db
+- [ ] Run from same place always
+- [ ] script to run linting and testing locally
 
 ## Server
 - [ ] Log some HW perifials

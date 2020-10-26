@@ -1,11 +1,10 @@
-# todo: lock on file system usage
-
 import datetime
 import sys
 from dataclasses import dataclass, asdict
 from ntpath import split, basename
 
 from lib.configuration_parser import ConfigurationParser
+from src.logging.persistent_logging import DbLogging
 
 
 @dataclass
@@ -39,10 +38,14 @@ class Logging:
         self.owner = self.path_leaf(path=owner)
         self.log_mode = log_mode
         self.min_log_lvl = min_log_lvl
-        self.filename = self.get_filename_from_config()
+        self.filename = self.get_filename()
         if config:
             self.log_mode = self.config['general']['logging_mode']
             self.min_log_lvl = self.get_log_lvl_from_config()
+
+        if self.log_mode == 'db':
+            self.db = DbLogging()
+            self.db.connect()
 
     def log(self, msg, log_lvl):
         if log_lvl < self.min_log_lvl:
@@ -53,6 +56,8 @@ class Logging:
             self.write_to_terminal(log_msg, log_lvl)
         elif self.log_mode == 'file':
             self.write_to_file(log_msg)
+        elif self.log_mode == 'db' and self.db:
+            self.db.log(source=self.owner, time=self.get_time(), log_lvl=self.get_key_from_dict(log_lvl), msg=msg)
         elif self.log_mode == 'test':
             return log_msg
         else:
@@ -87,12 +92,15 @@ class Logging:
         return datetime.datetime.now()
 
     @staticmethod
-    def format_log_msg(msg, log_lvl, current_time, source):
+    def get_key_from_dict(val):
         log_levels = asdict(LogLevels())
-        log_lvl_key = list(log_levels.keys())[list(log_levels.values()).index(log_lvl)]
+        return list(log_levels.keys())[list(log_levels.values()).index(val)]
+
+    def format_log_msg(self, msg, log_lvl, current_time, source):
+        log_lvl_key = self.get_key_from_dict(log_lvl)
         return f'{current_time} - {source} | {log_lvl_key} : {msg}'
 
-    def get_filename_from_config(self):
+    def get_filename(self):
         return self.config['logging']['filename']
 
     def set_log_lvl(self, log_lvl):
