@@ -28,7 +28,7 @@ class DbLogging:
             client.server_info()
             db = client['logs']
         except errors.ServerSelectionTimeoutError as error:
-            raise RuntimeError(error)
+            raise RuntimeError from error
 
         self.collection = self.get_collection(db=db)
         self.mongo_db = db
