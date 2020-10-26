@@ -80,6 +80,7 @@ Device needs to be reconnected when this error is handled.
 - [ ] Setup.py
 - [x] Setup ubuntu home-server with  MQTT broker and MongoDB db
 - [ ] Run from same place always
+- [ ] script to run linting and testing locally
 
 ## Server
 - [ ] Log some HW perifials
