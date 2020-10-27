@@ -2,11 +2,11 @@
 home_dir=$(pwd)
 
 echo "Installing packages"
-#pip3 install -r requirements.txt
+pip3 install -r requirements.txt
 
 
 echo "Running unit tests"
-#python3 -m unittest discover -s tests/ -p 'test_*.py'
+python3 -m unittest discover -s tests/ -p 'test_*.py'
 
 
 echo "Linting of src folder"
