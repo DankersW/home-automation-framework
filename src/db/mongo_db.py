@@ -62,10 +62,10 @@ class MongoHandler:
         collection = self.mongo_db[collection_name]
         query = {'device': device_name}
         data = collection.find_one(query)
-        if type(data) == dict:
+        # if type(data) == dict:
+        if isinstance(data, dict):
             return data.get('_id')
-        else:
-            return None
+        return None
 
 
 if __name__ == '__main__':

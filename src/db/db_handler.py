@@ -9,15 +9,9 @@ from src.db.mongo_db import MongoHandler
 
 class DbHandler:
     def __init__(self):
-        self.mongo = MongoHandler()
+        self.mongo = MongoHandler(db_name='iot_db')
 
     def __del__(self):
-        pass
-
-    def get_historical_data(self):
-        print("Call to historical db")
-
-    def set_historical_data(self, data):
         pass
 
     def get_data(self, device_name=None):
