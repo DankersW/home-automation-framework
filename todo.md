@@ -75,11 +75,8 @@ Device needs to be reconnected when this error is handled.
 - [ ]: observer pattern
 
 ## Enviroment
-- [ ] Setup a virtual environment
-- [ ] Docker-ize environment
-- [ ] Setup.py
 - [x] Setup ubuntu home-server with  MQTT broker and MongoDB db
-- [ ] Run from same place always
+- [x] Run from same place always
 - [x] script to run linting and testing locally
 
 ## Server
