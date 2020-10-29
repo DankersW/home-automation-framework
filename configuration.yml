@@ -3,9 +3,10 @@ general:
   gcp: false
   local_mqtt_gateway: true
   logging_mode: terminal
+  #logging_mode: file
 
 logging:
-  filename: log.txt
+  file_log_folder: 'C:\Users\woute\development\logs'
   min_log_level: debug
   log_collection_name: logs
 

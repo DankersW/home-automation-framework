@@ -3,6 +3,8 @@ import sys
 from dataclasses import dataclass, asdict
 from ntpath import split, basename
 
+import os
+
 from lib.configuration_parser import ConfigurationParser
 from src.logging.persistent_logging import DbLogging
 
@@ -101,7 +103,9 @@ class Logging:
         return f'{current_time} - {source} | {log_lvl_key} : {msg}'
 
     def get_filename(self):
-        return self.config['logging']['filename']
+        log_folder = self.config['logging']['file_log_folder']
+        print(os.system(f' {log_folder}'))
+        return
 
     def set_log_lvl(self, log_lvl):
         self.min_log_lvl = log_lvl
