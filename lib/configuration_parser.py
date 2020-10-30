@@ -13,7 +13,7 @@ class ConfigurationParser:
     def get_path_to_conf_file(self):
         dir_structure = path.normpath(Path.cwd()).split(sep)
         if dir_structure[0] == 'C:' or dir_structure[0] == 'D:' or dir_structure[0] == 'E:':  # Solve Windows path
-            dir_structure[0] += f'\\'
+            dir_structure[0] += '\\'
         elif dir_structure[0] == '':  # Solve Github actions location error
             dir_structure[0] = '/'
         index_repo_name = [i for i, x in enumerate(dir_structure) if x == self.repo_name][-1]

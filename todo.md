@@ -31,7 +31,7 @@ Device needs to be reconnected when this error is handled.
 - [x] Have a ylm file that specifies the logging configuration: E.Q format, log to file or terminal, etc. 
 - [x] Unit tests for logging
 - [x] Usage YML file to set configuration
-- [ ] Set file name to date, and have all write to the same one
+- [x] Set file name to date, and have all write to the same one
 - [x] Set logging name via __repr__ or __name__ or __file__
 - [x] Switch to f string printing
 - [x] Log to DB aswell
