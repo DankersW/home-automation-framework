@@ -2,8 +2,8 @@
 general:
   gcp: false
   local_mqtt_gateway: true
-  logging_mode: terminal
-  #logging_mode: file
+  #logging_mode: terminal
+  logging_mode: file
 
 logging:
   file_log_folder: 'C:\Users\woute\development\logs'

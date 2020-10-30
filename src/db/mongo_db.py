@@ -36,7 +36,7 @@ class MongoHandler:
             self.log.success(f'Connected to MongoDB {db_name!r} at {mongo_url}')
         except errors.ServerSelectionTimeoutError as err:
             self.log.critical(f'Connection MongoDB error at {mongo_url} with error: {err}')
-            raise RuntimeError
+            raise RuntimeError from err
         return db
 
     def get(self, collection_name, device_name=None):
