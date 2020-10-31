@@ -13,7 +13,9 @@
 
 ## IOT-gateway
 - [ ] Find and implement a good pattern to run the message shuffeling based on active gateways
-
+ --> https://www.protechtraining.com/blog/post/tutorial-the-observer-pattern-in-python-879
+ 
+ 
 ## Bugs
 - [ ] g-bridge: Out of memory causes reconnection. and and up with connection code 4 - The client is not currently 
 connected. then disconnect 5 - the connection was refused. This keeps going forever. connect --> disconnect --> ... 
@@ -68,11 +70,11 @@ Device needs to be reconnected when this error is handled.
 - [ ] Create a first release and install https://realpython.com/pyinstaller-python/
 
 ## Release
-- [ ]: when monitoring and email notifications is in place
-- [ ]: messaging gateway is running
-- [ ]: db working 
-- [ ]: proper logging
-- [ ]: observer pattern
+- [ ] when monitoring and email notifications is in place
+- [ ] messaging gateway is running
+- [ ] db working 
+- [ ] proper logging
+- [ ] observer pattern
 
 ## Enviroment
 - [x] Setup ubuntu home-server with  MQTT broker and MongoDB db
