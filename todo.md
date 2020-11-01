@@ -13,8 +13,6 @@
 
 ## IOT-gateway
 - [ ] Find and implement a good pattern to run the message shuffeling based on active gateways
- --> https://www.protechtraining.com/blog/post/tutorial-the-observer-pattern-in-python-879
- 
  
 ## Bugs
 - [ ] g-bridge: Out of memory causes reconnection. and and up with connection code 4 - The client is not currently 
