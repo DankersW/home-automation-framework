@@ -25,30 +25,36 @@ class DbObserver:
 
 
 class GenericObserver:
-    def __init__(self, name, observer):
-        pass
+    def __init__(self, name):
+        self.name = name
 
-    def notify(self):
-        pass
+    def notify(self, msg):
+        print(f'{self.name}: received event event and message {msg} -- setting incomming message queue')
 
 
-class Subject:  # Publisher
+class Subscriber:
+    def __init__(self, name):
+        self.name = name
+
+    def update(self, message):
+        print('{} got message "{}"'.format(self.name, message))
+
+
+class Subject:
     def __init__(self, events):
-        # maps event names to subscribers
-        # str -> dict
-        self.events = {event: dict()
-                       for event in events}
+        self.events = {event: dict() for event in events}
 
     def get_subscribers(self, event):
         return self.events[event]
 
-    def register(self, event, who, callback=None):
-        if callback == None:
-            callback = getattr(who, 'update')
-        self.get_subscribers(event)[who] = callback
+    def register(self, events, observer, callback=None):
+        if callback is None:
+            callback = getattr(observer, 'notify')
+        for event in events:
+            self.get_subscribers(event)[observer] = callback
 
-    def unregister(self, event, who):
-        del self.get_subscribers(event)[who]
+    def unregister(self, event, observer):
+        del self.get_subscribers(event)[observer]
 
     def dispatch(self, event, message):
         for subscriber, callback in self.get_subscribers(event).items():
@@ -56,21 +62,19 @@ class Subject:  # Publisher
 
 
 def driver():
-    pub = Subject(['lunch', 'dinner'])
-    bob = Subscriber('Bob')
-    alice = Subscriber('Alice')
-    john = Subscriber('John')
+    events = ['gcp_comm', 'device_comm']
+    iot_observer = Subject(events)
 
-    pub.register("lunch", bob)
-    pub.register("dinner", alice)
-    pub.register("lunch", john)
-    pub.register("dinner", john)
+    g_bridge_observer = GenericObserver(name='g_bridge')
+    local_mqtt_observer = GenericObserver(name='local_mqtt')
+    db_observer = GenericObserver(name='db_handler')
 
-    pub.dispatch("lunch", "It's lunchtime!")
-    pub.dispatch("dinner", "Dinner is served")
+    iot_observer.register(observer=g_bridge_observer, events=['gcp_comm'])
+    iot_observer.register(observer=local_mqtt_observer, events=['device_comm'])
+    iot_observer.register(observer=db_observer, events=['device_comm', 'gcp_comm'])
 
-    for event in ['lunch', 'dinner']:
-        print(pub.get_subscribers(event))
+    iot_observer.dispatch('device_comm', 'data for devices')
+    iot_observer.dispatch('gcp_comm', 'gcp data')
 
 
 if __name__ == '__main__':
