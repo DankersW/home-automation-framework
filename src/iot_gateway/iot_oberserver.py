@@ -4,40 +4,24 @@ class GBridgeObserver:
     def __init__(self, name):
         self.name = name
 
-    def notify(self, message):
-        print('{} got message "{}"'.format(self.name, message))
+    def notify(self, msg, event):
+        print(f'{self.name}: {event} - {msg}')
 
 
 class LocalMqttGatewayObserver:
     def __init__(self, name):
         self.name = name
 
-    def notify(self, message):
-        print('{} got message "{}"'.format(self.name, message))
+    def notify(self, msg, event):
+        print(f'{self.name}: {event} - {msg}')
 
 
 class DbObserver:
     def __init__(self, name):
         self.name = name
 
-    def notify(self, message):
-        print('{} got message "{}"'.format(self.name, message))
-
-
-class GenericObserver:
-    def __init__(self, name):
-        self.name = name
-
-    def notify(self, msg):
-        print(f'{self.name}: received event event and message {msg} -- setting incomming message queue')
-
-
-class Subscriber:
-    def __init__(self, name):
-        self.name = name
-
-    def update(self, message):
-        print('{} got message "{}"'.format(self.name, message))
+    def notify(self, msg, event):
+        print(f'{self.name}: {event} - {msg}')
 
 
 class Subject:
@@ -58,24 +42,34 @@ class Subject:
 
     def dispatch(self, event, message):
         for subscriber, callback in self.get_subscribers(event).items():
-            callback(message)
+            callback(message, event)
 
 
-def driver():
-    events = ['gcp_comm', 'device_comm']
-    iot_observer = Subject(events)
+class IotSubject:
+    observers = []
 
-    g_bridge_observer = GenericObserver(name='g_bridge')
-    local_mqtt_observer = GenericObserver(name='local_mqtt')
-    db_observer = GenericObserver(name='db_handler')
+    def __init__(self):
+        events = ['gcp_comm', 'device_comm']
+        self.subject = Subject(events)
+        self.init_observers()
+        self.attach_observers()
 
-    iot_observer.register(observer=g_bridge_observer, events=['gcp_comm'])
-    iot_observer.register(observer=local_mqtt_observer, events=['device_comm'])
-    iot_observer.register(observer=db_observer, events=['device_comm', 'gcp_comm'])
+    def init_observers(self):
+        self.observers.append({'observer': GBridgeObserver(name='g_bridge'), 'events': ['gcp_comm']})
+        self.observers.append({'observer': LocalMqttGatewayObserver(name='local_mqtt'), 'events': ['device_comm']})
+        self.observers.append({'observer': DbObserver(name='db_handler'), 'events': ['gcp_comm', 'device_comm']})
 
-    iot_observer.dispatch('device_comm', 'data for devices')
-    iot_observer.dispatch('gcp_comm', 'gcp data')
+    def attach_observers(self):
+        for observer in self.observers:
+            self.subject.register(**observer)
+
+    def run(self):
+        # todo: poll all overserver queues
+        # todo: dispatch all gatered events
+        self.subject.dispatch('gcp_comm', 'gcp data')
+        self.subject.dispatch('device_comm', 'data for devices')
 
 
 if __name__ == '__main__':
-    driver()
+    iot_subject = IotSubject()
+    iot_subject.run()
