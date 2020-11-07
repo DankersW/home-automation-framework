@@ -66,8 +66,18 @@ class IotSubject:
     def run(self):
         # todo: poll all overserver queues
         # todo: dispatch all gatered events
+        test_events = [{'event': 'gcp_comm', 'message': 'random data'},
+                       {'event': 'device_comm', 'message': 'local random data'},
+                       {'event': 'device_comm', 'message': 'someting data'},
+                       {'event': 'device_comm', 'message': 'another v data'}]
         self.subject.dispatch('gcp_comm', 'gcp data')
         self.subject.dispatch('device_comm', 'data for devices')
+
+        self.notify_observers(events=test_events)
+        
+    def notify_observers(self, events):
+        for event in events:
+            self.subject.dispatch(**event)
 
 
 if __name__ == '__main__':
