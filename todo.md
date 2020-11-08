@@ -6,13 +6,16 @@
 - [x] Licensing
 - [x] Docs folder
 - [ ] Handle closing down correctly
+- [ ] Fix include path for license file (G-bridge)
+- [ ] Update linting script for github workflows
 
 ## Documentation
 - [x] Update readme with recent info
 - [x] Update architectural overview
 
 ## IOT-gateway
-- [ ] Find and implement a good pattern to run the message shuffeling based on active gateways
+- [x] Find and implement a good pattern to run the message shuffeling based on active gateways
+- [ ] Publish data from the notify and update the outgoing queue via poll
  
 ## Bugs
 - [ ] g-bridge: Out of memory causes reconnection. and and up with connection code 4 - The client is not currently 

@@ -1,9 +1,11 @@
 ---
 general:
-  gcp: false
+  logging_mode: terminal
+
+system_components:
+  gcp: true
   local_mqtt_gateway: true
-  #logging_mode: terminal
-  logging_mode: file
+  db: true
 
 logging:
   file_log_folder: 'C:\Users\woute\development\logs'
@@ -11,7 +13,6 @@ logging:
   log_collection_name: logs
 
 local_mqtt_gateway:
-  #broker_address: '127.0.0.1' # Local
   broker_address: '192.168.1.83' # WIFI home
   #broker_address: '10.42.0.25' # ETH0
 

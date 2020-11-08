@@ -35,6 +35,17 @@ class LocalMqttGateway(threading.Thread):
     def run(self):
         self.client.loop_forever()
 
+    def notify(self, msg, event):
+        # todo: call the publish method
+        # todo: parse the msg
+        self.log.info(f'notified - {event} - {msg}')
+
+    @staticmethod
+    def poll_events():
+        event = 'gcp_mqtt'
+        msg = {'device': 'light_switch_2', 'location': 'living-room', 'state': False}
+        return [{'event': event, 'message': msg}]
+
     def on_connect(self, _client, _userdata, _flags, rc):
         self.log.success(f'Connected to MQTT broker with result code {str(rc)}.')
         self.client.subscribe("iot/#")
