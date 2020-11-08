@@ -2,8 +2,6 @@ from datetime import datetime
 import sys
 from dataclasses import dataclass, asdict
 from ntpath import split, basename
-from os import listdir
-from os.path import isfile, join
 from pathlib import Path
 
 from lib.configuration_parser import ConfigurationParser
@@ -38,50 +36,50 @@ class Logging:
 
     def __init__(self, owner, log_mode='test', min_log_lvl=LogLevels.debug, config=False):
         self.config = ConfigurationParser().get_config()
-        self.owner = self.path_leaf(path=owner)
+        self.owner = self._path_leaf(path=owner)
         self.log_mode = log_mode
         self.min_log_lvl = min_log_lvl
 
         if config:
             self.log_mode = self.config['general']['logging_mode']
-            self.min_log_lvl = self.get_log_lvl_from_config()
+            self.min_log_lvl = self._get_log_lvl_from_config()
 
         if self.log_mode == 'db':
             self.db = DbLogging()
             self.db.connect()
 
         if self.log_mode == 'file':
-            self.filename = self.get_filename()
+            self.filename = self._get_filename()
 
-    def log(self, msg, log_lvl):
+    def _log(self, msg, log_lvl):
         if log_lvl < self.min_log_lvl:
             return None
 
-        log_msg = self.format_log_msg(msg, log_lvl, current_time=self.get_time(), source=self.owner)
+        log_msg = self._format_log_msg(msg, log_lvl, current_time=self._get_time(), source=self.owner)
         if self.log_mode == 'terminal':
-            self.write_to_terminal(log_msg, log_lvl)
+            self._write_to_terminal(log_msg, log_lvl)
         elif self.log_mode == 'file':
-            self.write_to_file(log_msg)
+            self._write_to_file(log_msg)
         elif self.log_mode == 'db' and self.db:
-            self.db.log(source=self.owner, time=self.get_time(), log_lvl=self.get_key_from_dict(log_lvl), msg=msg)
+            self.db.log(source=self.owner, time=self._get_time(), log_lvl=self._get_key_from_dict(log_lvl), msg=msg)
         elif self.log_mode == 'test':
             return log_msg
         else:
             pass
         return None
 
-    def write_to_file(self, log_msg):
+    def _write_to_file(self, log_msg):
         with open(self.filename, "a") as file:
             file.write(log_msg + '\n')
         file.close()
 
-    def write_to_terminal(self, log_msg, log_lvl):
-        output_format = self.get_output_format(log_lvl)
+    def _write_to_terminal(self, log_msg, log_lvl):
+        output_format = self._get_output_format(log_lvl)
         sys.stdout.write(output_format)
         print(log_msg)
         sys.stdout.write(self.Colours.reset)
 
-    def get_output_format(self, log_lvl):
+    def _get_output_format(self, log_lvl):
         mapper = {
             LogLevels.critical: self.Colours.magenta,
             LogLevels.error: self.Colours.red,
@@ -94,55 +92,55 @@ class Logging:
         return mapper.get(log_lvl, self.Colours.reset)
 
     @staticmethod
-    def get_time():
+    def _get_time():
         return datetime.now()
 
     @staticmethod
-    def get_key_from_dict(val):
+    def _get_key_from_dict(val):
         log_levels = asdict(LogLevels())
         return list(log_levels.keys())[list(log_levels.values()).index(val)]
 
-    def format_log_msg(self, msg, log_lvl, current_time, source):
-        log_lvl_key = self.get_key_from_dict(log_lvl)
+    def _format_log_msg(self, msg, log_lvl, current_time, source):
+        log_lvl_key = self._get_key_from_dict(log_lvl)
         return f'{current_time} - {source} | {log_lvl_key} : {msg}'
 
-    def get_filename(self):
+    def _get_filename(self):
         log_folder = self.config['logging']['file_log_folder']
         dt = datetime.now().strftime('%Y%m%d%H%M')
         filename = f'logs-{dt}'
         return Path(log_folder, filename)
 
-    def set_log_lvl(self, log_lvl):
+    def _set_log_lvl(self, log_lvl):
         self.min_log_lvl = log_lvl
 
     def critical(self, msg):
-        self.log(msg, log_lvl=LogLevels.critical)
+        self._log(msg, log_lvl=LogLevels.critical)
 
     def error(self, msg):
-        self.log(msg, log_lvl=LogLevels.error)
+        self._log(msg, log_lvl=LogLevels.error)
 
     def warning(self, msg):
-        self.log(msg, log_lvl=LogLevels.warning)
+        self._log(msg, log_lvl=LogLevels.warning)
 
     def success(self, msg):
-        self.log(msg, log_lvl=LogLevels.success)
+        self._log(msg, log_lvl=LogLevels.success)
 
     def info(self, msg):
-        self.log(msg, log_lvl=LogLevels.info)
+        self._log(msg, log_lvl=LogLevels.info)
 
     def debug(self, msg):
-        self.log(msg, log_lvl=LogLevels.debug)
+        self._log(msg, log_lvl=LogLevels.debug)
 
     def not_set(self, msg):
-        self.log(msg, log_lvl=LogLevels.not_set)
+        self._log(msg, log_lvl=LogLevels.not_set)
 
     @staticmethod
-    def path_leaf(path):
+    def _path_leaf(path):
         head, tail = split(path)
         file_name = tail or basename(head)
         return file_name.split('.')[0]
 
-    def get_log_lvl_from_config(self):
+    def _get_log_lvl_from_config(self):
         conf_lvl = self.config['logging']['min_log_level']
         return LogLevels.__dict__.get(conf_lvl)
 

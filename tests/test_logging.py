@@ -14,7 +14,7 @@ class TestLogging(unittest.TestCase):
         truth_list = ['1 - a | critical : a', '1 - a | error : a', '1 - a | warning : a', '1 - a | success : a',
                       '1 - a | info : a', '1 - a | debug : a', '1 - a | not_set : a']
         for truth, log_lvl in zip(truth_list, log_levels):
-            test_result = log.format_log_msg(msg, log_lvl, time, source)
+            test_result = log._format_log_msg(msg, log_lvl, time, source)
             self.assertEqual(test_result, truth)
 
     def test_set_log_lvl(self):
@@ -27,8 +27,8 @@ class TestLogging(unittest.TestCase):
         truth_list = ['t | critical : a', 't | error : a', None, 't | success : a', 't | info : a',
                       None, None]
         for truth, log_lvl, min_log_lvl in zip(truth_list, log_levels, min_log_lvls):
-            log.set_log_lvl(min_log_lvl)
-            helper = str(log.log(msg, log_lvl))
+            log._set_log_lvl(min_log_lvl)
+            helper = str(log._log(msg, log_lvl))
             test_result = helper.split(' - ')[-1]
             self.assertEqual(test_result, str(truth))
 
@@ -38,7 +38,7 @@ class TestLogging(unittest.TestCase):
         log_levels = [LogLevels.critical, LogLevels.error, LogLevels.warning, LogLevels.info,
                       LogLevels.debug, LogLevels.not_set, LogLevels.success]
         for truth, log_lvl in zip(truth_list, log_levels):
-            test_result = log.get_output_format(log_lvl)
+            test_result = log._get_output_format(log_lvl)
             self.assertEqual(test_result, truth)
 
     def test_leaf_path(self):
@@ -46,6 +46,6 @@ class TestLogging(unittest.TestCase):
                  'c', '/c.py', '//c.py', 'a.py/b/c']
         filenames = ['c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c']
         for path, filename in zip(paths,filenames):
-            result = Logging.path_leaf(path)
+            result = Logging._path_leaf(path)
             print(result)
             self.assertEqual(result, filename)

@@ -73,6 +73,17 @@ class GBridge(threading.Thread):
         while self.g_bridge_connected:
             time.sleep(ONE_MILLISECOND_SECONDS)
 
+    def notify(self, msg, event):
+        # todo: parse data and call publish
+        self.log.warning(f'notified - {msg} - {event}')
+
+    def _locate_certificates(self):
+        pass
+
+    @staticmethod
+    def poll_events():
+        return []
+
     def connect_to_iot_core_broker(self, conf):
         # Create the MQTT client and connect to Cloud IoT.
         gateway_id = f'projects/{conf.project_id}/locations/{conf.cloud_region}/registries/' \

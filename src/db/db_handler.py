@@ -1,18 +1,31 @@
-from dataclasses import dataclass
+from threading import Thread
+from time import sleep
 
-from pymongo import MongoClient, errors
-
-from lib.configuration_parser import ConfigurationParser
-from src.logging.logging import Logging
 from src.db.mongo_db import MongoHandler
 
 
-class DbHandler:
+class DbHandler(Thread):
+    running = True
+
     def __init__(self):
+        Thread.__init__(self)
         self.mongo = MongoHandler(db_name='iot_db')
 
     def __del__(self):
-        pass
+        self.running = False
+
+    def run(self):
+        while self.running:
+            sleep(0.1)
+
+    def notify(self, msg, event):
+        # todo: handle data and call store method
+        print(f"db_handler: notified - {msg} - {event}")
+        self.store_data(msg)
+
+    @staticmethod
+    def poll_events():
+        return []
 
     def get_data(self, device_name=None):
         data = self.mongo.get('states', device_name)
@@ -32,5 +45,5 @@ class DbHandler:
 if __name__ == '__main__':
     db_handler = DbHandler()
     db_handler.get_data()
-    test_data = {'device': 'light_switch_2', 'location': 'living', 'state': False}
+    test_data = {'device': 'light_switch_2', 'location': 'living-room', 'state': False}
     db_handler.store_data(test_data)
