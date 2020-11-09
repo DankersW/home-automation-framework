@@ -43,7 +43,7 @@ class IotSubject:
 
     def init_observers(self):
         if self.config['system_components']['gcp']:
-            self.observers.append({'obs_object': GBridge('../../keys/'), 'events': ['gcp_mqtt']})
+            self.observers.append({'obs_object': GBridge(), 'events': ['gcp_mqtt']})
 
         if self.config['system_components']['local_mqtt_gateway']:
             self.observers.append({'obs_object': LocalMqttGateway(), 'events': ['device_mqtt']})

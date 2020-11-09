@@ -10,13 +10,13 @@ from lib.configuration_parser import ConfigurationParser
 class IotGateway:
     running = True
 
-    def __init__(self, path_cert_dir=None):
+    def __init__(self):
         self.log = Logging(owner=__file__, config=True)
         self.config = ConfigurationParser().get_config()
         self.gcp = self.config['general']['gcp']
         if self.gcp:
             self.log.info('Starting up G-Bridge')
-            self.g_bridge = GBridge(path_cert_dir)
+            self.g_bridge = GBridge()
             self.g_bridge.start()
 
         self.local_mqtt = self.config['general']['local_mqtt_gateway']
@@ -75,4 +75,4 @@ class IotGateway:
 
 
 if __name__ == '__main__':
-    iotGateway = IotGateway(path_cert_dir='../../keys/')
+    iotGateway = IotGateway()
