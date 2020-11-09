@@ -3,11 +3,13 @@ import ssl
 import time
 import threading
 from dataclasses import dataclass
+from pathlib import Path
 import jwt
 
 import paho.mqtt.client as mqtt
 
 from src.logging.logging import Logging, LogLevels
+from lib.utils import get_keys_dir
 
 
 @dataclass
@@ -52,13 +54,14 @@ class GBridge(threading.Thread):
 
     received_messages_queue = []
 
-    def __init__(self, path_cert_dir=None):
+    def __init__(self):
         threading.Thread.__init__(self)
         self.log = Logging(owner=__file__, log_mode='terminal', min_log_lvl=LogLevels.debug)
         gateway_configuration = MqttGatewayConfiguration()
-        if path_cert_dir is not None:
-            gateway_configuration.private_key_file = path_cert_dir + gateway_configuration.private_key_file
-            gateway_configuration.ca_certs = path_cert_dir + gateway_configuration.ca_certs
+
+        keys_dir = get_keys_dir()
+        gateway_configuration.private_key_file = Path(keys_dir, gateway_configuration.private_key_file)
+        gateway_configuration.ca_certs = Path(keys_dir, gateway_configuration.ca_certs)
         self.gateway_id = gateway_configuration.gateway_id
         self.connect_to_iot_core_broker(gateway_configuration)
 
@@ -224,7 +227,7 @@ class GBridge(threading.Thread):
 
 # Quick Tests
 def attach_detach_with_2_devices():
-    g_bridge = GBridge(path_cert_dir='../../keys/')
+    g_bridge = GBridge()
     g_bridge.start()
     device_list = ["light_switch_001", "light_switch_002"]
 
@@ -240,7 +243,7 @@ def attach_detach_with_2_devices():
 
 
 def keep_running_for_messages():
-    g_bridge = GBridge(path_cert_dir='../../keys/')
+    g_bridge = GBridge()
     g_bridge.start()
     device_list = ["light_switch_001", "light_switch_002"]
     g_bridge.attach_device(device_list[0])
@@ -256,7 +259,7 @@ def keep_running_for_messages():
 
 
 def send_data():
-    g_bridge = GBridge(path_cert_dir='../../keys/')
+    g_bridge = GBridge()
     g_bridge.start()
     device_list = ["light_switch_001", "light_switch_002"]
     g_bridge.attach_device(device_list[0])
@@ -274,7 +277,7 @@ def send_data():
 
 
 def send_message_and_wait():
-    g_bridge = GBridge(path_cert_dir='../../keys/')
+    g_bridge = GBridge()
     g_bridge.start()
     device_list = ["light_switch_001"]
     g_bridge.attach_device(device_list[0])
