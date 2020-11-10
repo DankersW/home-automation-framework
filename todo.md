@@ -6,8 +6,8 @@
 - [x] Licensing
 - [x] Docs folder
 - [ ] Handle closing down correctly
-- [ ] Fix include path for license file (G-bridge)
-- [ ] Update linting script for github workflows
+- [x] Fix include path for license file (G-bridge)
+- [x] Update linting script for github workflows
 
 ## Documentation
 - [x] Update readme with recent info
