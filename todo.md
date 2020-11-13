@@ -46,6 +46,7 @@ Device needs to be reconnected when this error is handled.
 ## GUI
 - [ ] Front-end to visualize db data
 - [ ] way to send data to iot-framework
+- [ ] Log iot-messages in the gui
 
 ## Testing
 - [ ] Verification environment for running development tests
