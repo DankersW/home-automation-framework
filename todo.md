@@ -12,7 +12,7 @@
 
 ## Documentation
 - [x] Update readme with recent info
-- [x] Update architectural overview
+- [ ] Update architectural overview
 
 ## IOT-gateway
 - [x] Find and implement a good pattern to run the message shuffeling based on active gateways
@@ -40,6 +40,8 @@ Device needs to be reconnected when this error is handled.
 - [x] Set logging name via __repr__ or __name__ or __file__
 - [x] Switch to f string printing
 - [x] Log to DB aswell
+- [ ] save state changes in one document
+- [ ] Log all iot messages that goes back and forward
 
 ## Storage
 - [x] DB that stores current state data (E.Q. Document DB like mongodb)
@@ -80,10 +82,13 @@ Device needs to be reconnected when this error is handled.
 - [ ] proper logging
 - [ ] observer pattern
 
-## Enviroment
+## Environment
 - [x] Setup ubuntu home-server with  MQTT broker and MongoDB db
 - [x] Run from same place always
 - [x] script to run linting and testing locally
+
+## Docker
+- [ ] Container holding Mongo-db + mqtt
 
 ## Server
 - [ ] Log some HW perifials
