@@ -70,6 +70,7 @@ class IotSubject:
                        {'event': 'device_mqtt', 'message': 'another v data'}]
         """
         events = self.poll_observers()
+        events = [{'event': 'gcp_mqtt', 'message': 'random data'}]
         self.notify_observers(events=events)
 
     def notify_observers(self, events):
