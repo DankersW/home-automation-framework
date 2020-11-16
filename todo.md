@@ -8,6 +8,7 @@
 - [ ] Handle closing down correctly
 - [x] Fix include path for license file (G-bridge)
 - [x] Update linting script for github workflows
+- [ ] Use proper threath queue and threath event between the observers and the subject. so that we don't need to do active polling
 
 ## Documentation
 - [x] Update readme with recent info
