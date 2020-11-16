@@ -76,13 +76,19 @@ class GBridge(threading.Thread):
         while self.g_bridge_connected:
             time.sleep(ONE_MILLISECOND_SECONDS)
 
-    def notify(self, msg, event):
+    def notify(self, msg, event) -> None:
         # todo: parse data and call publish
         self.log.warning(f'notified - {msg} - {event}')
-        data = self._message_parser(message=msg)
+        message = self._message_parser(msg=msg)
+        if message:
+            self.send_data(**message)
 
-    def _message_parser(self, message):
-        return "None"
+    @staticmethod
+    def _message_parser(msg) -> dict:
+        valid_message = 'device_id' in msg and 'event_type' in msg and 'payload' in msg
+        if valid_message:
+            return {'device_id': msg['device_id'], 'event_type': msg['event_type'], 'payload': msg['payload']}
+        return dict()
 
     def _locate_certificates(self):
         pass
