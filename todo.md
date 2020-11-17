@@ -16,9 +16,12 @@
 
 ## IOT-gateway
 - [x] Find and implement a good pattern to run the message shuffeling based on active gateways
-- [ ] Publish data from the notify and update the outgoing queue via poll
+- [ ] Publish data from the notify to all observers
+- [ ] Update the outgoing messages queue
 - [ ] Threating event to let all the threats wait to start untill all observers are set
- 
+- [ ] Attach devices automatically
+- [ ] Document naming of the different events and clean it up in the code so that the deivces listen to them in a good way
+
 ## Bugs
 - [ ] g-bridge: Out of memory causes reconnection. and and up with connection code 4 - The client is not currently 
 connected. then disconnect 5 - the connection was refused. This keeps going forever. connect --> disconnect --> ... 

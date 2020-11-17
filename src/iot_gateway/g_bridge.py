@@ -76,9 +76,7 @@ class GBridge(threading.Thread):
         while self.g_bridge_connected:
             time.sleep(ONE_MILLISECOND_SECONDS)
 
-    def notify(self, msg, event) -> None:
-        # todo: parse data and call publish
-        self.log.warning(f'notified - {msg} - {event}')
+    def notify(self, msg, _) -> None:
         message = self._message_parser(msg=msg)
         if message:
             self.send_data(**message)
@@ -90,9 +88,6 @@ class GBridge(threading.Thread):
             msg.pop('extra', None)
             return msg
         return dict()
-
-    def _locate_certificates(self):
-        pass
 
     @staticmethod
     def poll_events():
@@ -234,7 +229,3 @@ class GBridge(threading.Thread):
         for device in self.attached_devices:
             self.log.info(f'Re-attaching device {device}.')
             self.attach_device(device)
-
-
-#if __name__ == '__main__':
-

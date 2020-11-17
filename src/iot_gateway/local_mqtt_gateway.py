@@ -35,10 +35,9 @@ class LocalMqttGateway(threading.Thread):
     def run(self):
         self.client.loop_forever()
 
-    def notify(self, msg, event):
-        # todo: call the publish method
-        # todo: parse the msg
-        self.log.info(f'notified - {event} - {msg}')
+    def notify(self, msg, _):
+        if msg.get('event_type') == 'command':
+            self.publish_control_message(device=msg.get('device_id'), data=msg.get('payload'))
 
     @staticmethod
     def poll_events():
