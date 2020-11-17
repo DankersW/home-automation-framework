@@ -87,7 +87,8 @@ class GBridge(threading.Thread):
     def _message_parser(msg) -> dict:
         valid_message = 'device_id' in msg and 'event_type' in msg and 'payload' in msg
         if valid_message:
-            return {'device_id': msg['device_id'], 'event_type': msg['event_type'], 'payload': msg['payload']}
+            msg.pop('extra', None)
+            return msg
         return dict()
 
     def _locate_certificates(self):
