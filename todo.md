@@ -93,6 +93,9 @@ Device needs to be reconnected when this error is handled.
 ## Docker
 - [ ] Container holding Mongo-db + mqtt
 
+## Monitoring
+- [ ] Have a host-monitoring observer that publishes its data to the db handler with a good event name
+
 ## Server
 - [ ] Log some HW perifials
 - [ ] Monitoring of the themperature and sending out reacting on to high temp, send out warning email if it get's warm

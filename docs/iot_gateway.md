@@ -1,8 +1,9 @@
 # Docs
 
-## Protocols
-The Home Server has two MQTT instances, one that forwards messages from Device Gateway to the GCP IoT core and vice 
-versa. And One that forwards messages from the IoT devices to and from the G-bridge.
+## IoT-observer
+The core of the iot-gateway is based on the Observer pattern which has a Subject (the one who handles all the 
+connections from the observers), a ConcreteSubject (which one decides when and what event needs to be delivered), and 
+a bunch of observers which subscribe to certain events. 
 
 
 ## IoT-gateway message content
@@ -14,6 +15,11 @@ Data is passed along all the observers in a Dict format.
 | event_type | Type of event                                 | 'telemetry'  | Yes      | <telemerty, state, command> |
 | payload    | Payload of the message, depends on event_type | true         | Yes      | <bool, int>                 |
 | extra      | Extra data in the form of json                | {"abc": 123} | No       | JSON                        |
+
+
+## Protocols
+The Home Server has two MQTT instances, one that forwards messages from Device Gateway to the GCP IoT core and vice 
+versa. And One that forwards messages from the IoT devices to and from the G-bridge.
 
 ### G-bridge MQTT configuration
 Google's IoT core MQTT broker has 4 predefined topics. 
