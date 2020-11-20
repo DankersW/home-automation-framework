@@ -32,7 +32,7 @@ class IotSubject:
     observers = []
 
     def __init__(self):
-        events = ['gcp_mqtt', 'device_mqtt']
+        events = ['gcp_state_changed', 'device_state_changed']
         self.log = Logging(owner=__file__, config=True)
         self.config = ConfigurationParser().get_config()
         self.subject = Subject(events)
@@ -43,13 +43,13 @@ class IotSubject:
 
     def init_observers(self):
         if self.config['system_components']['gcp']:
-            self.observers.append({'obs_object': GBridge(), 'events': ['gcp_mqtt']})
+            self.observers.append({'obs_object': GBridge(), 'events': ['device_state_changed']})
 
         if self.config['system_components']['local_mqtt_gateway']:
-            self.observers.append({'obs_object': LocalMqttGateway(), 'events': ['device_mqtt']})
+            self.observers.append({'obs_object': LocalMqttGateway(), 'events': ['gcp_state_changed']})
 
         if self.config['system_components']['db']:
-            self.observers.append({'obs_object': DbHandler(), 'events': ['device_mqtt', 'gcp_mqtt']})
+            self.observers.append({'obs_object': DbHandler(), 'events': ['gcp_state_changed', 'device_state_changed']})
 
     def attach_observers(self):
         for observer in self.observers:
