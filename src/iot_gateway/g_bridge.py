@@ -53,8 +53,6 @@ class GBridge(threading.Thread):
     pending_messages = []
     pending_subscribed_topics = []
 
-    received_messages_queue = []
-
     def __init__(self, queue):
         threading.Thread.__init__(self)
         self.log = Logging(owner=__file__, log_mode='terminal', min_log_lvl=LogLevels.debug)
@@ -165,8 +163,9 @@ class GBridge(threading.Thread):
         # todo: fix this so that is better
         if message.topic.split('/')[3] == "commands":
             device_id = GBridge.get_id_from_topic(message.topic)
-            message = [device_id, payload]
-            self.received_messages_queue.append(message)
+            queue_message = {'device_id': device_id, 'event_type': 'command', 'payload': payload}
+            item = {'event': 'gcp_state_changed', 'message': queue_message}
+            self.received_queue.put(item)
 
     def attach_device(self, device_id):
         self.log.debug(f'Attaching device {device_id!r}.')
@@ -213,12 +212,6 @@ class GBridge(threading.Thread):
             self.log.error(f'Unknown event type {event_type}.')
             return
         self.publish(topic, payload)
-
-    def get_last_message(self):
-        message_queue = None
-        if len(self.received_messages_queue) > 0:
-            message_queue = self.received_messages_queue.pop(0)
-        return message_queue
 
     @staticmethod
     def get_id_from_topic(topic):

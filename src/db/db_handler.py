@@ -1,5 +1,5 @@
 from threading import Thread
-from time import sleep
+from queue import Queue
 
 from src.db.mongo_db import MongoHandler
 
@@ -7,43 +7,41 @@ from src.db.mongo_db import MongoHandler
 class DbHandler(Thread):
     running = True
 
-    def __init__(self):
+    def __init__(self, queue):
         Thread.__init__(self)
         self.mongo = MongoHandler(db_name='iot_db')
+        self.received_queue = queue
+        self.to_handle_queue = Queue(maxsize=100)
 
     def __del__(self):
         self.running = False
 
     def run(self):
         while self.running:
-            sleep(0.1)
+            item = self.to_handle_queue.get()
+            if item.get('event') == 'gcp_state_changed' or item.get('event') == 'gcp_state_changed':
+                self.store_state_data(data=item.get('msg'))
 
     def notify(self, msg, event):
-        # todo: handle data and call store method
-        print(f"db_handler: notified - {msg} - {event}")
-        self.store_data(msg)
-
-    @staticmethod
-    def poll_events():
-        return []
+        self.to_handle_queue.put({'event': event, 'msg': msg})
 
     def get_data(self, device_name=None):
         data = self.mongo.get('states', device_name)
         for item in data:
             print(item)
 
-    def store_data(self, data):
-        device_name = data.get('device')
-        device_id = self.mongo.check_existence_by_device_name('states', device_name)
+    def store_state_data(self, data):
+        device_id = self.mongo.check_existence_by_device_name('states', data.get('device_id'))
         if device_id:
-            updated_data = {'$set': {'state': data.get('state')}}
+            updated_data = {'$set': {'state': data.get('payload')}}
             self.mongo.update_object('states', device_id, updated_data)
         else:
             self.mongo.insert('states', data)
 
 
 if __name__ == '__main__':
-    db_handler = DbHandler()
+    t_queue = Queue(10)
+    db_handler = DbHandler(queue=t_queue)
     db_handler.get_data()
     test_data = {'device': 'light_switch_2', 'location': 'living-room', 'state': False}
-    db_handler.store_data(test_data)
+    db_handler.store_state_data(test_data)

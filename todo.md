@@ -8,8 +8,8 @@
 - [ ] Handle closing down correctly
 - [x] Fix include path for license file (G-bridge)
 - [x] Update linting script for github workflows
-- [ ] Use proper threath queue and threath event between the observers and the subject. so that we don't need to do active polling
-- [ ] G-bridge: message from new device --> attach that device first
+- [x] Use proper threath queue and threath event between the observers and the subject. so that we don't need to do active polling
+- [x] G-bridge: message from new device --> attach that device first
 
 ## Documentation
 - [x] Update readme with recent info
@@ -17,10 +17,10 @@
 
 ## IOT-gateway
 - [x] Find and implement a good pattern to run the message shuffeling based on active gateways
-- [ ] Publish data from the notify to all observers
-- [ ] Update the outgoing messages queue
+- [x] Publish data from the notify to all observers
+- [x] Update the outgoing messages queue
 - [ ] Threating event to let all the threats wait to start untill all observers are set
-- [ ] Attach devices automatically
+- [x] Attach devices automatically
 - [x] Document naming of the different events and clean it up in the code so that the deivces listen to them in a good way
 
 ## Bugs

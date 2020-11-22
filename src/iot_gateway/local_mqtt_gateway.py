@@ -16,7 +16,6 @@ class LocalMqttGateway(threading.Thread):
         port: int = 1883
         stay_alive: int = 60
 
-    received_message_queue = []
     running = False
 
     def __init__(self, queue):
@@ -47,14 +46,7 @@ class LocalMqttGateway(threading.Thread):
             self.publish(msg=queue_item)
 
     def notify(self, msg, _):
-        print("notify")
         self.publish_queue.put(item=msg)
-
-    @staticmethod
-    def poll_events():
-        event = 'gcp_mqtt'
-        msg = {'device': 'light_switch_2', 'location': 'living-room', 'state': False}
-        return [{'event': event, 'message': msg}]
 
     def on_connect(self, _client, _userdata, _flags, rc):
         self.log.success(f'Connected to MQTT broker with result code {str(rc)}.')
@@ -86,11 +78,6 @@ class LocalMqttGateway(threading.Thread):
             self.log.info(f'Publishing message {data!r} on topic {topic!r}.')
             self.client.publish(topic, data)
 
-    def publish_test(self):
-        topic = 'iot/devices/light_switch_001/state'
-        data = True
-        self.client.publish(topic, data)
-
 
 def get_item_from_topic(topic, index_type):
     item_index = {
@@ -104,6 +91,6 @@ def get_item_from_topic(topic, index_type):
 
 
 if __name__ == '__main__':
-    mqtt_gateway = LocalMqttGateway(None)
-    mqtt_gateway.publish_test()
+    t_queue = Queue(10)
+    mqtt_gateway = LocalMqttGateway(queue=t_queue)
 
