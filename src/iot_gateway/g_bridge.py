@@ -5,6 +5,7 @@ import threading
 from dataclasses import dataclass
 from pathlib import Path
 import jwt
+from queue import Queue
 
 import paho.mqtt.client as mqtt
 
@@ -54,10 +55,13 @@ class GBridge(threading.Thread):
 
     received_messages_queue = []
 
-    def __init__(self):
+    def __init__(self, queue):
         threading.Thread.__init__(self)
         self.log = Logging(owner=__file__, log_mode='terminal', min_log_lvl=LogLevels.debug)
         gateway_configuration = MqttGatewayConfiguration()
+
+        self.publish_queue = Queue(maxsize=100)
+        self.received_queue = queue
 
         keys_dir = get_keys_dir()
         gateway_configuration.private_key_file = Path(keys_dir, gateway_configuration.private_key_file)
@@ -74,20 +78,12 @@ class GBridge(threading.Thread):
         self.mqtt_client.loop_start()
         self.wait_for_connection(5)
         while self.g_bridge_connected:
+            queue_item = self.publish_queue.get()
+            self.send_data(msg=queue_item)
             time.sleep(ONE_MILLISECOND_SECONDS)
 
     def notify(self, msg, _) -> None:
-        message = self._message_parser(msg=msg)
-        if message:
-            self.send_data(**message)
-
-    @staticmethod
-    def _message_parser(msg) -> dict:
-        valid_message = 'device_id' in msg and 'event_type' in msg and 'payload' in msg
-        if valid_message:
-            msg.pop('extra', None)
-            return msg
-        return dict()
+        self.publish_queue.put(item=msg)
 
     @staticmethod
     def poll_events():
@@ -201,7 +197,14 @@ class GBridge(threading.Thread):
         while message_info.mid in self.pending_messages:  # Waiting for message ACK to arrive
             time.sleep(0.01)
 
-    def send_data(self, device_id, event_type, payload):
+    def send_data(self, msg):
+        device_id = msg.get('device_id')
+        event_type = msg.get('event_type')
+        payload = msg.get('payload')
+
+        if device_id not in self.attached_devices:
+            self.attach_device(device_id=device_id)
+
         if event_type == 'telemetry':
             topic = f'/devices/{device_id}/events'
         elif event_type == 'state':

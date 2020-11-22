@@ -26,6 +26,16 @@ Data is passed along all the observers in a Dict format.
 The Home Server has two MQTT instances, one that forwards messages from Device Gateway to the GCP IoT core and vice 
 versa. And One that forwards messages from the IoT devices to and from the G-bridge.
 
+### Local MQTT
+
+| Topic                             | Event type    | Info                                         |   |   |
+|-----------------------------------|---------------|----------------------------------------------|---|---|
+| iot/devices/<device-id>/command   | Command       | Used for changing the State of the device    |   |   |
+| iot/devices/<device-id>/config    | Configuration | Used for changing the settings of the device |   |   |
+| iot/devices/<device-id>/telemetry | Telemetry     | Used by the device to send streaming data    |   |   |
+| iot/devices/<device-id>/state     | State         | Used by the device to upload state changes   |   |   |
+
+
 ### G-bridge MQTT configuration
 Google's IoT core MQTT broker has 4 predefined topics. 
 * **Configuration:** Sent from the cloud to the device, up to one message per second. Configuration messages are guaranteed

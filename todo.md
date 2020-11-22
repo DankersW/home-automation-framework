@@ -9,6 +9,7 @@
 - [x] Fix include path for license file (G-bridge)
 - [x] Update linting script for github workflows
 - [ ] Use proper threath queue and threath event between the observers and the subject. so that we don't need to do active polling
+- [ ] G-bridge: message from new device --> attach that device first
 
 ## Documentation
 - [x] Update readme with recent info
@@ -20,7 +21,7 @@
 - [ ] Update the outgoing messages queue
 - [ ] Threating event to let all the threats wait to start untill all observers are set
 - [ ] Attach devices automatically
-- [ ] Document naming of the different events and clean it up in the code so that the deivces listen to them in a good way
+- [x] Document naming of the different events and clean it up in the code so that the deivces listen to them in a good way
 
 ## Bugs
 - [ ] g-bridge: Out of memory causes reconnection. and and up with connection code 4 - The client is not currently 
