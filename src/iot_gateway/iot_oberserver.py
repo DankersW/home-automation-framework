@@ -55,7 +55,7 @@ class IotSubject:
                                    'events': ['gcp_state_changed']})
 
         if self.config['system_components']['db']:
-            self.observers.append({'obs_object': DbHandler(),
+            self.observers.append({'obs_object': DbHandler(queue=self.observer_queue),
                                    'events': ['gcp_state_changed', 'device_state_changed']})
 
     def attach_observers(self) -> None:
