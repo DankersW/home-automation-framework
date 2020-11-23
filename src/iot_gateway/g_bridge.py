@@ -4,8 +4,9 @@ import time
 import threading
 from dataclasses import dataclass
 from pathlib import Path
-import jwt
+from queue import Queue
 
+import jwt
 import paho.mqtt.client as mqtt
 
 from src.logging.logging import Logging, LogLevels
@@ -52,12 +53,13 @@ class GBridge(threading.Thread):
     pending_messages = []
     pending_subscribed_topics = []
 
-    received_messages_queue = []
-
-    def __init__(self):
+    def __init__(self, queue):
         threading.Thread.__init__(self)
         self.log = Logging(owner=__file__, log_mode='terminal', min_log_lvl=LogLevels.debug)
         gateway_configuration = MqttGatewayConfiguration()
+
+        self.publish_queue = Queue(maxsize=100)
+        self.received_queue = queue
 
         keys_dir = get_keys_dir()
         gateway_configuration.private_key_file = Path(keys_dir, gateway_configuration.private_key_file)
@@ -74,14 +76,12 @@ class GBridge(threading.Thread):
         self.mqtt_client.loop_start()
         self.wait_for_connection(5)
         while self.g_bridge_connected:
+            queue_item = self.publish_queue.get()
+            self.send_data(msg=queue_item)
             time.sleep(ONE_MILLISECOND_SECONDS)
 
-    def notify(self, msg, event):
-        # todo: parse data and call publish
-        self.log.warning(f'notified - {msg} - {event}')
-
-    def _locate_certificates(self):
-        pass
+    def notify(self, msg, _) -> None:
+        self.publish_queue.put(item=msg)
 
     @staticmethod
     def poll_events():
@@ -163,8 +163,9 @@ class GBridge(threading.Thread):
         # todo: fix this so that is better
         if message.topic.split('/')[3] == "commands":
             device_id = GBridge.get_id_from_topic(message.topic)
-            message = [device_id, payload]
-            self.received_messages_queue.append(message)
+            queue_message = {'device_id': device_id, 'event_type': 'command', 'payload': payload}
+            item = {'event': 'gcp_state_changed', 'message': queue_message}
+            self.received_queue.put(item)
 
     def attach_device(self, device_id):
         self.log.debug(f'Attaching device {device_id!r}.')
@@ -195,21 +196,22 @@ class GBridge(threading.Thread):
         while message_info.mid in self.pending_messages:  # Waiting for message ACK to arrive
             time.sleep(0.01)
 
-    def send_data(self, device_id, event_type, payload):
-        if event_type == "telemetry":
+    def send_data(self, msg):
+        device_id = msg.get('device_id')
+        event_type = msg.get('event_type')
+        payload = msg.get('payload')
+
+        if device_id not in self.attached_devices:
+            self.attach_device(device_id=device_id)
+
+        if event_type == 'telemetry':
             topic = f'/devices/{device_id}/events'
-        elif event_type == "state":
+        elif event_type == 'state':
             topic = f'/devices/{device_id}/state'
         else:
             self.log.error(f'Unknown event type {event_type}.')
             return
         self.publish(topic, payload)
-
-    def get_last_message(self):
-        message_queue = None
-        if len(self.received_messages_queue) > 0:
-            message_queue = self.received_messages_queue.pop(0)
-        return message_queue
 
     @staticmethod
     def get_id_from_topic(topic):
@@ -223,74 +225,3 @@ class GBridge(threading.Thread):
         for device in self.attached_devices:
             self.log.info(f'Re-attaching device {device}.')
             self.attach_device(device)
-
-
-# Quick Tests
-def attach_detach_with_2_devices():
-    g_bridge = GBridge()
-    g_bridge.start()
-    device_list = ["light_switch_001", "light_switch_002"]
-
-    g_bridge.attach_device(device_list[0])
-    g_bridge.attach_device(device_list[1])
-
-    g_bridge.detach_device(device_list[0])
-    g_bridge.attach_device(device_list[1])
-
-    time.sleep(2)
-    g_bridge.__del__()
-    del g_bridge
-
-
-def keep_running_for_messages():
-    g_bridge = GBridge()
-    g_bridge.start()
-    device_list = ["light_switch_001", "light_switch_002"]
-    g_bridge.attach_device(device_list[0])
-
-    for _ in range(30):
-        message = g_bridge.get_last_message()
-        if message is not None:
-            print(f"received message queue: {message}")
-        time.sleep(1)
-
-    g_bridge.__del__()
-    del g_bridge
-
-
-def send_data():
-    g_bridge = GBridge()
-    g_bridge.start()
-    device_list = ["light_switch_001", "light_switch_002"]
-    g_bridge.attach_device(device_list[0])
-    g_bridge.attach_device(device_list[1])
-
-    g_bridge.send_data(device_list[0], "state", "{\"test\": 123}")
-    g_bridge.send_data(device_list[1], "telemetry", "{\"test\": 123}")
-    g_bridge.send_data(device_list[0], "telemetry", "{\"test\": 123}")
-    g_bridge.send_data(device_list[1], "state", "{\"test\": 123}")
-    g_bridge.send_data(device_list[0], "state", "{\"test\": 14}")
-
-    time.sleep(10)
-    g_bridge.__del__()
-    del g_bridge
-
-
-def send_message_and_wait():
-    g_bridge = GBridge()
-    g_bridge.start()
-    device_list = ["light_switch_001"]
-    g_bridge.attach_device(device_list[0])
-
-    time.sleep(5)
-    g_bridge.send_data(device_list[0], "state", "{\"light_state\": 1}")
-    time.sleep(20)
-    g_bridge.send_data(device_list[0], "state", "{\"light_state\": 4}")
-
-    time.sleep(10)
-    g_bridge.__del__()
-    del g_bridge
-
-
-if __name__ == '__main__':
-    send_message_and_wait()

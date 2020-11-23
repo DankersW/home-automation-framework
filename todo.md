@@ -8,17 +8,21 @@
 - [ ] Handle closing down correctly
 - [x] Fix include path for license file (G-bridge)
 - [x] Update linting script for github workflows
-- [ ] Use proper threath queue and threath event between the observers and the subject. so that we don't need to do active polling
+- [x] Use proper threath queue and threath event between the observers and the subject. so that we don't need to do active polling
+- [x] G-bridge: message from new device --> attach that device first
 
 ## Documentation
 - [x] Update readme with recent info
-- [x] Update architectural overview
+- [ ] Update architectural overview
 
 ## IOT-gateway
 - [x] Find and implement a good pattern to run the message shuffeling based on active gateways
-- [ ] Publish data from the notify and update the outgoing queue via poll
+- [x] Publish data from the notify to all observers
+- [x] Update the outgoing messages queue
 - [ ] Threating event to let all the threats wait to start untill all observers are set
- 
+- [x] Attach devices automatically
+- [x] Document naming of the different events and clean it up in the code so that the deivces listen to them in a good way
+
 ## Bugs
 - [ ] g-bridge: Out of memory causes reconnection. and and up with connection code 4 - The client is not currently 
 connected. then disconnect 5 - the connection was refused. This keeps going forever. connect --> disconnect --> ... 
@@ -40,6 +44,8 @@ Device needs to be reconnected when this error is handled.
 - [x] Set logging name via __repr__ or __name__ or __file__
 - [x] Switch to f string printing
 - [x] Log to DB aswell
+- [ ] save state changes in one document
+- [ ] Log all iot messages that goes back and forward
 
 ## Storage
 - [x] DB that stores current state data (E.Q. Document DB like mongodb)
@@ -80,10 +86,16 @@ Device needs to be reconnected when this error is handled.
 - [ ] proper logging
 - [ ] observer pattern
 
-## Enviroment
+## Environment
 - [x] Setup ubuntu home-server with  MQTT broker and MongoDB db
 - [x] Run from same place always
 - [x] script to run linting and testing locally
+
+## Docker
+- [ ] Container holding Mongo-db + mqtt
+
+## Monitoring
+- [ ] Have a host-monitoring observer that publishes its data to the db handler with a good event name
 
 ## Server
 - [ ] Log some HW perifials

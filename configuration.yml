@@ -5,7 +5,7 @@ general:
 system_components:
   gcp: true
   local_mqtt_gateway: true
-  db: true
+  db: false #true
 
 logging:
   file_log_folder: 'C:\Users\woute\development\logs'

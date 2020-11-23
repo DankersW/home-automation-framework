@@ -7,7 +7,8 @@ class TestIdFromTopic(unittest.TestCase):
     index_type = 'device_id'
 
     def test_correct_topics(self):
-        topic_list = ["iot/device-001/state", "iot/d1/state", "iot/FA124/state", "iot/randomName/state", "iot/1/state"]
+        topic_list = ["iot/devices/device-001/state", "iot/devices/d1/state", "iot/devices/FA124/state",
+                      "iot/devices/randomName/state", "iot/devices/1/state"]
         truth_list = ["device-001", "d1", "FA124", "randomName", "1"]
         for i in range(len(topic_list)):
             test_result = local_mqtt_gateway.get_item_from_topic(topic_list[i], self.index_type)
@@ -26,7 +27,7 @@ class TestIdFromTopic(unittest.TestCase):
         self.assertEqual(test_result, truth)
 
     def test_wrong_structure(self):
-        topic = "iot/very/wrong/state"
+        topic = "iot/devices/very/wrong/state"
         truth = None
         test_result = local_mqtt_gateway.get_item_from_topic(topic, self.index_type)
         self.assertEqual(test_result, truth)
@@ -36,7 +37,8 @@ class TestEventFromTopic(unittest.TestCase):
     index_type = 'event'
 
     def test_correct_topics(self):
-        topic_list = ["iot/device-001/state", "iot/d1/state", "iot/FA14/attach", "iot/randomName/state", "iot/1/attach"]
+        topic_list = ["iot/devices/device-001/state", "iot/devices/d1/state", "iot/devices/FA14/attach",
+                      "iot/devices/randomName/state", "iot/devices/1/attach"]
         truth_list = ["state", "state", "attach", "state", "attach"]
         for i in range(len(topic_list)):
             test_result = local_mqtt_gateway.get_item_from_topic(topic_list[i], self.index_type)
