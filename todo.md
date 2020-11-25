@@ -96,6 +96,7 @@ Device needs to be reconnected when this error is handled.
 
 ## Monitoring
 - [ ] Have a host-monitoring observer that publishes its data to the db handler with a good event name
+- [ ] Health checking - health tracing - message tracing
 
 ## Server
 - [ ] Log some HW perifials
