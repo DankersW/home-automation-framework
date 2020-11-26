@@ -13,7 +13,7 @@
 
 ## Documentation
 - [x] Update readme with recent info
-- [ ] Update architectural overview
+- [x] Update architectural overview
 
 ## IOT-gateway
 - [x] Find and implement a good pattern to run the message shuffeling based on active gateways
