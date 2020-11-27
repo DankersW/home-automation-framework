@@ -1,5 +1,6 @@
-# create db
+#!/bin/bash
 
+# create db
 mongo
 use iot_db
 use admin

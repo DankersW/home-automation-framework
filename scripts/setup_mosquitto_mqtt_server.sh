@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Install and verify Mosquitto is working on WSL
 sudo apt-get install -y mosquitto
 service mosquitto status
