@@ -19,7 +19,7 @@ class DbHandler(Thread):
     def run(self):
         while self.running:
             item = self.to_handle_queue.get()
-            if item.get('event') == 'gcp_state_changed' or item.get('event') == 'gcp_state_changed':
+            if item.get('event') == 'gcp_state_changed' or item.get('event') == 'device_state_changed':
                 self.store_state_data(data=item.get('msg'))
 
     def notify(self, msg, event):
