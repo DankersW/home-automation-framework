@@ -4,25 +4,24 @@ Follow the [Installation manual](https://roboticsbackend.com/install-ubuntu-on-r
 
 ## System setup
 Create a new root user
-```
+```shell script
 sudo adduser dankers-iot
 sudo usermod -aG sudo dankers-iot
 ```
 Remove automatic updates
-```
+```shell script
 sudo apt remove unattended-upgrades
 ```
-
 
 ## Setup networking
 
 Change firewall settings to allow for ssh traffic.
-```
+```shell script
 sudo ufw allow ssh
 ```
 
 fixed IP for ETH0
-```
+```shell script
 sudo nano /etc/netplan/99_config.yaml
 # add to file
 network:
@@ -40,7 +39,7 @@ sudo netplan apply
 ## MQTT broker
 Install Mosquitto 
 
-```
+```shell script
 sudo apt install mosquitto mosquitto-clients
 sudo ufw allow 8883
 sudo ufw allow 1883

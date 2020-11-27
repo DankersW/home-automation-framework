@@ -3,7 +3,7 @@ general:
   logging_mode: terminal
 
 system_components:
-  gcp: true
+  gcp: false
   local_mqtt_gateway: true
   db: false #true
 
