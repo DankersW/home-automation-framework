@@ -1,5 +1,5 @@
 from pathlib import Path
-from os import path, sep, system
+from os import path, sep
 import yaml
 
 

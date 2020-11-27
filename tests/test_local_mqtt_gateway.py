@@ -10,7 +10,7 @@ class TestIdFromTopic(unittest.TestCase):
         topic_list = ["iot/devices/device-001/state", "iot/devices/d1/state", "iot/devices/FA124/state",
                       "iot/devices/randomName/state", "iot/devices/1/state"]
         truth_list = ["device-001", "d1", "FA124", "randomName", "1"]
-        for i in range(len(topic_list)):
+        for i, _ in enumerate(topic_list):
             test_result = local_mqtt_gateway.get_item_from_topic(topic_list[i], self.index_type)
             self.assertEqual(test_result, truth_list[i])
 
@@ -40,7 +40,7 @@ class TestEventFromTopic(unittest.TestCase):
         topic_list = ["iot/devices/device-001/state", "iot/devices/d1/state", "iot/devices/FA14/attach",
                       "iot/devices/randomName/state", "iot/devices/1/attach"]
         truth_list = ["state", "state", "attach", "state", "attach"]
-        for i in range(len(topic_list)):
+        for i, _ in enumerate(topic_list):
             test_result = local_mqtt_gateway.get_item_from_topic(topic_list[i], self.index_type)
             self.assertEqual(test_result, truth_list[i])
 
