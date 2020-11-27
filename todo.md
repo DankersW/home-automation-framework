@@ -44,12 +44,13 @@ Device needs to be reconnected when this error is handled.
 -  [x] Set logging name via __repr__ or __name__ or __file__
 -  [x] Switch to f string printing
 -  [x] Log to DB aswell
--  [ ] save state changes in one document
--  [ ] Log all iot messages that goes back and forward
+
 
 ## Storage
 -  [x] DB that stores current state data (E.Q. Document DB like mongodb)
 -  [x] DB that stores data for a long time (E.Q. wide column db like Apache Cassandra or Apache HBase)
+-  [ ] save state changes in one document
+-  [ ] Log all iot messages that goes back and forward
 
 ## GUI
 -  [ ] Front-end to visualize db data
