@@ -34,6 +34,14 @@ versa. And One that forwards messages from the IoT devices to and from the G-bri
 | iot/devices/<device-id>/telemetry | Telemetry     | Used by the device to send streaming data    |   |   |
 | iot/devices/<device-id>/state     | State         | Used by the device to upload state changes   |   |   |
 
+#### Message content
+```json
+{
+  "device_id": "device_001",
+  "light_state": true
+}
+```
+
 ### G-bridge MQTT configuration
 Google's IoT core MQTT broker has 4 predefined topics. 
   * **Configuration:** Sent from the cloud to the device, up to one message per second. Configuration messages are 
@@ -78,7 +86,7 @@ Google's IoT core MQTT broker has 4 predefined topics.
 /devices/{device-id}/events
 ```
 
-**Message content**
+  **Message content**
 The messages contain a JSON string with explenatory key value pairs. For example, in the case of of a light switch 
 updating its status to the cloud. It could send the following message on the topic 
 ``` /devices/lightswitch-001/state ```.

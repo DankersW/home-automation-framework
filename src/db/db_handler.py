@@ -19,7 +19,9 @@ class DbHandler(Thread):
     def run(self):
         while self.running:
             item = self.to_handle_queue.get()
+            print(f'new event - {item}')
             if item.get('event') == 'gcp_state_changed' or item.get('event') == 'device_state_changed':
+
                 self.store_state_data(data=item.get('msg'))
 
     def notify(self, msg, event):
@@ -31,6 +33,7 @@ class DbHandler(Thread):
             print(item)
 
     def store_state_data(self, data):
+        print(f'storing data: {data}')
         device_id = self.mongo.check_existence_by_device_name('states', data.get('device_id'))
         if device_id:
             updated_data = {'$set': {'state': data.get('payload')}}

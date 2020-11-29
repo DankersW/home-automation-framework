@@ -58,14 +58,14 @@ class LocalMqttGateway(threading.Thread):
         self.log.info(f'Received message {payload!r} on topic {topic!r}.')
         device_id = get_item_from_topic(topic, 'device_id')
         event = get_item_from_topic(topic, 'event')
-        valid_topic = device_id is not None and payload is not None and event is not None and event != 'command'
+        valid_topic = device_id is not None and payload is not None and event is not None
         if valid_topic:
             queue_message = {'device_id': device_id, 'event_type': event, 'payload': payload}
             item = {'event': 'device_state_changed', 'message': queue_message}
+            print("placed on queue")
             self.received_queue.put(item)
         else:
-            pass
-            # todo: print invalid dev_id or payload
+            self.log.warning(f'Invalid message - {valid_topic} - {device_id} - {event}')
 
     def publish(self, msg):
         topic = None
