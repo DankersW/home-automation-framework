@@ -44,19 +44,19 @@ class MongoHandler:
         query = {}
         if device_name:
             query.update({'device': device_name})
-        self.log.info(f'Executing query {query!r} on collection {collection_name!r}')
+        self.log.debug(f'Executing query {query!r} on collection {collection_name!r}')
         return list(collection.find(query))
 
     def insert(self, collection_name, data):
         collection = self.mongo_db[collection_name]
         data_id = collection.insert_one(data)
-        self.log.info(f'Inserted {data!r} into {collection_name!r} with ID {data_id}')
+        self.log.debug(f'Inserted {data!r} into {collection_name!r} with ID {data_id}')
 
-    def update_object(self, collection_name, device_id, updated_values):
+    def update_object(self, collection_name, object_id, updated_values):
         collection = self.mongo_db[collection_name]
-        query = {'_id': device_id}
+        query = {'_id': object_id}
         collection.update_one(query, updated_values)
-        self.log.info(f'Data with ID {device_id!r} in collection {collection_name!r} updated successfully')
+        self.log.debug(f'Data with ID {object_id!r} in collection {collection_name!r} updated successfully')
 
     def check_existence_by_device_name(self, collection_name, device_name):
         collection = self.mongo_db[collection_name]

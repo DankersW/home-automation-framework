@@ -19,10 +19,10 @@ class DbHandler(Thread):
     def run(self):
         while self.running:
             item = self.to_handle_queue.get()
-            print(f'new event - {item}')
-            if item.get('event') == 'gcp_state_changed' or item.get('event') == 'device_state_changed':
 
-                self.store_state_data(data=item.get('msg'))
+            state_change = item.get('event') == 'gcp_state_changed' or item.get('event') == 'device_state_changed'
+            if state_change:
+                self.store_state_data(event=item.get('event'), data=item.get('msg'))
 
     def notify(self, msg, event):
         self.to_handle_queue.put({'event': event, 'msg': msg})
@@ -32,14 +32,16 @@ class DbHandler(Thread):
         for item in data:
             print(item)
 
-    def store_state_data(self, data):
-        print(f'storing data: {data}')
-        device_id = self.mongo.check_existence_by_device_name('states', data.get('device_id'))
-        if device_id:
-            updated_data = {'$set': {'state': data.get('payload')}}
-            self.mongo.update_object('states', device_id, updated_data)
+    def store_state_data(self, event: str, data: dict):
+        object_id = self.mongo.check_existence_by_device_name('states', data.get('device_id'))
+        print(object_id)
+        if object_id:
+            updated_data = {'$set': {'state': data.get('state'), 'event': event, 'change_source': data.get('event')}}
+            self.mongo.update_object(collection_name='states', object_id=object_id, updated_values=updated_data)
         else:
-            self.mongo.insert('states', data)
+            document_data = {'device_id': data.get('device_id'), 'event': event, 'change_source': data.get('event'),
+                             'state': data.get('state')}
+            self.mongo.insert(collection_name='states', data=document_data)
 
 
 if __name__ == '__main__':

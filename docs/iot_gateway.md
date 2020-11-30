@@ -38,9 +38,18 @@ versa. And One that forwards messages from the IoT devices to and from the G-bri
 ```json
 {
   "device_id": "device_001",
-  "light_state": true
+  "event_type": "iot_dev_state_change",
+  "state": true
 }
 ```
+
+  **Possible events**
+  
+| event_type                        | Info                                                                  | 
+|-----------------------------------|-----------------------------------------------------------------------|
+| iot_dev_state_change              | The user (or the unit itself) changed the state of the iot unit       | 
+
+
 
 ### G-bridge MQTT configuration
 Google's IoT core MQTT broker has 4 predefined topics. 
