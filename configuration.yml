@@ -1,6 +1,6 @@
 ---
 general:
-  logging_mode: terminal
+  logging_mode: terminal  # Options: <terminal, file, db, test>
 
 system_components:
   gcp: false

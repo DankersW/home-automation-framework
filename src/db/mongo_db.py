@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Union
 
 from pymongo import MongoClient, errors
 
@@ -39,7 +40,7 @@ class MongoHandler:
             raise RuntimeError from err
         return db
 
-    def get(self, collection_name, device_name=None):
+    def get(self, collection_name, device_name=None) -> list:
         collection = self.mongo_db[collection_name]
         query = {}
         if device_name:
@@ -58,9 +59,9 @@ class MongoHandler:
         collection.update_one(query, updated_values)
         self.log.debug(f'Data with ID {object_id!r} in collection {collection_name!r} updated successfully')
 
-    def check_existence_by_device_name(self, collection_name, device_name):
+    def check_existence_by_device_name(self, collection_name: str, device_name: str) -> Union[str, None]:
         collection = self.mongo_db[collection_name]
-        query = {'device': device_name}
+        query = {'device_id': device_name}
         data = collection.find_one(query)
         if isinstance(data, dict):
             return data.get('_id')

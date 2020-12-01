@@ -22,7 +22,7 @@
 -  [ ] Threating event to let all the threats wait to start untill all observers are set
 -  [x] Attach devices automatically
 -  [x] Document naming of the different events and clean it up in the code so that the deivces listen to them in a good way
--  [ ] Define iot (mqtt) message content that is send from devices
+-  [x] Define iot (mqtt) message content that is send from devices
 
 ## Bugs
 -  [ ] g-bridge: Out of memory causes reconnection. and and up with connection code 4 - The client is not currently 
@@ -49,7 +49,7 @@ Device needs to be reconnected when this error is handled.
 ## Storage
 -  [x] DB that stores current state data (E.Q. Document DB like mongodb)
 -  [x] DB that stores data for a long time (E.Q. wide column db like Apache Cassandra or Apache HBase)
--  [ ] save state changes in one document
+-  [x] save state changes in one document
 -  [ ] Log all iot messages that goes back and forward
 
 ## GUI
