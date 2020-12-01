@@ -22,6 +22,9 @@ class DbHandler(Thread):
             state_change = item.get('event') == 'gcp_state_changed' or item.get('event') == 'device_state_changed'
             if state_change:
                 self.store_state_data(event=item.get('event'), data=item.get('msg'))
+            elif item.get('event') == 'iot_traffic':
+                # todo: handle traffic
+                print(item)
 
     def notify(self, msg: dict, event: str) -> None:
         self.to_handle_queue.put({'event': event, 'msg': msg})

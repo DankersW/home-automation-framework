@@ -69,6 +69,10 @@ class LocalMqttGateway(threading.Thread):
                     'message': {'device_id': device_id, 'event_type': event, 'state': device_state}}
             self.received_queue.put(item)
 
+        traffic_item = {'event': 'iot_traffic',
+                        'message': {'source': type(self).__name__, 'topic': topic, 'payload': data}}
+        self.received_queue.put(traffic_item)
+
     def publish(self, msg):
         topic = None
         device = msg.get('device_id')

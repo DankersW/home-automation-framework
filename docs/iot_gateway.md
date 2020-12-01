@@ -10,6 +10,7 @@ a bunch of observers which subscribe to certain events.
 | gcp\_state\_changed    | Describes that the state on GCP has changed, message arrives at G-bridge | G-bridge           | DB\_handler, local\_mqtt\_gateway |
 | device\_state\_changed | Notifies that the state of any IoT device has been updated               | local-mqtt         | DB\_handler, G-bridge             |
 | host\_health           | Publishes information about the state server's host machine              | host-monitor       | DB\_handler                       |
+| iot\_traffic           | Used to publish the iot traffic to the DB\_handler for logging           | local-mqtt         | DB\_handler                       |
 
 ## IoT-gateway message content
 Data is passed along all the observers in a Dict format.
