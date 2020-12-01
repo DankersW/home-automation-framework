@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from dataclasses import dataclass
 from queue import Queue
+from json import dumps, loads
 
 import threading
 import paho.mqtt.client as mqtt
@@ -53,19 +54,20 @@ class LocalMqttGateway(threading.Thread):
         self.client.subscribe("iot/#")
 
     def on_message(self, _client, _userdata, msg):
-        payload = msg.payload.decode('utf-8')
+        data = loads(msg.payload.decode('utf-8'))
         topic = msg.topic
-        self.log.info(f'Received message {payload!r} on topic {topic!r}.')
-        device_id = get_item_from_topic(topic, 'device_id')
-        event = get_item_from_topic(topic, 'event')
-        valid_topic = device_id is not None and payload is not None and event is not None and event != 'command'
-        if valid_topic:
-            queue_message = {'device_id': device_id, 'event_type': event, 'payload': payload}
-            item = {'event': 'device_state_changed', 'message': queue_message}
+        device_id = data.get('device_id', None)
+        event = data.get('event_type', None)
+        self.log.info(f'Received message {data!r} on topic {topic!r}.')
+
+        bad_msg = device_id is None or event is None
+        if bad_msg:
+            self.log.warning(f'Invalid message received on topic {event!r} with device_id {device_id!r}')
+        elif event == 'iot_dev_state_change':
+            device_state = data.get('state', None)
+            item = {'event': 'device_state_changed',
+                    'message': {'device_id': device_id, 'event_type': event, 'state': device_state}}
             self.received_queue.put(item)
-        else:
-            pass
-            # todo: print invalid dev_id or payload
 
     def publish(self, msg):
         topic = None
