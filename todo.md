@@ -23,6 +23,8 @@
 -  [x] Attach devices automatically
 -  [x] Document naming of the different events and clean it up in the code so that the deivces listen to them in a good way
 -  [x] Define iot (mqtt) message content that is send from devices
+-  [ ] Clean way of initialzing all observers instead of if a then x. e.q. fetching them a different file. 
+-  [ ] Fetch observer interested messages from the class itself.
 
 ## Bugs
 -  [ ] g-bridge: Out of memory causes reconnection. and and up with connection code 4 - The client is not currently 
@@ -50,7 +52,7 @@ Device needs to be reconnected when this error is handled.
 -  [x] DB that stores current state data (E.Q. Document DB like mongodb)
 -  [x] DB that stores data for a long time (E.Q. wide column db like Apache Cassandra or Apache HBase)
 -  [x] save state changes in one document
--  [ ] Log all iot messages that goes back and forward
+-  [x] Log all iot messages that goes back and forward
 
 ## GUI
 -  [ ] Front-end to visualize db data

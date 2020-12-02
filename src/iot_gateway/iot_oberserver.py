@@ -34,7 +34,7 @@ class IotSubject:
     running = False
 
     def __init__(self) -> None:
-        events = ['gcp_state_changed', 'device_state_changed']
+        events = ['gcp_state_changed', 'device_state_changed', 'iot_traffic']
         self.log = Logging(owner=__file__, config=True)
         self.config = ConfigurationParser().get_config()
         self.subject = Subject(events)
@@ -56,7 +56,7 @@ class IotSubject:
 
         if self.config['system_components']['db']:
             self.observers.append({'obs_object': DbHandler(queue=self.observer_queue),
-                                   'events': ['gcp_state_changed', 'device_state_changed']})
+                                   'events': ['gcp_state_changed', 'device_state_changed', 'iot_traffic']})
 
     def attach_observers(self) -> None:
         for observer in self.observers:

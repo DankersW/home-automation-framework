@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 from dataclasses import dataclass
 from queue import Queue
-from json import dumps, loads
+from json import loads
+from datetime import datetime
 
 import threading
 import paho.mqtt.client as mqtt
@@ -69,6 +70,8 @@ class LocalMqttGateway(threading.Thread):
                     'message': {'device_id': device_id, 'event_type': event, 'state': device_state}}
             self.received_queue.put(item)
 
+        self._save_iot_message(topic=topic, payload=data)
+
     def publish(self, msg):
         topic = None
         device = msg.get('device_id')
@@ -79,6 +82,12 @@ class LocalMqttGateway(threading.Thread):
         if topic is not None and data is not None:
             self.log.info(f'Publishing message {data!r} on topic {topic!r}.')
             self.client.publish(topic, data)
+
+    def _save_iot_message(self, topic: str, payload: dict) -> None:
+        traffic_item = {'event': 'iot_traffic', 'message': {'timestamp': datetime.now(),
+                                                            'source': type(self).__name__,
+                                                            'topic': topic, 'payload': payload}}
+        self.received_queue.put(traffic_item)
 
 
 def get_item_from_topic(topic, index_type):
