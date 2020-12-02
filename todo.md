@@ -52,7 +52,7 @@ Device needs to be reconnected when this error is handled.
 -  [x] DB that stores current state data (E.Q. Document DB like mongodb)
 -  [x] DB that stores data for a long time (E.Q. wide column db like Apache Cassandra or Apache HBase)
 -  [x] save state changes in one document
--  [ ] Log all iot messages that goes back and forward
+-  [x] Log all iot messages that goes back and forward
 
 ## GUI
 -  [ ] Front-end to visualize db data

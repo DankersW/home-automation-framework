@@ -34,7 +34,7 @@ class IotSubject:
     running = False
 
     def __init__(self) -> None:
-        events = ['gcp_state_changed', 'device_state_changed']
+        events = ['gcp_state_changed', 'device_state_changed', 'iot_traffic']
         self.log = Logging(owner=__file__, config=True)
         self.config = ConfigurationParser().get_config()
         self.subject = Subject(events)
