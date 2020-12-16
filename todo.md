@@ -90,6 +90,7 @@ Device needs to be reconnected when this error is handled.
 -  [x] Setup ubuntu home-server with  MQTT broker and MongoDB db
 -  [x] Run from same place always
 -  [x] script to run linting and testing locally
+-  [ ] virtual enviroment that adds paths to PYTHONPATH
 
 ## Docker
 -  [ ] Container holding Mongo-db + mqtt
