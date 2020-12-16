@@ -58,8 +58,8 @@ class GBridge(threading.Thread):
         self.log = Logging(owner=__file__, log_mode='terminal', min_log_lvl=LogLevels.debug)
         gateway_configuration = MqttGatewayConfiguration()
 
-        self.publish_queue = Queue(maxsize=100)
-        self.received_queue = queue
+        self.observer_notify_queue = Queue(maxsize=100)
+        self.observer_publish_queue = queue
 
         keys_dir = get_keys_dir()
         gateway_configuration.private_key_file = Path(keys_dir, gateway_configuration.private_key_file)
@@ -76,12 +76,12 @@ class GBridge(threading.Thread):
         self.mqtt_client.loop_start()
         self.wait_for_connection(5)
         while self.g_bridge_connected:
-            queue_item = self.publish_queue.get()
+            queue_item = self.observer_notify_queue.get()
             self.send_data(msg=queue_item)
             time.sleep(ONE_MILLISECOND_SECONDS)
 
     def notify(self, msg, _) -> None:
-        self.publish_queue.put(item=msg)
+        self.observer_notify_queue.put(item=msg)
 
     @staticmethod
     def poll_events():
@@ -165,7 +165,7 @@ class GBridge(threading.Thread):
             device_id = GBridge.get_id_from_topic(message.topic)
             queue_message = {'device_id': device_id, 'event_type': 'command', 'payload': payload}
             item = {'event': 'gcp_state_changed', 'message': queue_message}
-            self.received_queue.put(item)
+            self.observer_publish_queue.put(item)
 
     def attach_device(self, device_id):
         self.log.debug(f'Attaching device {device_id!r}.')

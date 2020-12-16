@@ -71,9 +71,6 @@ Device needs to be reconnected when this error is handled.
 
 ## Full chain
 -  [x] Fix crash when the cloud controls a device and device updates its status back
--  [ ] Disconnecting of a device on all places + firebase state online
--  [ ] Map device id to physical placement in the apartment 
--  [ ] Let a device generate it's own random ID when it boots up for the first time, check a local file if this ID is already used or not.
 
 ## CI
 -  [x] Implement Actions on Github that runs a job to test if all tests pass before a merge to master or push to master

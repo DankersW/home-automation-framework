@@ -25,8 +25,8 @@ class LocalMqttGateway(threading.Thread):
         self.config = ConfigurationParser().get_config()
         self.log = Logging(owner=__file__, config=True)
 
-        self.publish_queue = Queue(maxsize=100)
-        self.received_queue = queue
+        self.observer_notify_queue = Queue(maxsize=100)
+        self.observer_publish_queue = queue
 
         broker_address = self.config['local_mqtt_gateway']['broker_address']
         self.client = mqtt.Client()
@@ -44,11 +44,11 @@ class LocalMqttGateway(threading.Thread):
     def run(self):
         self.client.loop_start()
         while self.running:
-            queue_item = self.publish_queue.get()
+            queue_item = self.observer_notify_queue.get()
             self.publish(msg=queue_item)
 
     def notify(self, msg, _):
-        self.publish_queue.put(item=msg)
+        self.observer_notify_queue.put(item=msg)
 
     def on_connect(self, _client, _userdata, _flags, rc):
         self.log.success(f'Connected to MQTT broker with result code {str(rc)}.')
@@ -68,7 +68,7 @@ class LocalMqttGateway(threading.Thread):
             device_state = data.get('state', None)
             item = {'event': 'device_state_changed',
                     'message': {'device_id': device_id, 'event_type': event, 'state': device_state}}
-            self.received_queue.put(item)
+            self.observer_publish_queue.put(item)
 
         self._save_iot_message(topic=topic, payload=data)
 
@@ -87,7 +87,7 @@ class LocalMqttGateway(threading.Thread):
         traffic_item = {'event': 'iot_traffic', 'message': {'timestamp': datetime.now(),
                                                             'source': type(self).__name__,
                                                             'topic': topic, 'payload': payload}}
-        self.received_queue.put(traffic_item)
+        self.observer_publish_queue.put(traffic_item)
 
 
 def get_item_from_topic(topic, index_type):

@@ -1,4 +1,4 @@
-from src.iot_gateway.iot_oberserver import IotSubject
+from src.home_automation_framework import IotSubject
 
 
 class HomeServer:
