@@ -54,20 +54,13 @@ Device needs to be reconnected when this error is handled.
 -  [x] save state changes in one document
 -  [x] Log all iot messages that goes back and forward
 
-## GUI
--  [ ] Front-end to visualize db data
--  [ ] way to send data to iot-framework
--  [ ] Log iot-messages in the gui
-
-## Testing
--  [ ] Verification environment for running development tests
-
 ## Gateway
 -  [x] Re-write G-bridge to serve as a gateway instead of mocking each device
 -  [x] Attach and detach devices when they turn on or off
 -  [x] Reattach all connected devices when the gateway disconnects
 -  [ ] Sending data: include a time-off that the functions waits for a ACK. after the timeout either drop the message or resend it  
 -  [x] Fix path issue
+-  [ ] Protobuf as message format
 
 ## Full chain
 -  [x] Fix crash when the cloud controls a device and device updates its status back
@@ -80,7 +73,6 @@ Device needs to be reconnected when this error is handled.
 -  [ ] Create a first release and install https://realpython.com/pyinstaller-python/
 
 ## Release
--  [ ] when monitoring and email notifications is in place
 -  [ ] messaging gateway is running
 -  [ ] db working 
 -  [ ] proper logging
