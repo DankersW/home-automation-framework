@@ -1,13 +1,15 @@
 from threading import Thread
 from queue import Queue
 from pathlib import Path
+from time import time, sleep
 import subprocess
 
 from src.logging.logging import Logging
 
 
 class HealthMonitor(Thread):
-    running = False
+    running = True
+    update_time_sec = 30
 
     def __init__(self, queue: Queue) -> None:
         Thread.__init__(self)
@@ -20,19 +22,30 @@ class HealthMonitor(Thread):
 
     def run(self) -> None:
         while self.running:
-            item = self.observer_notify_queue.get()
+            start_time = time()
 
-        self.poll_system_temp()
-        self.poll_cpu_load()
+            host_data = self._fetch_host_data()
+            item = {'event': 'host_health', 'message': host_data}
+            self.observer_publish_queue.put(item)
+
+            sleep_time = self.update_time_sec - ((time() - start_time) % self.update_time_sec)
+            sleep(sleep_time)
 
     def notify(self, msg: dict, event: str) -> None:
         pass
 
-    def poll_system_temp(self) -> int:
+    def _fetch_host_data(self) -> dict:
+        data = {
+            'temperature': self.poll_system_temp(),
+            'cpu_load': self.poll_cpu_load()
+        }
+        return data
+
+    def poll_system_temp(self) -> float:
         temp_file = self._get_temperature_file()
         try:
             with open(temp_file) as file:
-                return int(file.readline())
+                return float(file.readline()) / 1000
         except FileNotFoundError:
             self.log.critical(f'Temperature file {temp_file!r} does not exist')
         return 0
@@ -58,4 +71,4 @@ class HealthMonitor(Thread):
 if __name__ == '__main__':
     test_queue = Queue(10)
     hm = HealthMonitor(test_queue)
-    hm.poll_cpu_load()
+    hm.start()

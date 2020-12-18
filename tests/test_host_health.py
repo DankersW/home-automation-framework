@@ -26,7 +26,7 @@ class TestHostHealth(TestCase):
         mock_temp = 12345
         create_test_file_with_data(file=file_path, data=str(mock_temp))
         mock_file_path.return_value = file_path
-        self.assertEqual(self.health_monitor.poll_system_temp(), mock_temp)
+        self.assertEqual(self.health_monitor.poll_system_temp(), float(mock_temp) / 1000)
         delete_file(file=file_path)
 
     @mock.patch('subprocess.Popen')
@@ -37,3 +37,13 @@ class TestHostHealth(TestCase):
         process_mock.configure_mock(**attrs)
         mock_popen.return_value = process_mock
         self.assertEqual(self.health_monitor.poll_cpu_load(), 14.482)
+
+    @patch.object(HealthMonitor, 'poll_cpu_load')
+    @patch.object(HealthMonitor, 'poll_system_temp')
+    def test_fetch_host_data(self, mock_poll_system_temp, mock_poll_cpu_load):
+        data = {'temperature': 12.147, 'cpu_load': 15.786}
+        mock_poll_system_temp.return_value = data.get('temperature')
+        mock_poll_cpu_load.return_value = data.get('cpu_load')
+        result = self.health_monitor._fetch_host_data()
+        self.assertEqual(result, data)
+
