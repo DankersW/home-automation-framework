@@ -70,7 +70,7 @@ class TestHostHealth(TestCase):
         data = {'timestamp': datetime.now(), 'temperature': 12.147, 'cpu_load': 15.786}
         mock_fetch_host_data.return_value = data
 
-        interval = 1
+        interval = 2
         mock_interval_property = PropertyMock(return_value=interval)
         mock_running_property = PropertyMock(return_value=True)
         type(self.health_monitor).update_time_sec = mock_interval_property
