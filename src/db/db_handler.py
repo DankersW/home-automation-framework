@@ -11,25 +11,26 @@ class DbHandler(Thread):
     def __init__(self, queue: Queue) -> None:
         Thread.__init__(self)
         self.mongo = MongoHandler(db_name='iot_db')
-        self.received_queue = queue
-        self.to_handle_queue = Queue(maxsize=100)
+        self.observer_publish_queue = queue
+        self.observer_notify_queue = Queue(maxsize=100)
 
     def __del__(self) -> None:
         self.running = False
 
     def run(self) -> None:
         while self.running:
-            item = self.to_handle_queue.get()
+            item = self.observer_notify_queue.get()
             action = self.action_selector(event=item.get('event'))
             action(event=item.get('event'), data=item.get('msg'))
 
     def notify(self, msg: dict, event: str) -> None:
-        self.to_handle_queue.put({'event': event, 'msg': msg})
+        self.observer_notify_queue.put({'event': event, 'msg': msg})
 
     def action_selector(self, event: str) -> Callable:
         action_map = {'gcp_state_changed': self.store_state_data,
                       'device_state_changed': self.store_state_data,
-                      'iot_traffic': self.store_iot_traffic}
+                      'iot_traffic': self.store_iot_traffic,
+                      'host_health': self.store_host_health}
         return action_map.get(event, self.action_skip)
 
     @staticmethod
@@ -53,6 +54,9 @@ class DbHandler(Thread):
             self.mongo.insert(collection_name='states', data=document_data)
 
     def store_iot_traffic(self, event: str, data: dict) -> None:
+        self.mongo.insert(collection_name=event, data=data)
+
+    def store_host_health(self, event: str, data: dict) -> None:
         self.mongo.insert(collection_name=event, data=data)
 
 

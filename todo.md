@@ -54,26 +54,16 @@ Device needs to be reconnected when this error is handled.
 -  [x] save state changes in one document
 -  [x] Log all iot messages that goes back and forward
 
-## GUI
--  [ ] Front-end to visualize db data
--  [ ] way to send data to iot-framework
--  [ ] Log iot-messages in the gui
-
-## Testing
--  [ ] Verification environment for running development tests
-
 ## Gateway
 -  [x] Re-write G-bridge to serve as a gateway instead of mocking each device
 -  [x] Attach and detach devices when they turn on or off
 -  [x] Reattach all connected devices when the gateway disconnects
 -  [ ] Sending data: include a time-off that the functions waits for a ACK. after the timeout either drop the message or resend it  
 -  [x] Fix path issue
+-  [ ] Protobuf as message format
 
 ## Full chain
 -  [x] Fix crash when the cloud controls a device and device updates its status back
--  [ ] Disconnecting of a device on all places + firebase state online
--  [ ] Map device id to physical placement in the apartment 
--  [ ] Let a device generate it's own random ID when it boots up for the first time, check a local file if this ID is already used or not.
 
 ## CI
 -  [x] Implement Actions on Github that runs a job to test if all tests pass before a merge to master or push to master
@@ -83,7 +73,6 @@ Device needs to be reconnected when this error is handled.
 -  [ ] Create a first release and install https://realpython.com/pyinstaller-python/
 
 ## Release
--  [ ] when monitoring and email notifications is in place
 -  [ ] messaging gateway is running
 -  [ ] db working 
 -  [ ] proper logging
@@ -93,14 +82,15 @@ Device needs to be reconnected when this error is handled.
 -  [x] Setup ubuntu home-server with  MQTT broker and MongoDB db
 -  [x] Run from same place always
 -  [x] script to run linting and testing locally
+-  [ ] virtual enviroment that adds paths to PYTHONPATH
 
 ## Docker
 -  [ ] Container holding Mongo-db + mqtt
 
 ## Monitoring
--  [ ] Have a host-monitoring observer that publishes its data to the db handler with a good event name
--  [ ] Health checking - health tracing - message tracing
+-  [x] Have a host-monitoring observer that publishes its data to the db handler with a good event name
+-  [x] Health checking - health tracing - message tracing
 
 ## Server
--  [ ] Log some HW perifials
--  [ ] Monitoring of the themperature and sending out reacting on to high temp, send out warning email if it get's warm
+-  [x] Log some HW perifials
+-  [x] Monitoring of the themperature and sending out reacting on to high temp, send out warning email if it get's warm

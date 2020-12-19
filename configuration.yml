@@ -6,6 +6,7 @@ system_components:
   gcp: false
   local_mqtt_gateway: true
   db: true #true
+  host_monitor: true
 
 logging:
   file_log_folder: 'C:\Users\woute\development\logs'
