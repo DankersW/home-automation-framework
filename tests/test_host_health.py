@@ -8,7 +8,7 @@ import mock
 from mock import PropertyMock
 
 from src.host_health.health_monitor import HealthMonitor
-from tests.helper_functions import create_test_file_with_data, delete_file
+from tests.helper_functions import create_test_file_with_data, delete_file, emtpy_queue
 
 
 class TestHostHealth(TestCase):
@@ -33,6 +33,7 @@ class TestHostHealth(TestCase):
 
     @mock.patch('subprocess.Popen')
     def test_poll_cpu_load_correct(self, mock_popen):
+        """ Test parsing of cpu data, correct data """
         process_mock = mock.Mock()
         test_data = b'cpu  1697429 0 1156929 16854817 0 172800 0 0 0 0'
         attrs = {'communicate.return_value': (test_data, 'error')}
@@ -40,9 +41,20 @@ class TestHostHealth(TestCase):
         mock_popen.return_value = process_mock
         self.assertEqual(self.health_monitor.poll_cpu_load(), 14.482)
 
+    @mock.patch('subprocess.Popen')
+    def test_poll_cpu_load_corrupt_data(self, mock_popen):
+        """ Test parsing of cpu data, corrupt data """
+        process_mock = mock.Mock()
+        test_data = b'very bad data'
+        attrs = {'communicate.return_value': (test_data, 'error')}
+        process_mock.configure_mock(**attrs)
+        mock_popen.return_value = process_mock
+        self.assertEqual(self.health_monitor.poll_cpu_load(), 0)
+
     @patch.object(HealthMonitor, 'poll_cpu_load')
     @patch.object(HealthMonitor, 'poll_system_temp')
     def test_fetch_host_data(self, mock_poll_system_temp, mock_poll_cpu_load):
+        """ Testing to fetch host data """
         data = {'temperature': 12.147, 'cpu_load': 15.786}
         mock_poll_system_temp.return_value = data.get('temperature')
         mock_poll_cpu_load.return_value = data.get('cpu_load')
@@ -51,19 +63,20 @@ class TestHostHealth(TestCase):
 
     @patch.object(HealthMonitor, '_fetch_host_data')
     def test_run_for_3_times_poll_interval(self, mock_fetch_host_data):
+        """ Testing main loop, we leave the main loop after x time and count the messages placed on the queue"""
         data = {'temperature': 12.147, 'cpu_load': 15.786}
         mock_fetch_host_data.return_value = data
 
-        interval = 5
+        interval = 1
         mock_interval_property = PropertyMock(return_value=interval)
         mock_running_property = PropertyMock(return_value=True)
         type(self.health_monitor).update_time_sec = mock_interval_property
         type(self.health_monitor).running = mock_running_property
+        emtpy_queue(queue=self.test_queue)
+
         self.health_monitor.start()
-        print("created")
-        print("started")
         sleep(interval * 3)
-        print("done sleeping")
         mock_running_property = PropertyMock(return_value=False)
         type(self.health_monitor).running = mock_running_property
+        self.assertEqual(self.test_queue.qsize(), 3)
 

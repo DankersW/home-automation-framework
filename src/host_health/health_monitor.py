@@ -29,10 +29,7 @@ class HealthMonitor(Thread):
             self.observer_publish_queue.put(item)
 
             sleep_time = self.update_time_sec - ((time() - start_time) % self.update_time_sec)
-            print(f"Sleeping {sleep_time}")
             sleep(sleep_time)
-
-        print("done")
 
     def notify(self, msg: dict, event: str) -> None:
         pass
@@ -66,8 +63,10 @@ class HealthMonitor(Thread):
             cpu_data = [int(field) for field in cpu_data]
             cpu_usage = ((cpu_data[0] + cpu_data[2]) * 100 / (cpu_data[0] + cpu_data[2] + cpu_data[3]))
             return round(cpu_usage, 3)
-        except FileNotFoundError:
-            self.log.critical(f'Command {" ".join(cpu_command)!r} was not found on the system')
+        except FileNotFoundError as error:
+            self.log.critical(f'Command {" ".join(cpu_command)!r} was not found on the system: {error}')
+        except ValueError as error:
+            self.log.error(f'Parsing of the data went wrong: {error}')
         return 0
 
 
