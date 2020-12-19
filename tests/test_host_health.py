@@ -2,8 +2,10 @@ from unittest import TestCase
 from unittest.mock import patch
 from queue import Queue
 from pathlib import Path
+from time import sleep
 
 import mock
+from mock import PropertyMock
 
 from src.host_health.health_monitor import HealthMonitor
 from tests.helper_functions import create_test_file_with_data, delete_file
@@ -46,4 +48,22 @@ class TestHostHealth(TestCase):
         mock_poll_cpu_load.return_value = data.get('cpu_load')
         result = self.health_monitor._fetch_host_data()
         self.assertEqual(result, data)
+
+    @patch.object(HealthMonitor, '_fetch_host_data')
+    def test_run_for_3_times_poll_interval(self, mock_fetch_host_data):
+        data = {'temperature': 12.147, 'cpu_load': 15.786}
+        mock_fetch_host_data.return_value = data
+
+        interval = 5
+        mock_interval_property = PropertyMock(return_value=interval)
+        mock_running_property = PropertyMock(return_value=True)
+        type(self.health_monitor).update_time_sec = mock_interval_property
+        type(self.health_monitor).running = mock_running_property
+        self.health_monitor.start()
+        print("created")
+        print("started")
+        sleep(interval * 3)
+        print("done sleeping")
+        mock_running_property = PropertyMock(return_value=False)
+        type(self.health_monitor).running = mock_running_property
 

@@ -29,7 +29,10 @@ class HealthMonitor(Thread):
             self.observer_publish_queue.put(item)
 
             sleep_time = self.update_time_sec - ((time() - start_time) % self.update_time_sec)
+            print(f"Sleeping {sleep_time}")
             sleep(sleep_time)
+
+        print("done")
 
     def notify(self, msg: dict, event: str) -> None:
         pass
