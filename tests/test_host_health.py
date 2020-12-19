@@ -3,6 +3,7 @@ from unittest.mock import patch
 from queue import Queue
 from pathlib import Path
 from time import sleep
+from datetime import datetime
 
 import mock
 from mock import PropertyMock
@@ -53,18 +54,20 @@ class TestHostHealth(TestCase):
 
     @patch.object(HealthMonitor, 'poll_cpu_load')
     @patch.object(HealthMonitor, 'poll_system_temp')
-    def test_fetch_host_data(self, mock_poll_system_temp, mock_poll_cpu_load):
+    @patch.object(HealthMonitor, '_get_timestamp')
+    def test_fetch_host_data(self, mock_get_timestamp, mock_poll_system_temp, mock_poll_cpu_load):
         """ Testing to fetch host data """
-        data = {'temperature': 12.147, 'cpu_load': 15.786}
+        data = {'timestamp': datetime.now(), 'temperature': 12.147, 'cpu_load': 15.786}
         mock_poll_system_temp.return_value = data.get('temperature')
         mock_poll_cpu_load.return_value = data.get('cpu_load')
+        mock_get_timestamp.return_value = data.get('timestamp')
         result = self.health_monitor._fetch_host_data()
         self.assertEqual(result, data)
 
     @patch.object(HealthMonitor, '_fetch_host_data')
     def test_run_for_3_times_poll_interval(self, mock_fetch_host_data):
         """ Testing main loop, we leave the main loop after x time and count the messages placed on the queue"""
-        data = {'temperature': 12.147, 'cpu_load': 15.786}
+        data = {'timestamp': datetime.now(), 'temperature': 12.147, 'cpu_load': 15.786}
         mock_fetch_host_data.return_value = data
 
         interval = 1

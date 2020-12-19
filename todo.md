@@ -88,9 +88,9 @@ Device needs to be reconnected when this error is handled.
 -  [ ] Container holding Mongo-db + mqtt
 
 ## Monitoring
--  [ ] Have a host-monitoring observer that publishes its data to the db handler with a good event name
--  [ ] Health checking - health tracing - message tracing
+-  [x] Have a host-monitoring observer that publishes its data to the db handler with a good event name
+-  [x] Health checking - health tracing - message tracing
 
 ## Server
--  [ ] Log some HW perifials
--  [ ] Monitoring of the themperature and sending out reacting on to high temp, send out warning email if it get's warm
+-  [x] Log some HW perifials
+-  [x] Monitoring of the themperature and sending out reacting on to high temp, send out warning email if it get's warm

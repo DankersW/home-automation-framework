@@ -1,17 +1,17 @@
-#!/usr/bin/env python3
 from dataclasses import dataclass
 from queue import Queue
 from json import loads
 from datetime import datetime
 
-import threading
-import paho.mqtt.client as mqtt
+from threading import Thread
+
+from paho.mqtt import client as mqtt
 
 from src.logging.logging import Logging
 from lib.configuration_parser import ConfigurationParser
 
 
-class LocalMqttGateway(threading.Thread):
+class LocalMqttGateway(Thread):
 
     @dataclass
     class MqttConfiguration:
@@ -21,7 +21,7 @@ class LocalMqttGateway(threading.Thread):
     running = False
 
     def __init__(self, queue):
-        threading.Thread.__init__(self)
+        Thread.__init__(self)
         self.config = ConfigurationParser().get_config()
         self.log = Logging(owner=__file__, config=True)
 

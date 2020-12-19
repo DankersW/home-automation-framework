@@ -2,10 +2,11 @@ from time import sleep
 from queue import Queue
 
 from lib.configuration_parser import ConfigurationParser
-from src.logging.logging import Logging
 from src.iot_gateway.g_bridge import GBridge
 from src.iot_gateway.local_mqtt_gateway import LocalMqttGateway
+from src.logging.logging import Logging
 from src.db.db_handler import DbHandler
+from src.host_health.health_monitor import HealthMonitor
 
 
 class Subject:
@@ -34,7 +35,7 @@ class IotSubject:
     running = False
 
     def __init__(self) -> None:
-        events = ['gcp_state_changed', 'device_state_changed', 'iot_traffic']
+        events = ['gcp_state_changed', 'device_state_changed', 'iot_traffic', 'host_health']
         self.log = Logging(owner=__file__, config=True)
         self.config = ConfigurationParser().get_config()
         self.subject = Subject(events)
@@ -56,7 +57,11 @@ class IotSubject:
 
         if self.config['system_components']['db']:
             self.observers.append({'obs_object': DbHandler(queue=self.observer_queue),
-                                   'events': ['gcp_state_changed', 'device_state_changed', 'iot_traffic']})
+                                   'events': ['gcp_state_changed', 'device_state_changed', 'iot_traffic', 'host_health']})
+
+        if self.config['system_components']['host_monitor']:
+            self.observers.append({'obs_object': HealthMonitor(queue=self.observer_queue),
+                                   'events': []})
 
     def attach_observers(self) -> None:
         for observer in self.observers:

@@ -29,7 +29,8 @@ class DbHandler(Thread):
     def action_selector(self, event: str) -> Callable:
         action_map = {'gcp_state_changed': self.store_state_data,
                       'device_state_changed': self.store_state_data,
-                      'iot_traffic': self.store_iot_traffic}
+                      'iot_traffic': self.store_iot_traffic,
+                      'host_health': self.store_host_health}
         return action_map.get(event, self.action_skip)
 
     @staticmethod
@@ -53,6 +54,9 @@ class DbHandler(Thread):
             self.mongo.insert(collection_name='states', data=document_data)
 
     def store_iot_traffic(self, event: str, data: dict) -> None:
+        self.mongo.insert(collection_name=event, data=data)
+
+    def store_host_health(self, event: str, data: dict) -> None:
         self.mongo.insert(collection_name=event, data=data)
 
 

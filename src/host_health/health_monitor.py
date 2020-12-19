@@ -2,6 +2,7 @@ from threading import Thread
 from queue import Queue
 from pathlib import Path
 from time import time, sleep
+from datetime import datetime
 import subprocess
 
 from src.logging.logging import Logging
@@ -9,7 +10,7 @@ from src.logging.logging import Logging
 
 class HealthMonitor(Thread):
     running = True
-    update_time_sec = 30
+    update_time_sec = 60
 
     def __init__(self, queue: Queue) -> None:
         Thread.__init__(self)
@@ -21,6 +22,7 @@ class HealthMonitor(Thread):
         self.running = False
 
     def run(self) -> None:
+        self.log.info(f'Updating system information every {self.update_time_sec} seconds.')
         while self.running:
             start_time = time()
 
@@ -36,10 +38,15 @@ class HealthMonitor(Thread):
 
     def _fetch_host_data(self) -> dict:
         data = {
+            'timestamp': self._get_timestamp(),
             'temperature': self.poll_system_temp(),
             'cpu_load': self.poll_cpu_load()
         }
         return data
+
+    @staticmethod
+    def _get_timestamp() -> datetime:
+        return datetime.now()
 
     def poll_system_temp(self) -> float:
         temp_file = self._get_temperature_file()
