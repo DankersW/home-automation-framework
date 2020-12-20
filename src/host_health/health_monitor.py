@@ -11,6 +11,7 @@ from src.logging.logging import Logging
 class HealthMonitor(Thread):
     running = True
     update_time_sec = 60
+    subscribed_event = []
 
     def __init__(self, queue: Queue) -> None:
         Thread.__init__(self)

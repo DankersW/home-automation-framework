@@ -19,6 +19,7 @@ class LocalMqttGateway(Thread):
         stay_alive: int = 60
 
     running = False
+    subscribed_event = ['gcp_state_changed']
 
     def __init__(self, queue):
         Thread.__init__(self)

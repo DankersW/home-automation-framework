@@ -46,6 +46,8 @@ def error_str(rc):
 
 
 class GBridge(threading.Thread):
+    subscribed_event = ['device_state_changed']
+
     mqtt_client = None
     g_bridge_connected = False
 

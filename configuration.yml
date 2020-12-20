@@ -5,7 +5,7 @@ general:
 system_components:
   gcp: false
   local_mqtt_gateway: true
-  db: true #true
+  db: true
   host_monitor: true
 
 logging:

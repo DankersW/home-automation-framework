@@ -7,6 +7,7 @@ from src.db.mongo_db import MongoHandler
 
 class DbHandler(Thread):
     running = True
+    subscribed_event = ['gcp_state_changed', 'device_state_changed', 'iot_traffic', 'host_health']
 
     def __init__(self, queue: Queue) -> None:
         Thread.__init__(self)
