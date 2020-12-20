@@ -48,20 +48,19 @@ class IotSubject:
         self.start_observer_threats()
 
     def init_observers(self) -> None:
-        active_components = self.get_activated_components()
+        active_components = self._get_activated_components()
         for component in active_components:
-            obj = self.get_matching_object(component_name=component)
+            obj = self._get_matching_object(component_name=component)
             observer = obj(queue=self.observer_queue)
             events = observer.subscribed_event
             self.observers.append({'obs_object': observer, 'events': events})
 
-    def get_activated_components(self) -> list:
+    def _get_activated_components(self) -> list:
         system_components = self.config['system_components'].keys()
         return [component for component in system_components if self.config['system_components'][component]]
 
     @staticmethod
-    def get_matching_object(component_name: str) -> Callable:
-        print(component_name)
+    def _get_matching_object(component_name: str) -> Callable:
         object_mapper = {
             'gcp': GBridge,
             'local_mqtt_gateway': LocalMqttGateway,
