@@ -23,8 +23,8 @@
 -  [x] Attach devices automatically
 -  [x] Document naming of the different events and clean it up in the code so that the deivces listen to them in a good way
 -  [x] Define iot (mqtt) message content that is send from devices
--  [ ] Clean way of initialzing all observers instead of if a then x. e.q. fetching them a different file. 
--  [ ] Fetch observer interested messages from the class itself.
+-  [x] Clean way of initialzing all observers instead of if a then x. e.q. fetching them a different file. 
+-  [x] Fetch observer interested messages from the class itself.
 
 ## Bugs
 -  [ ] g-bridge: Out of memory causes reconnection. and and up with connection code 4 - The client is not currently 
