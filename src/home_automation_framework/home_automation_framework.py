@@ -1,5 +1,6 @@
 from time import sleep
 from queue import Queue
+from typing import Callable
 
 from lib.configuration_parser import ConfigurationParser
 from src.iot_gateway.g_bridge import GBridge
@@ -47,21 +48,26 @@ class IotSubject:
         self.start_observer_threats()
 
     def init_observers(self) -> None:
-        if self.config['system_components']['gcp']:
-            self.observers.append({'obs_object': GBridge(queue=self.observer_queue),
-                                   'events': ['device_state_changed']})
+        active_components = self._get_activated_components()
+        for component in active_components:
+            obj = self._get_matching_object(component_name=component)
+            observer = obj(queue=self.observer_queue)
+            events = observer.subscribed_event
+            self.observers.append({'obs_object': observer, 'events': events})
 
-        if self.config['system_components']['local_mqtt_gateway']:
-            self.observers.append({'obs_object': LocalMqttGateway(queue=self.observer_queue),
-                                   'events': ['gcp_state_changed']})
+    def _get_activated_components(self) -> list:
+        system_components = self.config['system_components'].keys()
+        return [component for component in system_components if self.config['system_components'][component]]
 
-        if self.config['system_components']['db']:
-            self.observers.append({'obs_object': DbHandler(queue=self.observer_queue),
-                                   'events': ['gcp_state_changed', 'device_state_changed', 'iot_traffic', 'host_health']})
-
-        if self.config['system_components']['host_monitor']:
-            self.observers.append({'obs_object': HealthMonitor(queue=self.observer_queue),
-                                   'events': []})
+    @staticmethod
+    def _get_matching_object(component_name: str) -> Callable:
+        object_mapper = {
+            'gcp': GBridge,
+            'local_mqtt_gateway': LocalMqttGateway,
+            'db': DbHandler,
+            'host_monitor': HealthMonitor
+        }
+        return object_mapper.get(component_name)
 
     def attach_observers(self) -> None:
         for observer in self.observers:
