@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+
+  # our framework needs to depend on mqtt broker and DB
+  # todo: do a health check
+
+  mqtt_mosquitto_broker:
+    image: toke/mosquitto:release-1.4.10-2
+    hostname: mqtt_mosquitto_broker
+    container_name: mqtt_mosquitto_broker
+    expose:
+      - "1883"
+    ports:
+      - "1883:1883"
