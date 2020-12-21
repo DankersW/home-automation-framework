@@ -85,7 +85,11 @@ Device needs to be reconnected when this error is handled.
 -  [ ] virtual enviroment that adds paths to PYTHONPATH
 
 ## Docker
--  [ ] Container holding Mongo-db + mqtt
+-  [ ] Container holding Mongo-db with bind mounts to harddrive
+-  [ ] Container holding NQTT
+-  [ ] Container holding Application
+-  [ ] Docker compose / kubernetes
+
 
 ## Monitoring
 -  [x] Have a host-monitoring observer that publishes its data to the db handler with a good event name
