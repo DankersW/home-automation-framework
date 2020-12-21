@@ -86,7 +86,7 @@ Device needs to be reconnected when this error is handled.
 
 ## Docker
 -  [ ] Container holding Mongo-db with bind mounts to harddrive
--  [ ] Container holding NQTT
+-  [x] Container holding NQTT
 -  [ ] Container holding Application
 -  [ ] Docker compose / kubernetes
 
