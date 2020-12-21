@@ -1,7 +1,7 @@
 # MQTT Mosquitto Docker image
 
-docker run -ti -p 1883:1883 toke/mosquitto
+Container pulled from [Toke's Github page](https://github.com/toke/docker-mosquitto)
 
-https://github.com/toke/docker-mosquitto
-
-https://hometechhacker.com/mqtt-using-docker-and-home-assistant/
+```shell script
+docker run -ti -p 1883:1883 toke/mosquitto:release-1.4.10-2
+```
