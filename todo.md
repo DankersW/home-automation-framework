@@ -89,6 +89,7 @@ Device needs to be reconnected when this error is handled.
 -  [x] Container holding NQTT
 -  [ ] Container holding Application
 -  [ ] Docker compose / kubernetes
+-  [ ] Host setup db on the correct location, location to point to external HD if present otherwise, somewhere else
 
 
 ## Monitoring
