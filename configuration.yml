@@ -5,8 +5,8 @@ general:
 system_components:
   gcp: false
   local_mqtt_gateway: true
-  db: false
-  host_monitor: false
+  db: true
+  host_monitor: true
 
 logging:
   file_log_folder: 'C:\Users\woute\development\logs'
@@ -15,9 +15,9 @@ logging:
 
 local_mqtt_gateway:
   #broker_address: '192.168.1.83' # WIFI home
-  broker_address: '192.168.56.1'
+  broker_address: '192.168.1.92'
   #broker_address: '10.42.0.25' # ETH0
 
 mongo_db:
-  host_ip: '192.168.1.83'
+  host_ip: '192.168.1.69'
   #host_ip: '10.42.0.25'
