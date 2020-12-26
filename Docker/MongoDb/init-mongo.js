@@ -1,3 +1,5 @@
+db.auth('admin', 'mongo_admin_iot')
+
 db.createUser(
     {
         user: "admin",
