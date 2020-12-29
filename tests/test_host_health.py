@@ -4,6 +4,7 @@ from queue import Queue
 from pathlib import Path
 from time import sleep
 from datetime import datetime
+from threading import Event
 
 import mock
 from mock import PropertyMock
@@ -14,7 +15,8 @@ from tests.helper_functions import create_test_file_with_data, delete_file, emtp
 
 class TestHostHealth(TestCase):
     test_queue = Queue(10)
-    health_monitor = HealthMonitor(test_queue)
+    test_event = Event()
+    health_monitor = HealthMonitor(test_queue, test_event)
 
     @patch.object(HealthMonitor, '_get_temperature_file')
     def test_poll_system_temp_no_file_exist(self, mock_file_path):

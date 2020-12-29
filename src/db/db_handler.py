@@ -65,5 +65,6 @@ class DbHandler(Thread):
 
 if __name__ == '__main__':
     t_queue = Queue(10)
-    db_handler = DbHandler(queue=t_queue)
+    t_event = Event()
+    db_handler = DbHandler(queue=t_queue, thread_event=t_event)
     db_handler.get_data()

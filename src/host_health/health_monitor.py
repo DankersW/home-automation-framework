@@ -82,5 +82,6 @@ class HealthMonitor(Thread):
 
 if __name__ == '__main__':
     test_queue = Queue(10)
-    hm = HealthMonitor(test_queue)
+    t_event = Event()
+    hm = HealthMonitor(test_queue, thread_event=t_event)
     hm.start()

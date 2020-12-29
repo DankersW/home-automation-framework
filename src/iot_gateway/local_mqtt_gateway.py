@@ -106,4 +106,5 @@ def get_item_from_topic(topic, index_type):
 
 if __name__ == '__main__':
     t_queue = Queue(10)
-    mqtt_gateway = LocalMqttGateway(queue=t_queue)
+    t_event = Event()
+    mqtt_gateway = LocalMqttGateway(queue=t_queue, thread_event=t_event)
