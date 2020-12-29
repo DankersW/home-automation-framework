@@ -3,7 +3,7 @@ from queue import Queue
 from json import loads
 from datetime import datetime
 
-from threading import Thread
+from threading import Thread, Event
 
 from paho.mqtt import client as mqtt
 
@@ -21,13 +21,14 @@ class LocalMqttGateway(Thread):
     running = False
     subscribed_event = ['gcp_state_changed']
 
-    def __init__(self, queue):
+    def __init__(self, queue, thread_event: Event):
         Thread.__init__(self)
         self.config = ConfigurationParser().get_config()
         self.log = Logging(owner=__file__, config=True)
 
         self.observer_notify_queue = Queue(maxsize=100)
         self.observer_publish_queue = queue
+        self._thread_ready = thread_event
 
         broker_address = self.config['local_mqtt_gateway']['broker_address']
         self.client = mqtt.Client()
@@ -44,6 +45,7 @@ class LocalMqttGateway(Thread):
 
     def run(self):
         self.client.loop_start()
+        self._thread_ready.set()
         while self.running:
             queue_item = self.observer_notify_queue.get()
             self.publish(msg=queue_item)

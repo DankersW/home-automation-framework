@@ -1,6 +1,7 @@
 from time import sleep
 from queue import Queue
 from typing import Callable
+from threading import Event
 
 from lib.configuration_parser import ConfigurationParser
 from src.iot_gateway.g_bridge import GBridge
@@ -42,6 +43,7 @@ class IotSubject:
         self.subject = Subject(events)
 
         self.observer_queue = Queue(maxsize=100)
+        self._thread_started_event = Event()
 
         self.init_observers()
         self.attach_observers()
@@ -51,7 +53,7 @@ class IotSubject:
         active_components = self._get_activated_components()
         for component in active_components:
             obj = self._get_matching_object(component_name=component)
-            observer = obj(queue=self.observer_queue)
+            observer = obj(queue=self.observer_queue, thread_event=self._thread_started_event)
             events = observer.subscribed_event
             self.observers.append({'obs_object': observer, 'events': events})
 
@@ -76,9 +78,9 @@ class IotSubject:
     def start_observer_threats(self) -> None:
         for observer in self.observers:
             observer.get('obs_object').start()
+            self._thread_started_event.wait()
         observer_names = [key['obs_object'] for key in self.observers]
         self.log.success(f'Started {len(observer_names)} observers. {observer_names}')
-        sleep(5)  # To make sure every component has started up correctly
         self.running = True
 
     def run(self):

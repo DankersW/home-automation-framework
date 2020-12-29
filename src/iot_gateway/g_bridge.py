@@ -55,13 +55,14 @@ class GBridge(threading.Thread):
     pending_messages = []
     pending_subscribed_topics = []
 
-    def __init__(self, queue):
+    def __init__(self, queue, thread_event: threading.Event):
         threading.Thread.__init__(self)
         self.log = Logging(owner=__file__, log_mode='terminal', min_log_lvl=LogLevels.debug)
         gateway_configuration = MqttGatewayConfiguration()
 
         self.observer_notify_queue = Queue(maxsize=100)
         self.observer_publish_queue = queue
+        self._thread_ready = thread_event
 
         keys_dir = get_keys_dir()
         gateway_configuration.private_key_file = Path(keys_dir, gateway_configuration.private_key_file)
@@ -77,6 +78,7 @@ class GBridge(threading.Thread):
     def run(self):
         self.mqtt_client.loop_start()
         self.wait_for_connection(5)
+        self._thread_ready.set()
         while self.g_bridge_connected:
             queue_item = self.observer_notify_queue.get()
             self.send_data(msg=queue_item)
