@@ -1,4 +1,4 @@
-from threading import Thread
+from threading import Thread, Event
 from queue import Queue
 from typing import Callable
 
@@ -9,16 +9,18 @@ class DbHandler(Thread):
     running = True
     subscribed_event = ['gcp_state_changed', 'device_state_changed', 'iot_traffic', 'host_health']
 
-    def __init__(self, queue: Queue) -> None:
+    def __init__(self, queue: Queue, thread_event: Event) -> None:
         Thread.__init__(self)
         self.mongo = MongoHandler(db_name='iot_db')
         self.observer_publish_queue = queue
+        self._thread_ready = thread_event
         self.observer_notify_queue = Queue(maxsize=100)
 
     def __del__(self) -> None:
         self.running = False
 
     def run(self) -> None:
+        self._thread_ready.set()
         while self.running:
             item = self.observer_notify_queue.get()
             action = self.action_selector(event=item.get('event'))
@@ -63,5 +65,6 @@ class DbHandler(Thread):
 
 if __name__ == '__main__':
     t_queue = Queue(10)
-    db_handler = DbHandler(queue=t_queue)
+    t_event = Event()
+    db_handler = DbHandler(queue=t_queue, thread_event=t_event)
     db_handler.get_data()

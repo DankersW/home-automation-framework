@@ -1,4 +1,4 @@
-from threading import Thread
+from threading import Thread, Event
 from queue import Queue
 from pathlib import Path
 from time import time, sleep
@@ -13,9 +13,10 @@ class HealthMonitor(Thread):
     update_time_sec = 60
     subscribed_event = []
 
-    def __init__(self, queue: Queue) -> None:
+    def __init__(self, queue: Queue, thread_event: Event) -> None:
         Thread.__init__(self)
         self.observer_publish_queue = queue
+        self._thread_ready = thread_event
         self.observer_notify_queue = Queue(maxsize=100)
         self.log = Logging(owner=__file__, config=True)
 
@@ -24,6 +25,7 @@ class HealthMonitor(Thread):
 
     def run(self) -> None:
         self.log.info(f'Updating system information every {self.update_time_sec} seconds.')
+        self._thread_ready.set()
         while self.running:
             start_time = time()
 
@@ -80,5 +82,6 @@ class HealthMonitor(Thread):
 
 if __name__ == '__main__':
     test_queue = Queue(10)
-    hm = HealthMonitor(test_queue)
+    t_event = Event()
+    hm = HealthMonitor(test_queue, thread_event=t_event)
     hm.start()
