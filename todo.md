@@ -60,7 +60,6 @@ Device needs to be reconnected when this error is handled.
 -  [x] Reattach all connected devices when the gateway disconnects
 -  [ ] Sending data: include a time-off that the functions waits for a ACK. after the timeout either drop the message or resend it  
 -  [x] Fix path issue
--  [ ] Protobuf as message format
 
 ## Full chain
 -  [x] Fix crash when the cloud controls a device and device updates its status back
@@ -90,7 +89,6 @@ Device needs to be reconnected when this error is handled.
 -  [ ] Container holding Application
 -  [ ] Docker compose / kubernetes
 
-
 ## Monitoring
 -  [x] Have a host-monitoring observer that publishes its data to the db handler with a good event name
 -  [x] Health checking - health tracing - message tracing
@@ -98,3 +96,8 @@ Device needs to be reconnected when this error is handled.
 ## Server
 -  [x] Log some HW perifials
 -  [x] Monitoring of the themperature and sending out reacting on to high temp, send out warning email if it get's warm
+
+## Improvements
+-  [ ] Re-write Gbridge to function properly
+-  [ ] re-write local_mqtt with proper techniques
+-  [ ] Unit tests for each file and function
