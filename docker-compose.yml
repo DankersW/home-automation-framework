@@ -8,37 +8,31 @@ services:
     image: toke/mosquitto:release-1.4.10-2
     hostname: mqtt_mosquitto_broker
     container_name: mqtt_mosquitto_broker
+    restart: always
     expose:
       - "1883"
     ports:
       - "1883:1883"
 
-  #mongodb:
-  #  image: mongo:4.4.2-bionic
-  #  hostname: mongodb
-  #  container_name: mongodb
-    #environment:
-      #- MONGO_INITDB_DATABASE=iot_db
-      #- MONGO_INITDB_ROOT_USERNAME=admin
-      #- MONGO_INITDB_ROOT_PASSWORD=mongo_admin_iot
-  #  volumes:
-      #- ./Docker/MongoDb/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
- #     - mongo-volume:/data/db
- #   ports:
- #     - 27017:27017
-
   mongo:
-    image: mongo
+    image: mongo:4.4.2-bionic
+    hostname: mongoDB
+    container_name: MongoDB
     restart: always
     ports:
-      - "27017:27017"
+      - "27017-27019:27017-27019"
     environment:
-      MONGO_INITDB_DATABASE: iot_db
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: mongo_admin_iot
+      MONGO_INITDB_DATABASE: "iot_db"
+      MONGO_INITDB_ROOT_USERNAME: "admin"
+      MONGO_INITDB_ROOT_PASSWORD: "mongo_admin_iot"
+    volumes:
+      - ./Docker/MongoDb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./mongo-volume:/data/db
 
   mongo-express:
     image: mongo-express
+    hostname: mongo-express
+    container_name: mongo-express
     ports:
       - "8081:8081"
     environment:
