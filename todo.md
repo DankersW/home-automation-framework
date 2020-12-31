@@ -86,7 +86,10 @@ Device needs to be reconnected when this error is handled.
 -  [ ] virtual enviroment that adds paths to PYTHONPATH
 
 ## Docker
--  [ ] Container holding Mongo-db with bind mounts to harddrive
+-  [x] Container holding Mongo-db
+-  [ ] Mongo-volume added to ignore file
+-  [ ] Prod has mongo-volume points to harddrive
+-  [ ] differeance between prod and test compose file
 -  [x] Container holding NQTT
 -  [ ] Container holding Application
 -  [ ] Docker compose / kubernetes
