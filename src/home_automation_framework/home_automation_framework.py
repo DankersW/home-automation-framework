@@ -1,4 +1,3 @@
-from time import sleep
 from queue import Queue
 from typing import Callable
 from threading import Event
