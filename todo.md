@@ -53,6 +53,7 @@ Device needs to be reconnected when this error is handled.
 -  [x] DB that stores data for a long time (E.Q. wide column db like Apache Cassandra or Apache HBase)
 -  [x] save state changes in one document
 -  [x] Log all iot messages that goes back and forward
+-  [ ] move log db into all iot-db as a collection
 
 ## Gateway
 -  [x] Re-write G-bridge to serve as a gateway instead of mocking each device
@@ -84,10 +85,14 @@ Device needs to be reconnected when this error is handled.
 -  [ ] virtual enviroment that adds paths to PYTHONPATH
 
 ## Docker
--  [ ] Container holding Mongo-db with bind mounts to harddrive
--  [ ] Container holding NQTT
+-  [x] Container holding Mongo-db
+-  [ ] Mongo-volume added to ignore file
+-  [ ] Prod has mongo-volume points to harddrive
+-  [ ] differeance between prod and test compose file
+-  [x] Container holding NQTT
 -  [ ] Container holding Application
--  [ ] Docker compose / kubernetes
+-  [x] Docker compose / kubernetes
+-  [ ] Host setup db on the correct location, location to point to external HD if present otherwise, somewhere else
 
 ## Monitoring
 -  [x] Have a host-monitoring observer that publishes its data to the db handler with a good event name
