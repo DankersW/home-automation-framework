@@ -19,6 +19,12 @@ services:
     hostname: mongoDB
     container_name: MongoDB
     restart: always
+    healthcheck:
+      test: echo 'db.runCommand({serverStatus:1}).ok' | mongo admin -u admin -p mongo_admin_iot --quiet | grep 1
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
     ports:
       - "27017-27019:27017-27019"
     environment:
@@ -33,6 +39,8 @@ services:
     image: mongo-express
     hostname: mongo-express
     container_name: mongo-express
+    depends_on:
+      - mongo
     ports:
       - "8081:8081"
     environment:

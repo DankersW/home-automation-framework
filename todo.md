@@ -92,7 +92,7 @@ Device needs to be reconnected when this error is handled.
 -  [ ] differeance between prod and test compose file
 -  [x] Container holding NQTT
 -  [ ] Container holding Application
--  [ ] Docker compose / kubernetes
+-  [x] Docker compose / kubernetes
 -  [ ] Host setup db on the correct location, location to point to external HD if present otherwise, somewhere else
 
 
