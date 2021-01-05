@@ -36,6 +36,7 @@ class MqttGateway(Thread):
         self._thread_ready.set()
         while self.running:
             queue_item = self._observer_notify_queue.get()
+            print(queue_item)
 
     def notify(self, msg, _):
         self._observer_notify_queue.put(item=msg)
@@ -70,7 +71,8 @@ class MqttGateway(Thread):
     def _on_message(self):
         pass
 
-    # todo: test mosquitto broker tests github https://github.com/marketplace/actions/mosquitto-mqtt-broker-in-github-actions
+    # todo: test mosquitto broker tests
+    #  github https://github.com/marketplace/actions/mosquitto-mqtt-broker-in-github-actions
     # todo: integration tests local via docker, remote on github
 
 
