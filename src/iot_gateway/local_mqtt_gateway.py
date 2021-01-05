@@ -30,7 +30,7 @@ class LocalMqttGateway(Thread):
         self.observer_publish_queue = queue
         self._thread_ready = thread_event
 
-        broker_address = self.config['local_mqtt_gateway']['broker_address']
+        broker_address = self.config['mqtt_gateway']['broker_address']
         self.client = mqtt.Client()
         self.client.connect(broker_address, self.MqttConfiguration.port, self.MqttConfiguration.stay_alive)
 

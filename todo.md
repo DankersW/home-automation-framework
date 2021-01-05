@@ -19,12 +19,13 @@
 -  [x] Find and implement a good pattern to run the message shuffeling based on active gateways
 -  [x] Publish data from the notify to all observers
 -  [x] Update the outgoing messages queue
--  [ ] Threating event to let all the threats wait to start untill all observers are set
 -  [x] Attach devices automatically
 -  [x] Document naming of the different events and clean it up in the code so that the deivces listen to them in a good way
 -  [x] Define iot (mqtt) message content that is send from devices
 -  [x] Clean way of initialzing all observers instead of if a then x. e.q. fetching them a different file. 
 -  [x] Fetch observer interested messages from the class itself.
+-  [ ] Threating event to let all the threats wait to start untill all observers are set
+-  [ ] Integration tests of home automation, mocking input and checking the output 
 
 ## Bugs
 -  [ ] g-bridge: Out of memory causes reconnection. and and up with connection code 4 - The client is not currently 
@@ -106,3 +107,4 @@ Device needs to be reconnected when this error is handled.
 -  [ ] Re-write Gbridge to function properly
 -  [ ] re-write local_mqtt with proper techniques
 -  [ ] Unit tests for each file and function
+-  [ ] Unsubscribe a failed observer
