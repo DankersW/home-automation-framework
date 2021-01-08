@@ -1,5 +1,6 @@
 from typing import Callable
 from time import sleep
+from json import dumps
 
 from paho.mqtt import client as paho_mqtt, MQTTException
 
@@ -12,6 +13,7 @@ class IllegalArgumentError(ValueError):
 
 class MqttClient:
     """ Basic wrapper around Paho mqtt """
+    _mqtt_client = None
 
     def __init__(self, config: dict, connect_callback: Callable, message_callback: Callable) -> None:
         if self.valid_arguments(config=config, callbacks=[connect_callback, message_callback]):
@@ -32,21 +34,24 @@ class MqttClient:
         raise IllegalArgumentError
 
     def connect(self) -> paho_mqtt:
-        client = paho_mqtt.Client()
+        self._mqtt_client = paho_mqtt.Client()
         try:
-            client.connect(host=self._config.get("broker"), port=self._config.get("port", None),
-                           keepalive=self._config.get("stay_alive", None))
-            client.on_connect = self._on_connect_callback
-            client.on_message = self._on_message_callback
-            client.loop_start()
+            self._mqtt_client.connect(host=self._config.get("broker"), port=self._config.get("port", None),
+                                      keepalive=self._config.get("stay_alive", None))
+            self._mqtt_client.on_connect = self._on_connect_callback
+            self._mqtt_client.on_message = self._on_message_callback
+            self._mqtt_client.loop_start()
         except (ConnectionRefusedError, TimeoutError) as err:
             self.log.error(f'Failed to connect to MQTT broker ({self._config.get("broker", None)}). Error: {err}')
             return None
         self.log.success(f'Connected to MQTT broker ({self._config.get("broker")})')
-        return client
+        return self._mqtt_client
 
-    def publish(self, topic: str, msg: dict):
+    def publish(self, topic: str, msg: dict) -> bool:
         self.log.debug(f'Publishing message ')
+        json_payload = dumps(msg)
+        resp = self._mqtt_client.publish(topic=topic, payload=json_payload, qos=1)
+        print(resp)
         pass
 
 # todo: work on publish message with tests
@@ -65,4 +70,8 @@ if __name__ == '__main__':
     test_config = {'broker': '127.0.0.1', 'port': 1883, 'stay_alive': 60}
     mqtt_client = MqttClient(config=test_config, connect_callback=on_connect, message_callback=on_message)
     print(mqtt_client.connect())
+    sleep(4)
+    msg = {'a': 123, 'b': 'test'}
+    mqtt_client.publish(topic="test/hello", msg=msg)
+
 

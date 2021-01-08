@@ -39,6 +39,7 @@ services:
     image: mongo-express
     hostname: mongo-express
     container_name: mongo-express
+    restart: always
     depends_on:
       - mongo
     ports:
