@@ -49,6 +49,9 @@ class MqttClient:
         self.log.debug(f'Publishing message ')
         pass
 
+# todo: work on publish message with tests
+# todo: on message handler
+
 
 def on_connect(_client, _userdata, _flags, rc):
     print("connect")
