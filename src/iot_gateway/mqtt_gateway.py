@@ -27,8 +27,8 @@ class MqttGateway(Thread):
         self._observer_publish_queue: Queue = queue
         self._thread_ready: Event = thread_event
 
-        mqtt_config = self.get_mqtt_config()
-        self.mqtt_client = MqttClient(config=mqtt_config, connect_callback=self.on_connect, message_callback=self.on_message)
+        config = self.get_mqtt_config()
+        self.mqtt_client = MqttClient(config=config, connect_callback=self.on_connect, message_callback=self.on_message)
         if not self.mqtt_client.connect():
             print("unsubcribe itself")
 
@@ -47,14 +47,17 @@ class MqttGateway(Thread):
     def get_mqtt_config(self) -> dict:
         return {'broker': self.config['mqtt_gateway']['broker_address'], 'port': 1883, 'stay_alive': 60}
 
-    def on_connect(self, _client, _userdata, _flags, _rc):
-        self.log.success(f'Connected to MQTT broker ({self.config["mqtt_gateway"]["broker_address"]})')
+    def on_connect(self):
+        topics = ['iot/#']
+        self.mqtt_client.subscribe(topics=topics)
         self._thread_ready.set()
         self.running = True
 
-    def on_message(self, _client, _userdata, message):
-        print(message)
-        pass
+    def on_message(self, topic, payload):
+        print(payload)
+        print(topic)
+
+
 
     # todo: test mosquitto broker tests
     #  github https://github.com/marketplace/actions/mosquitto-mqtt-broker-in-github-actions

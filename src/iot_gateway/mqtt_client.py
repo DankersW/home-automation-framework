@@ -38,14 +38,22 @@ class MqttClient:
         try:
             self._mqtt_client.connect(host=self._config.get("broker"), port=self._config.get("port", None),
                                       keepalive=self._config.get("stay_alive", None))
-            self._mqtt_client.on_connect = self._on_connect_callback
-            self._mqtt_client.on_message = self._on_message_callback
+            self._mqtt_client.on_connect = self._on_connect
+            self._mqtt_client.on_message = self._on_message
             self._mqtt_client.loop_start()
         except (ConnectionRefusedError, TimeoutError) as err:
             self.log.error(f'Failed to connect to MQTT broker ({self._config.get("broker", None)}). Error: {err}')
             return False
-        self.log.success(f'Connected to MQTT broker ({self._config.get("broker")})')
         return True
+
+    def _on_connect(self, _client, _userdata, _flags, _rc) -> None:
+        self.log.success(f'Connected to MQTT broker ({self._config.get("broker")})')
+        self._on_connect_callback()
+
+    def _on_message(self, _client, _userdata, message) -> None:
+        topic = message.topic
+        payload = message.payload.decode("utf-8")
+        self._on_message_callback(topic=topic, payload=payload)
 
     def publish(self, topic: str, msg: dict) -> bool:
         self.log.debug(f'Publishing message {msg!r} on topic {topic!r}')
@@ -54,6 +62,10 @@ class MqttClient:
             self.log.warning(f'Message did not get published successfully')
             return False
         return True
+
+    def subscribe(self, topics: list):
+        for topic in topics:
+            self._mqtt_client.subscribe(topic=topic, qos=1)
 
 # todo: subscribe to list of topics
 # todo: on message handler
