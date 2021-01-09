@@ -28,8 +28,9 @@ class MqttGateway(Thread):
         self._thread_ready: Event = thread_event
 
         mqtt_config = self.get_mqtt_config()
-        mqtt_client = MqttClient(config=mqtt_config, connect_callback=self.on_connect, message_callback=self.on_message)
-        self.mqtt_client = mqtt_client.connect()
+        self.mqtt_client = MqttClient(config=mqtt_config, connect_callback=self.on_connect, message_callback=self.on_message)
+        if not self.mqtt_client.connect():
+            print("unsubcribe itself")
 
     def __del__(self):
         self.running = False
@@ -51,7 +52,8 @@ class MqttGateway(Thread):
         self._thread_ready.set()
         self.running = True
 
-    def on_message(self):
+    def on_message(self, _client, _userdata, message):
+        print(message)
         pass
 
     # todo: test mosquitto broker tests

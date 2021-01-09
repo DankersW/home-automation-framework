@@ -33,7 +33,7 @@ class MqttClient:
             return True
         raise IllegalArgumentError
 
-    def connect(self) -> paho_mqtt:
+    def connect(self) -> bool:
         self._mqtt_client = paho_mqtt.Client()
         try:
             self._mqtt_client.connect(host=self._config.get("broker"), port=self._config.get("port", None),
@@ -43,22 +43,23 @@ class MqttClient:
             self._mqtt_client.loop_start()
         except (ConnectionRefusedError, TimeoutError) as err:
             self.log.error(f'Failed to connect to MQTT broker ({self._config.get("broker", None)}). Error: {err}')
-            return None
+            return False
         self.log.success(f'Connected to MQTT broker ({self._config.get("broker")})')
-        return self._mqtt_client
+        return True
 
     def publish(self, topic: str, msg: dict) -> bool:
-        self.log.debug(f'Publishing message ')
-        json_payload = dumps(msg)
-        resp = self._mqtt_client.publish(topic=topic, payload=json_payload, qos=1)
-        print(resp)
-        pass
+        self.log.debug(f'Publishing message {msg!r} on topic {topic!r}')
+        message_info = self._mqtt_client.publish(topic=topic, payload=dumps(msg), qos=1)
+        if message_info.rc != 0:
+            self.log.warning(f'Message did not get published successfully')
+            return False
+        return True
 
-# todo: work on publish message with tests
+# todo: subscribe to list of topics
 # todo: on message handler
 
 
-def on_connect(_client, _userdata, _flags, rc):
+def on_connect(_client, _userdata, _flags, _rc):
     print("connect")
 
 
@@ -71,7 +72,8 @@ if __name__ == '__main__':
     mqtt_client = MqttClient(config=test_config, connect_callback=on_connect, message_callback=on_message)
     print(mqtt_client.connect())
     sleep(4)
-    msg = {'a': 123, 'b': 'test'}
-    mqtt_client.publish(topic="test/hello", msg=msg)
+    _msg = {'a': 123, 'b': 'test'}
+    mqtt_client.publish(topic="test/hello", msg=_msg)
+    mqtt_client.publish(topic="test/hello", msg=_msg)
 
 
