@@ -51,6 +51,7 @@ class MqttClient:
         self._on_connect_callback()
 
     def _on_message(self, _client, _userdata, message) -> None:
+        self.log.debug(f'Received message on topic {message.topic!r}')
         topic = message.topic
         payload = message.payload.decode("utf-8")
         self._on_message_callback(topic=topic, payload=payload)
@@ -59,32 +60,10 @@ class MqttClient:
         self.log.debug(f'Publishing message {msg!r} on topic {topic!r}')
         message_info = self._mqtt_client.publish(topic=topic, payload=dumps(msg), qos=1)
         if message_info.rc != 0:
-            self.log.warning(f'Message did not get published successfully')
+            self.log.warning('Message did not get published successfully')
             return False
         return True
 
     def subscribe(self, topics: list) -> None:
         for topic in topics:
             self._mqtt_client.subscribe(topic=topic, qos=1)
-
-# todo: on message handler
-
-
-def on_connect(_client, _userdata, _flags, _rc):
-    print("connect")
-
-
-def on_message():
-    print("message")
-
-
-if __name__ == '__main__':
-    test_config = {'broker': '127.0.0.1', 'port': 1883, 'stay_alive': 60}
-    mqtt_client = MqttClient(config=test_config, connect_callback=on_connect, message_callback=on_message)
-    print(mqtt_client.connect())
-    sleep(4)
-    _msg = {'a': 123, 'b': 'test'}
-    mqtt_client.publish(topic="test/hello", msg=_msg)
-    mqtt_client.publish(topic="test/hello", msg=_msg)
-
-

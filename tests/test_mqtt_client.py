@@ -96,8 +96,14 @@ class TestMqttClient(TestCase):
         conf = {'broker': '127.0.0.1'}
         _client = MqttClient(config=conf, connect_callback=self.mock_callback,
                              message_callback=mock_msg.on_msg_callback)
+        msg = 'test_123'
+        topic = 'test_topic'
+        mock_msg.payload = msg.encode('utf-8')
+        mock_msg.topic = topic
         _client._on_message(None, None, mock_msg)
-        print(mock_msg.result_payload)
+        self.assertEqual(mock_msg.result_payload, msg)
+        self.assertEqual(mock_msg.result_topic, topic)
+
 
 class MockOnMessage:
     payload = b'hello'
@@ -108,7 +114,6 @@ class MockOnMessage:
     def on_msg_callback(self, topic, payload):
         self.result_topic = topic
         self.result_payload = payload
-
 
 
 class MockClient:

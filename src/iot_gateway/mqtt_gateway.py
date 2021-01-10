@@ -54,14 +54,7 @@ class MqttGateway(Thread):
         self.running = True
 
     def on_message(self, topic, payload):
-        print(payload)
-        print(topic)
-
-
-
-    # todo: test mosquitto broker tests
-    #  github https://github.com/marketplace/actions/mosquitto-mqtt-broker-in-github-actions
-    # todo: integration tests local via docker, remote on github
+        pass
 
 
 if __name__ == '__main__':
