@@ -63,11 +63,10 @@ class MqttClient:
             return False
         return True
 
-    def subscribe(self, topics: list):
+    def subscribe(self, topics: list) -> None:
         for topic in topics:
             self._mqtt_client.subscribe(topic=topic, qos=1)
 
-# todo: subscribe to list of topics
 # todo: on message handler
 
 

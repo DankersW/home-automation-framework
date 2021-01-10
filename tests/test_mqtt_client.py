@@ -90,6 +90,26 @@ class TestMqttClient(TestCase):
         type(_client)._mqtt_client = mock_mqtt_client
         self.assertFalse(_client.publish("test", {'a': 12}))
 
+    def test_on_message(self):
+        """ Testing on message, mocking the actual paho code"""
+        mock_msg = MockOnMessage()
+        conf = {'broker': '127.0.0.1'}
+        _client = MqttClient(config=conf, connect_callback=self.mock_callback,
+                             message_callback=mock_msg.on_msg_callback)
+        _client._on_message(None, None, mock_msg)
+        print(mock_msg.result_payload)
+
+class MockOnMessage:
+    payload = b'hello'
+    topic = ''
+    result_payload = b''
+    result_topic = ''
+
+    def on_msg_callback(self, topic, payload):
+        self.result_topic = topic
+        self.result_payload = payload
+
+
 
 class MockClient:
     @staticmethod
