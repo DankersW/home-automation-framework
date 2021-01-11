@@ -1,20 +1,14 @@
-from dataclasses import dataclass
 from queue import Queue
 from threading import Thread, Event
 from json import loads
 from datetime import datetime
+from typing import Callable
 
 from src.iot_gateway.mqtt_client import MqttClient
 
 from src.logging.logging import Logging
 from lib.configuration_parser import ConfigurationParser
 from lib.utils import is_json
-
-
-@dataclass
-class MqttConfiguration:
-    port: int = 1883
-    stay_alive: int = 60
 
 
 class MqttGateway(Thread):
@@ -33,6 +27,7 @@ class MqttGateway(Thread):
         config = self.get_mqtt_config()
         self.mqtt_client = MqttClient(config=config, connect_callback=self.on_connect, message_callback=self.on_message)
         if not self.mqtt_client.connect():
+            # todo: unscribcribe from subject
             print("unsubcribe itself")
 
     def __del__(self):
@@ -44,7 +39,7 @@ class MqttGateway(Thread):
             queue_item = self._observer_notify_queue.get()
             print(queue_item)
 
-    def notify(self, msg, _):
+    def notify(self, msg, _event):
         self._observer_notify_queue.put(item=msg)
 
     def get_mqtt_config(self) -> dict:
@@ -62,9 +57,10 @@ class MqttGateway(Thread):
 
         data = self._parse_mqtt_payload(payload=payload)
         if self._is_valid_mqtt_message(msg=data):
-            self._message_handler(data=data)
+            handler = self._get_message_handler(event=data.get('event_type'))
+            handler(data=data)
         else:
-            self.log.warning('The MQTT message is was not valid')
+            self.log.warning('The MQTT message is not valid')
 
     def _log_mqtt_traffic(self, topic: str, payload: str) -> None:
         msg = {'timestamp': datetime.now(), 'source': type(self).__name__, 'topic': topic, 'payload': payload}
@@ -79,28 +75,28 @@ class MqttGateway(Thread):
 
     @staticmethod
     def _is_valid_mqtt_message(msg: dict) -> bool:
-        needed_keys = ['device_id', 'event_type']
+        needed_keys = ['device_id', 'event_type', 'state']
         for key in needed_keys:
             if key not in msg:
                 return False
         return True
 
-    def _message_handler(self, data: dict) -> None:
-        action_map = {
+    def _get_message_handler(self, event: str) -> Callable:
+        handler_map = {
             'iot_dev_state_change': self._handle_state_change
         }
-        event = data.get('event_type')
-        action = action_map.get(event, self._unknown_event)
-        action(data)
+        return handler_map.get(event, self._unknown_event)
 
-    def _unknown_event(self, data: dict):
+    def _unknown_event(self, data: dict) -> None:
         self.log.warning(f'Unknown event {data.get("event_type")} - No action selected')
 
-    def _handle_state_change(self, data: dict):
-        pass
-
-# todo: finish message handler
-# todo: inplement handle_state_changee
+    def _handle_state_change(self, data: dict) -> None:
+        device_id = data.get('device_id')
+        event = data.get('event_type')
+        device_state = data.get('state')
+        message = {'device_id': device_id, 'event_type': event, 'state': device_state}
+        item = {'event': 'device_state_changed', 'message': message}
+        self._observer_publish_queue.put(item)
 
 
 if __name__ == '__main__':

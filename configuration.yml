@@ -4,10 +4,9 @@ general:
 
 system_components:
   gcp: false
-  local_mqtt_gateway: false
   mqtt_gateway: true
   db: false
-  host_monitor: false
+  host_monitor: true
 
 logging:
   file_log_folder: 'C:\Users\woute\development\logs'
