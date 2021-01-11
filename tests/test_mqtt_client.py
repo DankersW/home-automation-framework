@@ -125,6 +125,10 @@ class MockClient:
     def loop_start(**_kwargs):
         pass
 
+    @staticmethod
+    def subscribe(**_kwargs):
+        pass
+
 
 class MockClientConnectionRefused(MockClient):
     @staticmethod
