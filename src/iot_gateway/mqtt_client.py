@@ -1,8 +1,7 @@
 from typing import Callable
-from time import sleep
 from json import dumps
 
-from paho.mqtt import client as paho_mqtt, MQTTException
+from paho.mqtt import client as paho_mqtt
 
 from src.logging.logging import Logging
 
