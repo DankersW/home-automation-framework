@@ -97,9 +97,3 @@ class MqttGateway(Thread):
         message = {'device_id': device_id, 'event_type': event, 'state': device_state}
         item = {'event': 'device_state_changed', 'message': message}
         self._observer_publish_queue.put(item)
-
-
-if __name__ == '__main__':
-    t_queue = Queue(10)
-    t_event = Event()
-    mqtt_gateway = MqttGateway(queue=t_queue, thread_event=t_event)

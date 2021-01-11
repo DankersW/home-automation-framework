@@ -168,3 +168,18 @@ class TestMqttGateway(TestCase):
         self.assertEqual(iot_traffic_event['message']['payload'], json_data)
 
         self.assertTrue(self.test_queue.empty())
+
+    @mock.patch("src.iot_gateway.mqtt_client.MqttClient")
+    def test_on_connect(self, mock_mqtt_client):
+        """ Testing on connect method """
+        mock_mqtt_client.return_value = MockMqttClient
+        mqtt_gateway = MqttGateway(queue=self.test_queue, thread_event=self.default_event)
+        mqtt_gateway.on_connect()
+        self.assertTrue(mqtt_gateway.running)
+        self.assertTrue(self.default_event.is_set())
+
+
+class MockMqttClient:
+    @staticmethod
+    def subscribe(topics):
+        pass
