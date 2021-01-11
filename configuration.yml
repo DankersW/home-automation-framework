@@ -4,8 +4,8 @@ general:
 
 system_components:
   gcp: false
-  local_mqtt_gateway: false
-  db: true
+  mqtt_gateway: true
+  db: false
   host_monitor: true
 
 logging:
@@ -13,7 +13,7 @@ logging:
   min_log_level: debug
   log_collection_name: logs
 
-local_mqtt_gateway:
+mqtt_gateway:
   #broker_address: '192.168.1.83' # WIFI home
   broker_address: '127.0.0.1'
   #broker_address: '10.42.0.25' # ETH0

@@ -83,5 +83,6 @@ class TestHostHealth(TestCase):
         sleep(interval * 3)
         mock_running_property = PropertyMock(return_value=False)
         type(self.health_monitor).running = mock_running_property
-        self.assertEqual(self.test_queue.qsize(), 3)
+        result = self.test_queue.qsize() == 3 or self.test_queue.qsize() == 4
+        self.assertTrue(result)
 

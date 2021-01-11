@@ -107,3 +107,12 @@ Device needs to be reconnected when this error is handled.
 -  [ ] Re-write Gbridge to function properly
 -  [ ] re-write local_mqtt with proper techniques
 -  [ ] Unit tests for each file and function
+-  [ ] Unsubscribe a failed observer
+
+## Integration tests
+-  [ ] Mosquitto broker test
+-  [ ] Mongodb test
+-  [ ] Test the system, feeding a bunch of packages via mqtt and comparing the db afterwards
+
+## order me
+unscrubrive from subject when mqtt broker refused

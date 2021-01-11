@@ -5,6 +5,7 @@ from threading import Event
 from lib.configuration_parser import ConfigurationParser
 from src.iot_gateway.g_bridge import GBridge
 from src.iot_gateway.local_mqtt_gateway import LocalMqttGateway
+from src.iot_gateway.mqtt_gateway import MqttGateway
 from src.logging.logging import Logging
 from src.db.db_handler import DbHandler
 from src.host_health.health_monitor import HealthMonitor
@@ -65,6 +66,7 @@ class IotSubject:
         object_mapper = {
             'gcp': GBridge,
             'local_mqtt_gateway': LocalMqttGateway,
+            'mqtt_gateway': MqttGateway,
             'db': DbHandler,
             'host_monitor': HealthMonitor
         }
