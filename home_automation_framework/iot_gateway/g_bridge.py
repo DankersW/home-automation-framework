@@ -9,7 +9,7 @@ from queue import Queue
 import jwt
 import paho.mqtt.client as mqtt
 
-from src.logging.logging import Logging, LogLevels
+from home_automation_framework.logging.logging import Logging, LogLevels
 from lib.utils import get_keys_dir
 
 

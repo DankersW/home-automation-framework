@@ -3,7 +3,7 @@ from json import dumps
 
 from paho.mqtt import client as paho_mqtt
 
-from src.logging.logging import Logging
+from home_automation_framework.logging.logging import Logging
 
 
 class IllegalArgumentError(ValueError):

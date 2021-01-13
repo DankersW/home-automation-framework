@@ -9,7 +9,7 @@ from threading import Event
 import mock
 from mock import PropertyMock
 
-from src.host_health.health_monitor import HealthMonitor
+from home_automation_framework.host_health.health_monitor import HealthMonitor
 from tests.helper_functions import create_test_file_with_data, delete_file, emtpy_queue
 
 

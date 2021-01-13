@@ -2,7 +2,7 @@ from unittest import TestCase
 from mock import PropertyMock
 from datetime import datetime
 
-from src.logging.persistent_logging import DbLogging
+from home_automation_framework.logging.persistent_logging import DbLogging
 
 
 class TestLogging(TestCase):

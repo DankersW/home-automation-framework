@@ -5,7 +5,7 @@ from time import time, sleep
 from datetime import datetime
 import subprocess
 
-from src.logging.logging import Logging
+from home_automation_framework.logging.logging import Logging
 
 
 class HealthMonitor(Thread):
