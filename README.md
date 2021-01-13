@@ -1,4 +1,4 @@
-![framework_unit_tests](https://github.com/DankersW/Home_Automation/workflows/home_server_tests/badge.svg) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/14720ee94823416288382efe00e56ed7)](https://www.codacy.com/gh/DankersW/home-automation-framework/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=DankersW/home-automation-framework&amp;utm_campaign=Badge_Grade)
+![framework_unit_tests](https://github.com/DankersW/Home_Automation/workflows/framework_unit_tests/badge.svg) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/14720ee94823416288382efe00e56ed7)](https://www.codacy.com/gh/DankersW/home-automation-framework/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=DankersW/home-automation-framework&amp;utm_campaign=Badge_Grade)
 # Home Automation framework
 Handles all the communication between my IoT units. It also acts as the link between GCP and my home appliances. 
 All IoT units needs to go through the gateway to access the internet. There is one MQTT IoT gateway handling IoT 
