@@ -6,7 +6,7 @@ traffic. In the future more IoT gateways will be added to handle addition commun
 An addition MQTT gateway is present handling traffic going to and from GPC. 
 
 ## Architecture
-![Architecture](static/images/Home-automation-framework.png "Architectural overview")
+![Architecture](docs/static/images/Home-automation-framework.png "Architectural overview")
 Architectural design made via  [Lucidchart](https://lucid.app/lucidchart/dbce786e-f6e2-41f7-8d71-51f903208ce9/edit?page=0_0#?folder_id=home&browser=icon)
 
 ## Run
