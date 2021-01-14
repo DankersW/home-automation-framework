@@ -2,7 +2,7 @@ from queue import Queue
 from typing import Callable
 from threading import Event
 
-from lib.configuration_parser import ConfigurationParser
+from home_automation_framework.utils.configuration_parser import ConfigurationParser
 from home_automation_framework.iot_gateway.g_bridge import GBridge
 from home_automation_framework.iot_gateway.mqtt_gateway import MqttGateway
 from home_automation_framework.logging.logging import Logging

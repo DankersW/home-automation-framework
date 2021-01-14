@@ -4,7 +4,7 @@ from dataclasses import dataclass, asdict
 from ntpath import split, basename
 from pathlib import Path
 
-from lib.configuration_parser import ConfigurationParser
+from home_automation_framework.utils.configuration_parser import ConfigurationParser
 from home_automation_framework.logging.persistent_logging import DbLogging
 
 

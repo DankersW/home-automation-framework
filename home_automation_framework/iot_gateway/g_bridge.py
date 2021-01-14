@@ -10,7 +10,7 @@ import jwt
 import paho.mqtt.client as mqtt
 
 from home_automation_framework.logging.logging import Logging, LogLevels
-from lib.utils import get_keys_dir
+from home_automation_framework.utils.utils import get_keys_dir
 
 
 @dataclass

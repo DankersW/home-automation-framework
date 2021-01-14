@@ -3,7 +3,7 @@ from typing import Union
 
 from pymongo import MongoClient, errors
 
-from lib.configuration_parser import ConfigurationParser
+from home_automation_framework.utils.configuration_parser import ConfigurationParser
 from home_automation_framework.logging.logging import Logging
 
 
