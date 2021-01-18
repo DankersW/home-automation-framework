@@ -11,7 +11,4 @@ COPY configuration.yml .
 
 RUN pip3 install -r requirements.txt
 
-
-#ENTRYPOINT ["ls", "-l"]
 CMD [ "python3", "./home_automation_framework.py" ]
-#CMD [ "python3", "./home-automation-framework/home_automation_framework.py" ]
