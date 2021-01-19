@@ -52,12 +52,13 @@ services:
     image: dankersw/home_automation_framework:beta_test
     hostname: framework
     container_name: framework
+    command: python3 home_automation_framework.py
     depends_on:
       - mongo
       - mqtt_mosquitto_broker
-    ports:
-      - "8081:8081"
-      - "27017-27019:27017-27019"
+    #ports:
+    #  - "8081:8081"
+    #  - "27017-27019:27017-27019"
 
 
 volumes:
