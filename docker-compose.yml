@@ -1,9 +1,6 @@
 version: "3.9"
 services:
 
-  # our framework needs to depend on mqtt broker and DB
-  # todo: do a health check
-
   mqtt_mosquitto_broker:
     image: toke/mosquitto:release-1.4.10-2
     hostname: mqtt_mosquitto_broker
@@ -49,9 +46,10 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: mongo_admin_iot
 
   home-automation-framework:
-    image: dankersw/home_automation_framework:latest
+    image: dankersw/home_automation_framework:0.1
     hostname: framework
     container_name: framework
+    restart: always
     command: python3 home_automation_framework.py
     depends_on:
       - mongo

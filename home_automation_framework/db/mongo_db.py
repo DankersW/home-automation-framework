@@ -31,7 +31,7 @@ class MongoHandler:
         mongo_url = self.MongoConfLocal.url.replace(self.MongoConfLocal.host, mongo_host)
 
         try:
-            client = MongoClient(mongo_url, serverSelectionTimeoutMS=30)
+            client = MongoClient(mongo_url)
             client.server_info()
             db = client[db_name]
             self.log.success(f'Connected to MongoDB {db_name!r} at {mongo_url}')
