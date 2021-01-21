@@ -1,7 +1,7 @@
 from unittest import TestCase, mock
 from paho.mqtt import client
 
-from src.iot_gateway.mqtt_client import MqttClient, IllegalArgumentError
+from home_automation_framework.iot_gateway.mqtt_client import MqttClient, IllegalArgumentError
 
 
 class TestMqttClient(TestCase):

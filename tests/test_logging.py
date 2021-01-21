@@ -1,6 +1,6 @@
 import unittest
 
-from src.logging.logging import Logging, LogLevels
+from home_automation_framework.logging.logging import Logging, LogLevels
 
 
 class TestLogging(unittest.TestCase):

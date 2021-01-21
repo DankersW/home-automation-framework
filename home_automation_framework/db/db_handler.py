@@ -2,7 +2,7 @@ from threading import Thread, Event
 from queue import Queue
 from typing import Callable
 
-from src.db.mongo_db import MongoHandler
+from home_automation_framework.db.mongo_db import MongoHandler
 
 
 class DbHandler(Thread):

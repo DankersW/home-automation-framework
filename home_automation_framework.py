@@ -1,4 +1,4 @@
-from src.home_automation_framework.home_automation_framework import IotSubject
+from home_automation_framework.framework.framework import IotSubject
 
 
 class HomeServer:

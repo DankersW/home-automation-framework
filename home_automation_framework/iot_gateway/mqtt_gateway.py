@@ -4,11 +4,10 @@ from json import loads
 from datetime import datetime
 from typing import Callable
 
-from src.iot_gateway.mqtt_client import MqttClient
-
-from src.logging.logging import Logging
-from lib.configuration_parser import ConfigurationParser
-from lib.utils import is_json
+from home_automation_framework.iot_gateway.mqtt_client import MqttClient
+from home_automation_framework.logging.logging import Logging
+from home_automation_framework.utils.configuration_parser import ConfigurationParser
+from home_automation_framework.utils.utils import is_json
 
 
 class MqttGateway(Thread):

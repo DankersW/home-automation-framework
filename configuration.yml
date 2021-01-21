@@ -5,7 +5,7 @@ general:
 system_components:
   gcp: false
   mqtt_gateway: true
-  db: false
+  db: true
   host_monitor: true
 
 logging:
@@ -14,10 +14,9 @@ logging:
   log_collection_name: logs
 
 mqtt_gateway:
-  #broker_address: '192.168.1.83' # WIFI home
-  broker_address: '127.0.0.1'
-  #broker_address: '10.42.0.25' # ETH0
+  #broker_address: '127.0.0.1'
+  broker_address: 'mqtt_mosquitto_broker'
 
 mongo_db:
-  host_ip: '127.0.0.1'
-  #host_ip: '10.42.0.25'
+  host_ip: 'mongo'
+  #host_ip: '127.0.0.1'

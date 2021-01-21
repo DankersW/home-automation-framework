@@ -3,8 +3,8 @@ from typing import Union
 
 from pymongo import MongoClient, errors
 
-from lib.configuration_parser import ConfigurationParser
-from src.logging.logging import Logging
+from home_automation_framework.utils.configuration_parser import ConfigurationParser
+from home_automation_framework.logging.logging import Logging
 
 
 class MongoHandler:
@@ -31,7 +31,7 @@ class MongoHandler:
         mongo_url = self.MongoConfLocal.url.replace(self.MongoConfLocal.host, mongo_host)
 
         try:
-            client = MongoClient(mongo_url, serverSelectionTimeoutMS=30)
+            client = MongoClient(mongo_url)
             client.server_info()
             db = client[db_name]
             self.log.success(f'Connected to MongoDB {db_name!r} at {mongo_url}')

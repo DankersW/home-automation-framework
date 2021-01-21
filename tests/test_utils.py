@@ -1,7 +1,7 @@
 from unittest import TestCase
 from json import dumps
 
-from lib.utils import is_json
+from home_automation_framework.utils.utils import is_json
 
 
 class TestUtils(TestCase):

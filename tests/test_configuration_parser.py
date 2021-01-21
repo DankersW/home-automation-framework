@@ -3,7 +3,7 @@ from pathlib import Path
 import unittest
 import yaml
 
-from lib.configuration_parser import ConfigurationParser
+from home_automation_framework.utils.configuration_parser import ConfigurationParser
 
 
 class TestConfigurationParser(unittest.TestCase):
