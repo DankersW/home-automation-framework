@@ -10,7 +10,7 @@ An addition MQTT gateway is present handling traffic going to and from GPC.
 Architectural design made via  [Lucidchart](https://lucid.app/lucidchart/dbce786e-f6e2-41f7-8d71-51f903208ce9/edit?page=0_0#?folder_id=home&browser=icon)
 
 ## Run
-Run the docker-compose file located at [Lucidchart](https://github.com/DankersW/home-automation)
+Run the docker-compose file located at [home-automation](https://github.com/DankersW/home-automation)
 
 ```bash
 pip3 install -r requirements.txt
