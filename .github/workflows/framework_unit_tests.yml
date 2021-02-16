@@ -21,13 +21,18 @@ jobs:
         run:  |
           coverage run -m unittest discover -s tests/ -p 'test_*.py'
           coverage report -m
+          coverage html
 
       - name: "file system"
         run: |
           pwd
           ls -l
+          echo ""
+          ls .github/workflows/ -l
 
       - name: "Upload coverage to Codecov"
         uses: codecov/codecov-action@v1
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: unittests
           fail_ci_if_error: true
