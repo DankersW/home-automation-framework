@@ -11,6 +11,7 @@
 ## IOT-gateway
 -  [ ] Integration tests of home automation, mocking input and checking the output 
 -  [ ] Publish status of framework over mqtt 
+-  [ ] Parsing sensor data message to internal message object
 
 ## Docker
 -  [ ] MongoDB for production needs to point to a specific location on the host
