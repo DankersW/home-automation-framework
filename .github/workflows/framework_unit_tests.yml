@@ -28,9 +28,9 @@ jobs:
           pwd
           ls -l
           echo ""
-          ls .github/workflows/ -l
+          ls -l .github/workflows/
           echo ""
-          cat ./coverage.xml
+          ls -l htmlcov/
 
       - name: "Upload coverage to Codecov"
         uses: codecov/codecov-action@v1
