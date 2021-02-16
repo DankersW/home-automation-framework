@@ -7,6 +7,7 @@
 -  [ ] If an observer failed to start up, it needs to be removed from the observer list
 -  [ ] GBridge: re-write to use mqtt client
 -  [ ] In docker compose map volume that holds temp to a docker volume; /sys/class/thermal/thermal_zone2/temp:/thermal/thermal_zone2/temp
+-  [ ] Using an ObserverMessage object instead of a dict
 
 ## IOT-gateway
 -  [ ] Integration tests of home automation, mocking input and checking the output 
