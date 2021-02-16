@@ -29,6 +29,8 @@ jobs:
           ls -l
           echo ""
           ls .github/workflows/ -l
+          echo ""
+          cat ./coverage.xml
 
       - name: "Upload coverage to Codecov"
         uses: codecov/codecov-action@v1
