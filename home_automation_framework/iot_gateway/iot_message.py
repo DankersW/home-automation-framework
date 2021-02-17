@@ -9,18 +9,27 @@ class IotMessage:
     device_id: str = None
     payload: dict = None
 
-    def __init__(self, mqtt_topic: str = None, data: Union[str, dict] = None) -> None:
+    def __init__(self, mqtt_topic: str, data: Union[str, dict]) -> None:
         self.event = self._get_event_from_topic(topic=mqtt_topic)
         self.device_id = self._get_device_id_from_topic(topic=mqtt_topic)
         self.payload = self._parse_data(data=data)
 
     def _get_event_from_topic(self, topic: str) -> Union[str, None]:
-        pass
+        return self._destruct_topic(topic=topic, item_index=3)
 
     def _get_device_id_from_topic(self, topic: str) -> Union[str, None]:
-        pass
+        return self._destruct_topic(topic=topic, item_index=2)
 
-    def _parse_data(self, data: Union[str, dict]) -> Union[dict, None]:
+    @staticmethod
+    def _destruct_topic(topic: str, item_index: int) -> Union[str, None]:
+        topic_structure = topic.split('/')
+        valid_topic = len(topic_structure) == 4 and topic_structure[0] == "iot" and topic_structure[1] == "devices"
+        if not valid_topic:
+            return None
+        return topic_structure[item_index]
+
+    @staticmethod
+    def _parse_data(data: Union[str, dict]) -> Union[dict, None]:
         if isinstance(data, dict):
             return data
         elif is_json(data):

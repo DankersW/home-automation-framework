@@ -1,4 +1,6 @@
 # MQTT gateway
+
+ **All topics**
 | Topic                             | Event type    | Info                                         |   |   |
 |-----------------------------------|---------------|----------------------------------------------|---|---|
 | iot/devices/<device-id>/command   | Command       | Used for changing the State of the device    |   |   |
@@ -14,9 +16,13 @@ Message payload can be in JSON format or in binary
 }
 ```
 
-  **Possible events**
-  
-| event_type             | Info                                                                  | 
-|------------------------|-----------------------------------------------------------------------|
-| iot_dev_state_change   | Device state got changed                                              | 
-| iot_sensor_data_info   | Device sends sensor data                                              | 
+### Example
+`state`
+- **topic**: iot/devices/device_test_001/state
+- **payload**: {"state": true}
+
+`telemetry`
+- **topic**: iot/devices/device_test_001/telemetry
+- **payload**: {"temperature": 21.05, "humidity": 25.03}
+
+

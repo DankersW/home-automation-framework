@@ -67,7 +67,8 @@ class MqttGateway(Thread):
 
     def _select_handler(self, event: str) -> Callable:
         handler_map = {
-            'iot_dev_state_change': self._handle_state_change
+            'state': self._handle_state_change,
+            'telemetry': self._handle_telemetry
         }
         return handler_map.get(event, self._unknown_event)
 
@@ -78,3 +79,6 @@ class MqttGateway(Thread):
         message = {'device_id': msg.device_id, 'event_type': msg.event, 'state': msg.payload.get('state')}
         item = {'event': 'device_state_changed', 'message': message}
         self._observer_publish_queue.put(item)
+
+    def _handle_telemetry(self, msg: IotMessage) -> None:
+        pass
