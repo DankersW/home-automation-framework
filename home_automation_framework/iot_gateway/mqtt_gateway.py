@@ -1,6 +1,5 @@
 from queue import Queue
 from threading import Thread, Event
-
 from datetime import datetime
 from typing import Callable
 
@@ -54,11 +53,10 @@ class MqttGateway(Thread):
         self.log.info(f'Received {payload!r} on topic {topic!r}')
         self._log_mqtt_traffic(topic=topic, payload=payload)
 
-        #data = self._parse_mqtt_payload(payload=payload)
         message = IotMessage(mqtt_topic=topic, data=payload)
         if message.is_valid():
-            handler = self._get_message_handler(event=message.event)
-            handler(data=data)
+            handler = self._select_handler(event=message.event)
+            handler(msg=message)
         else:
             self.log.warning('The MQTT message is not valid')
 
@@ -67,7 +65,7 @@ class MqttGateway(Thread):
         traffic_item = {'event': 'iot_traffic', 'message': msg}
         self._observer_publish_queue.put(traffic_item)
 
-    def _get_message_handler(self, event: str) -> Callable:
+    def _select_handler(self, event: str) -> Callable:
         handler_map = {
             'iot_dev_state_change': self._handle_state_change
         }
@@ -77,9 +75,6 @@ class MqttGateway(Thread):
         self.log.warning(f'Unknown event {msg.event} - No action selected')
 
     def _handle_state_change(self, msg: IotMessage) -> None:
-        device_id = msg.device_id
-        event = msg.event
-        device_state = data.get('state')
-        message = {'device_id': device_id, 'event_type': event, 'state': device_state}
+        message = {'device_id': msg.device_id, 'event_type': msg.event, 'state': msg.payload.get('state')}
         item = {'event': 'device_state_changed', 'message': message}
         self._observer_publish_queue.put(item)

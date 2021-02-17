@@ -21,11 +21,10 @@ class IotMessage:
         pass
 
     def _parse_data(self, data: Union[str, dict]) -> Union[dict, None]:
-        if is_json(data):
+        if isinstance(data, dict):
+            return data
+        elif is_json(data):
             return loads(data)
-        # todo: if json --> do something
-        # todo: serialize the data
-        # todo: parse message
         return None
 
     def is_valid(self) -> bool:
