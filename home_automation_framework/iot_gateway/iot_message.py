@@ -41,8 +41,3 @@ class IotMessage:
             if getattr(self, attr) is None:
                 return False
         return True
-
-
-if __name__ == '__main__':
-    msg = IotMessage('None')
-    print(msg.is_valid())

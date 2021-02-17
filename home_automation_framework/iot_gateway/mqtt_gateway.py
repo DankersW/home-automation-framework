@@ -76,6 +76,7 @@ class MqttGateway(Thread):
         self.log.warning(f'Unknown event {msg.event} - No action selected')
 
     def _handle_state_change(self, msg: IotMessage) -> None:
+        self.log.debug("Handling state event")
         message = {'device_id': msg.device_id, 'event_type': msg.event, 'state': msg.payload.get('state')}
         item = {'event': 'device_state_changed', 'message': message}
         self._observer_publish_queue.put(item)
