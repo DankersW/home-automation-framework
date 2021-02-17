@@ -1,13 +1,13 @@
 from queue import Queue
 from threading import Thread, Event
-from json import loads
+
 from datetime import datetime
 from typing import Callable
 
 from home_automation_framework.iot_gateway.mqtt_client import MqttClient
+from home_automation_framework.iot_gateway.iot_message import IotMessage
 from home_automation_framework.logging.logging import Logging
 from home_automation_framework.utils.configuration_parser import ConfigurationParser
-from home_automation_framework.utils.utils import is_json
 
 
 class MqttGateway(Thread):
@@ -54,9 +54,10 @@ class MqttGateway(Thread):
         self.log.info(f'Received {payload!r} on topic {topic!r}')
         self._log_mqtt_traffic(topic=topic, payload=payload)
 
-        data = self._parse_mqtt_payload(payload=payload)
-        if self._is_valid_mqtt_message(msg=data):
-            handler = self._get_message_handler(event=data.get('event_type'))
+        #data = self._parse_mqtt_payload(payload=payload)
+        message = IotMessage(mqtt_topic=topic, data=payload)
+        if message.is_valid():
+            handler = self._get_message_handler(event=message.event)
             handler(data=data)
         else:
             self.log.warning('The MQTT message is not valid')
@@ -66,32 +67,18 @@ class MqttGateway(Thread):
         traffic_item = {'event': 'iot_traffic', 'message': msg}
         self._observer_publish_queue.put(traffic_item)
 
-    def _parse_mqtt_payload(self, payload: str) -> dict:
-        if not is_json(payload):
-            self.log.warning('Received message was not in JSON format.')
-            return dict()
-        return loads(payload)
-
-    @staticmethod
-    def _is_valid_mqtt_message(msg: dict) -> bool:
-        needed_keys = ['device_id', 'event_type', 'state']
-        for key in needed_keys:
-            if key not in msg:
-                return False
-        return True
-
     def _get_message_handler(self, event: str) -> Callable:
         handler_map = {
             'iot_dev_state_change': self._handle_state_change
         }
         return handler_map.get(event, self._unknown_event)
 
-    def _unknown_event(self, data: dict) -> None:
-        self.log.warning(f'Unknown event {data.get("event_type")} - No action selected')
+    def _unknown_event(self, msg: IotMessage) -> None:
+        self.log.warning(f'Unknown event {msg.event} - No action selected')
 
-    def _handle_state_change(self, data: dict) -> None:
-        device_id = data.get('device_id')
-        event = data.get('event_type')
+    def _handle_state_change(self, msg: IotMessage) -> None:
+        device_id = msg.device_id
+        event = msg.event
         device_state = data.get('state')
         message = {'device_id': device_id, 'event_type': event, 'state': device_state}
         item = {'event': 'device_state_changed', 'message': message}
