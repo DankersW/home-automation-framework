@@ -79,31 +79,6 @@ class TestMqttGateway(TestCase):
         result = mqtt_gateway._select_handler(event=event)
         self.assertEqual(result.__name__, handler_name)
 
-    """
-    @mock.patch("home_automation_framework.iot_gateway.mqtt_client.MqttClient")
-    def test_on_message_correct_state_changed(self, mock_mqtt_client):
-        mock_mqtt_client.return_value = None
-        mqtt_gateway = MqttGateway(queue=self.test_queue, thread_event=self.default_event)
-
-        topic = 'iot/devices/test_device/state'
-        data = {'state': True}
-        json_data = dumps(data)
-        emtpy_queue(queue=self.test_queue)
-        mqtt_gateway.on_message(topic=topic, payload=json_data)
-
-        iot_traffic_event = self.test_queue.get()
-        self.assertEqual(iot_traffic_event['event'], 'iot_traffic')
-        self.assertEqual(iot_traffic_event['message']['source'], 'MqttGateway')
-        self.assertEqual(iot_traffic_event['message']['topic'], topic)
-        self.assertEqual(iot_traffic_event['message']['payload'], json_data)
-
-        state_changed_event = self.test_queue.get()
-        self.assertEqual(state_changed_event['event'], 'device_state_changed')
-        self.assertEqual(state_changed_event['message']['device_id'], 'test_device')
-        self.assertEqual(state_changed_event['message']['event_type'], 'state')
-        self.assertEqual(state_changed_event['message']['state'], True)
-    """
-
     @mock.patch("home_automation_framework.iot_gateway.mqtt_client.MqttClient")
     def test_on_message_unknown_event(self, mock_mqtt_client):
         """ Testing handling on message e"""

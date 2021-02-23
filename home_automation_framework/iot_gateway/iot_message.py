@@ -14,6 +14,9 @@ class IotMessage:
         self.device_id = self._get_device_id_from_topic(topic=mqtt_topic)
         self.payload = self._parse_data(data=data)
 
+    def __str__(self) -> str:
+        return f'IoT-message: {self.device_id} - {self.event} - {self.payload}'
+
     def _get_event_from_topic(self, topic: str) -> Union[str, None]:
         return self._destruct_topic(topic=topic, item_index=3)
 
