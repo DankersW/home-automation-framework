@@ -21,4 +21,7 @@
 -  [ ] Test MongoDB handler and mongo_db wrapper
 -  [ ] integration test for MongoDB and Mosquitto
 -  [ ] Full on system test feeding MQTT packages into the framework and comparing the db afterwards
--  [ ] Show code-coverage in readme via a badge
+-  [ ] Integration tests
+-  [ ] System tests
+-  [ ] increase
+

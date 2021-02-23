@@ -82,4 +82,8 @@ class MqttGateway(Thread):
         self._observer_publish_queue.put(item)
 
     def _handle_telemetry(self, msg: IotMessage) -> None:
-        pass
+        self.log.debug("Handling telemetry event")
+        message = {'timestamp': datetime.now(), 'device_id': msg.device_id}
+        message.update(msg.payload)
+        item = {'event': 'device_sensor_data', 'message': message}
+        self._observer_publish_queue.put(item)

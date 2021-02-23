@@ -11,3 +11,4 @@ a bunch of observers which subscribe to certain events.
 | device\_state\_changed | Notifies that the state of any IoT device has been updated               | local-mqtt         | DB\_handler, G-bridge             |
 | host\_health           | Publishes information about the state server's host machine              | host-monitor       | DB\_handler                       |
 | iot\_traffic           | Used to publish the iot traffic to the DB\_handler for logging           | local-mqtt         | DB\_handler                       |
+| device\_sensor\_data   | Telemetry sensor data from connected devices                            | local-mqtt         | DB\_handler                       |
