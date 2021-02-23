@@ -10,7 +10,7 @@ class TestLogging(TestCase):
 
     def test_generate_document_name(self):
         base_name = 'test_log'
-        mock_conf_property = PropertyMock(return_value={'logging': {'log_collection_name': base_name}})
+        mock_conf_property = PropertyMock(return_value={'logging_tests': {'log_collection_name': base_name}})
         type(self.db_logging).config = mock_conf_property
 
         time = datetime.now()

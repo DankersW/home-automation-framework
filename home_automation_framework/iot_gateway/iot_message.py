@@ -30,11 +30,12 @@ class IotMessage:
 
     @staticmethod
     def _parse_data(data: Union[str, dict]) -> Union[dict, None]:
+        parsed_data = None
         if isinstance(data, dict):
-            return data
+            parsed_data = data
         elif is_json(data):
-            return loads(data)
-        return None
+            parsed_data = loads(data)
+        return parsed_data
 
     def is_valid(self) -> bool:
         for attr in ['event', 'device_id', 'payload']:

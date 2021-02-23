@@ -4,7 +4,7 @@ from home_automation_framework.iot_gateway.iot_message import IotMessage
 
 
 class TestIotMessage(TestCase):
-    test_topic = 'iot/device/dev_001/state'
+    test_topic = 'iot/devices/dev_001/state'
     test_payload = {'state': True}
 
     def test_class_attributes(self):
