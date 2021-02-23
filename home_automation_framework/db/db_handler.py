@@ -7,7 +7,7 @@ from home_automation_framework.db.mongo_db import MongoHandler
 
 class DbHandler(Thread):
     running = True
-    subscribed_event = ['gcp_state_changed', 'device_state_changed', 'iot_traffic', 'host_health']
+    subscribed_event = ['gcp_state_changed', 'device_state_changed', 'iot_traffic', 'host_health', 'device_sensor_data']
 
     def __init__(self, queue: Queue, thread_event: Event) -> None:
         Thread.__init__(self)
@@ -33,7 +33,8 @@ class DbHandler(Thread):
         action_map = {'gcp_state_changed': self.store_state_data,
                       'device_state_changed': self.store_state_data,
                       'iot_traffic': self.store_iot_traffic,
-                      'host_health': self.store_host_health}
+                      'host_health': self.store_host_health,
+                      'device_sensor_data': self.store_sensor_data}
         return action_map.get(event, self.action_skip)
 
     @staticmethod
@@ -60,6 +61,9 @@ class DbHandler(Thread):
         self.mongo.insert(collection_name=event, data=data)
 
     def store_host_health(self, event: str, data: dict) -> None:
+        self.mongo.insert(collection_name=event, data=data)
+
+    def store_sensor_data(self, event: str, data: dict) -> None:
         self.mongo.insert(collection_name=event, data=data)
 
 

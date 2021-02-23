@@ -1,14 +1,6 @@
 #!/bin/bash
 home_dir=$(pwd)
 
-echo "Installing packages"
-pip3 install -r requirements.txt
-
-
-echo "Running unit tests"
-python3 -m unittest discover -s tests/ -p 'test_*.py'
-
-
 echo "Linting of home_automation_framework folder"
 sub_dirs=("db"  "iot_gateway"  "logging" "host_health" "framework" "utils")
 for sub_dir in ${sub_dirs[*]}; do
