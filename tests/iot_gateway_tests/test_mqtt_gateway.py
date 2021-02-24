@@ -4,7 +4,6 @@ from threading import Event
 from json import dumps
 
 from home_automation_framework.iot_gateway.mqtt_gateway import MqttGateway
-#from home_automation_framework.iot_gateway.iot_message import IotMessage
 from tests.helper_functions import emtpy_queue
 
 
