@@ -92,8 +92,3 @@ class IotSubject:
 
     def get_observer_events(self) -> dict:
         return self.observer_queue.get()
-
-
-if __name__ == '__main__':
-    iot_subject = IotSubject()
-    iot_subject.run()

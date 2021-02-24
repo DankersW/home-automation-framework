@@ -24,8 +24,3 @@ class ConfigurationParser:
     def yml_to_dict(file_path):
         with open(file_path) as yml_file:
             return yaml.safe_load(yml_file)
-
-
-if __name__ == '__main__':
-    conf = ConfigurationParser()
-    conf.get_path_to_conf_file()

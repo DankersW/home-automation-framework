@@ -17,6 +17,22 @@ class MockMongo:
     def insert(collection_name, data):
         pass
 
+    @staticmethod
+    def update_object(collection_name, object_id, updated_values):
+        pass
+
+
+class MockMongoDeviceNameExist(MockMongo):
+    @staticmethod
+    def check_existence_by_device_name(collection_name: str, device_name: str):
+        return True
+
+
+class MockMongoNoDeviceNameExist(MockMongo):
+    @staticmethod
+    def check_existence_by_device_name(collection_name: str, device_name: str):
+        return False
+
 
 class TestDbHandler(TestCase):
     test_queue = Queue(10)
@@ -72,3 +88,24 @@ class TestDbHandler(TestCase):
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
         db_handler.mongo = MockMongo
         db_handler.add_document_row(event='pass', data={})
+
+    @mock.patch.object(MongoHandler, '__init__')
+    def test_action_skip(self, mock_mongo):
+        mock_mongo.return_value = None
+        db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
+        db_handler.mongo = MockMongo
+        db_handler.action_skip()
+
+    @mock.patch.object(MongoHandler, '__init__')
+    def test_store_state_data(self, mock_mongo):
+        mock_mongo.return_value = None
+        db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
+        db_handler.mongo = MockMongoDeviceNameExist
+        db_handler.store_state_data(event="", data={})
+
+    @mock.patch.object(MongoHandler, '__init__')
+    def test_store_state_data_new(self, mock_mongo):
+        mock_mongo.return_value = None
+        db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
+        db_handler.mongo = MockMongoNoDeviceNameExist
+        db_handler.store_state_data(event="", data={})
