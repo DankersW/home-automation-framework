@@ -3,11 +3,11 @@ from typing import Callable
 from threading import Event
 
 from home_automation_framework.utils.configuration_parser import ConfigurationParser
-from bin.g_bridge import GBridge
 from home_automation_framework.iot_gateway.mqtt_gateway import MqttGateway
 from home_automation_framework.logging.logging import Logging
 from home_automation_framework.db.db_handler import DbHandler
 from home_automation_framework.host_health.health_monitor import HealthMonitor
+from bin.g_bridge import GBridge
 
 
 class Subject:

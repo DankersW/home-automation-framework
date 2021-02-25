@@ -59,4 +59,3 @@ class DbHandler(Thread):
 
     def add_document_row(self, event: str, data: dict) -> None:
         self.mongo.insert(collection_name=event, data=data)
-
