@@ -11,9 +11,24 @@ class MockObj:
     def __init__(self, queue, thread_event):
         pass
 
+    def start(self):
+        pass
+
 
 class MockObj2Events(MockObj):
     subscribed_event = ['iot_traffic', 'device_sensor_data']
+
+
+class FakeWait:
+    @staticmethod
+    def wait():
+        pass
+
+
+class MockLogging:
+    @staticmethod
+    def success(*k):
+        pass
 
 
 class TestIotSubject(TestCase):
@@ -78,5 +93,15 @@ class TestIotSubject(TestCase):
             self.assertEqual(observer['obs_object'].__class__.__name__, 'MockObj2Events')
             self.assertEqual(observer['events'],  ['iot_traffic', 'device_sensor_data'])
 
-
-
+    @mock.patch.object(IotSubject, '_get_matching_object')
+    @mock.patch.object(IotSubject, '_get_activated_components')
+    def test_start_observer_threats(self, mock_get_comp, mock_get_obj):
+        iot_subject = self.init_iot_subject()
+        iot_subject.observers = []
+        mock_get_comp.return_value = ['db']
+        mock_get_obj.return_value = MockObj
+        iot_subject.init_observers()
+        iot_subject._thread_started_event = FakeWait
+        iot_subject.log = MockLogging
+        iot_subject.start_observer_threats()
+        self.assertTrue(iot_subject.running)
