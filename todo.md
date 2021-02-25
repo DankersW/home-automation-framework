@@ -1,7 +1,6 @@
 # Todo
 
 ## General
--  [ ] Handle closing down correctly
 
 ## Framework
 -  [ ] If an observer failed to start up, it needs to be removed from the observer list
@@ -12,7 +11,6 @@
 ## IOT-gateway
 -  [ ] Integration tests of home automation, mocking input and checking the output 
 -  [ ] Publish status of framework over mqtt 
--  [ ] Parsing sensor data message to internal message object
 
 ## Docker
 -  [ ] MongoDB for production needs to point to a specific location on the host
@@ -23,5 +21,7 @@
 -  [ ] Full on system test feeding MQTT packages into the framework and comparing the db afterwards
 -  [ ] Integration tests
 -  [ ] System tests
--  [ ] increase
 
+### Prio
+-  [ ] Run system test
+-  [ ] FrameworkMessageObject
