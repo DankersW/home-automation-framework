@@ -66,8 +66,3 @@ class MongoHandler:
         if isinstance(data, dict):
             return data.get('_id')
         return None
-
-
-if __name__ == '__main__':
-    t_db = MongoHandler(db_name='iot_db')
-    print(t_db.get('states', 'test_device'))
