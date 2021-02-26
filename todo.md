@@ -21,6 +21,7 @@
 -  [ ] Full on system test feeding MQTT packages into the framework and comparing the db afterwards
 -  [ ] Integration tests
 -  [ ] System tests
+-  [ ] docker_build_and_push should change all the ip addresses in the config.yml to docker's own addresses
 
 ### Prio
 -  [ ] Run system test
