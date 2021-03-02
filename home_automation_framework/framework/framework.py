@@ -7,7 +7,6 @@ from home_automation_framework.iot_gateway.mqtt_gateway import MqttGateway
 from home_automation_framework.logging.logging import Logging
 from home_automation_framework.db.db_handler import DbHandler
 from home_automation_framework.host_health.health_monitor import HealthMonitor
-from bin.g_bridge import GBridge
 
 
 class Subject:
@@ -63,7 +62,6 @@ class IotSubject:
     @staticmethod
     def _get_matching_object(component_name: str) -> Callable:
         object_mapper = {
-            'gcp': GBridge,
             'mqtt_gateway': MqttGateway,
             'db': DbHandler,
             'host_monitor': HealthMonitor

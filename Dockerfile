@@ -8,7 +8,10 @@ COPY requirements.txt .
 COPY home_automation_framework home_automation_framework/.
 COPY home_automation_framework.py .
 COPY configuration.yml .
+COPY Docker/entrypoint.sh .
 
 RUN pip3 install -r requirements.txt
 
-ENTRYPOINT [ "python3", "./home_automation_framework.py" ]
+#ENTRYPOINT [ "/bin/sh", "-c", "sh", "entrypoint.sh" ]
+#ENTRYPOINT [ "python3", "./home_automation_framework.py" ]
+ENTRYPOINT [ "sh", "entrypoint.sh" ]
