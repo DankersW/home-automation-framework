@@ -1,12 +1,11 @@
 ---
 general:
-  logging_mode: terminal  # Options: <terminal, file, db, test>
+  logging_mode: db  # Options: <terminal, file, db, test>
 
 system_components:
-  gcp: false
   mqtt_gateway: true
   db: true
-  host_monitor: false
+  host_monitor: true
 
 logging:
   file_log_folder: 'C:\Users\woute\development\logs'
@@ -14,7 +13,7 @@ logging:
   log_collection_name: logs
 
 mqtt_gateway:
-  broker_address: '127.0.0.1'
+  broker_address: 'mqtt_mosquitto_broker'
 
 mongo_db:
-  host_ip: '127.0.0.1'
+  host_ip: 'mongo'
