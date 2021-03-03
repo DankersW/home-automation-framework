@@ -1,6 +1,6 @@
 ---
 general:
-  logging_mode: terminal  # Options: <terminal, file, db, test>
+  logging_mode: db  # Options: <terminal, file, db, test>
 
 system_components:
   mqtt_gateway: true
