@@ -7,6 +7,8 @@
 -  [ ] GBridge: re-write to use mqtt client
 -  [ ] In docker compose map volume that holds temp to a docker volume; /sys/class/thermal/thermal_zone2/temp:/thermal/thermal_zone2/temp
 -  [ ] Using an ObserverMessage object instead of a dict
+-  [ ] Syetem temperature in the config file
+-  [ ] production config file
 
 ## IOT-gateway
 -  [ ] Integration tests of home automation, mocking input and checking the output 
