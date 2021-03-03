@@ -51,7 +51,6 @@ class TestIotSubject(TestCase):
 
     def test_get_matching_object(self):
         components = {
-            'gcp': 'GBridge',
             'mqtt_gateway': 'MqttGateway',
             'db': 'DbHandler',
             'host_monitor': 'HealthMonitor'
