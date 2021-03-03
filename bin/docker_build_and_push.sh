@@ -11,3 +11,6 @@ docker build -t $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG .. --build-arg tag=$IMG_TAG
 
 echo "Tagging for local registry and pushing image/tags"
 docker push $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG
+
+echo "Cleanup"
+docker rmi $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG
