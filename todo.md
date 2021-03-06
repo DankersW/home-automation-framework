@@ -5,10 +5,7 @@
 ## Framework
 -  [ ] If an observer failed to start up, it needs to be removed from the observer list
 -  [ ] GBridge: re-write to use mqtt client
--  [ ] In docker compose map volume that holds temp to a docker volume; /sys/class/thermal/thermal_zone2/temp:/thermal/thermal_zone2/temp
 -  [ ] Using an ObserverMessage object instead of a dict
--  [ ] Syetem temperature in the config file
--  [ ] production config file
 
 ## IOT-gateway
 -  [ ] Integration tests of home automation, mocking input and checking the output 
@@ -23,7 +20,7 @@
 -  [ ] Full on system test feeding MQTT packages into the framework and comparing the db afterwards
 -  [ ] Integration tests
 -  [ ] System tests
--  [ ] docker_build_and_push should change all the ip addresses in the config.yml to docker's own addresses
+-  [ ] When a tag is created on github do a docker build and push for both architectures using buildx, the tag version equals to the git tag
 
 ### Prio
 -  [ ] Run system test
