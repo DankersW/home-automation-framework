@@ -39,18 +39,13 @@ jobs:
             GITHUB_TAG=${GITHUB_REF#refs/tags/*/}
             readarray -d / -t TAG_PATH <<< "$GITHUB_TAG"
             GIT_TAG="${TAG_PATH[2]}"
-            echo "Using tag: $GIT_TAG"
 
-            echo "BuildX for AMD64"
-            IMG_TAG="$GIT_TAG-amd64"
-            docker buildx build -t $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG . --build-arg tag=$IMG_TAG --platform linux/amd64 --push
-
-            echo "BuildX for ARM64"
-            IMG_TAG="$GIT_TAG-arm64"
-            docker buildx build -t $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG . --build-arg tag=$IMG_TAG --platform linux/arm64 --push
+            echo "Building AMD64 and ARM64 for tag $GIT_TAG"
+            IMG_TAG="$GIT_TAG"
 
           else
             echo "Building amd64 & arm64 for tag latest"
             IMG_TAG="latest"
-            docker buildx build -t $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG . --build-arg tag=$IMG_TAG --platform linux/amd64,linux/arm64 --push
           fi
+          docker buildx build -t $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG . --build-arg tag=$IMG_TAG --platform linux/amd64,linux/arm64 --push
+
