@@ -8,7 +8,7 @@ on: [push]
   #push:
   #  branches: master
   #  tags:
-  #    - '*.*.*'
+  #    - 'v*.*.*'
 
 jobs:
   buildx:
@@ -37,11 +37,23 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: "build linux/amd64"
+      - name: "build docker images"
         run: |
           DOCKER_REPO="home_automation_framework"
           DOCKER_ACC="dankersw"
           IMG_TAG="test-amd64"
-          docker buildx build -t $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG . --build-arg tag=$IMG_TAG --platform linux/amd64 --push
-        #docker push $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG
 
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/*/}
+            echo $VERSION
+            IMG_TAG="$VERSION-amd64"
+            echo "first amd64"
+            echo $IMG_TAG
+            IMG_TAG="$VERSION-arm64"
+            echo "now arm64"
+            echo $IMG_TAG
+          else
+            echo "Building amd64 & arm64 for tag latest"
+            IMG_TAG="latest"
+            docker buildx build -t $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG . --build-arg tag=$IMG_TAG --platform linux/amd64,linux/arm64 --push
+          fi
