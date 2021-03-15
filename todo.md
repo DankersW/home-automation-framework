@@ -10,6 +10,7 @@
 ## IOT-gateway
 -  [ ] Integration tests of home automation, mocking input and checking the output 
 -  [ ] Publish status of framework over mqtt 
+-  [ ] MQTT client ping pong, so that we can validate that the framework is working correctly
 
 ## Docker
 -  [ ] MongoDB for production needs to point to a specific location on the host
