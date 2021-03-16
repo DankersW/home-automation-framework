@@ -10,7 +10,7 @@ from home_automation_framework.logging.logging import Logging
 
 class HealthMonitor(Thread):
     running = True
-    update_time_sec = 60
+    update_time_sec = 600
     subscribed_event = []
 
     def __init__(self, queue: Queue, thread_event: Event) -> None:
