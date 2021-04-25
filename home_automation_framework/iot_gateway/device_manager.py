@@ -28,7 +28,7 @@ from queue import Queue
 from home_automation_framework.logging.logging import Logging
 
 
-class HealthMonitor(Thread):
+class DeviceManager(Thread):
     running = True
     update_time_sec = 600
     subscribed_event = []
@@ -61,6 +61,6 @@ class HealthMonitor(Thread):
 if __name__ == '__main__':
     test_queue = Queue(10)
     t_event = Event()
-    hm = HealthMonitor(test_queue, thread_event=t_event)
-    hm.start()
+    dm = DeviceManager(test_queue, thread_event=t_event)
+    dm.start()
 
