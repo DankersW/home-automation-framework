@@ -3,11 +3,13 @@ from queue import Queue
 from typing import Callable
 
 from home_automation_framework.db.mongo_db import MongoHandler
+from home_automation_framework.logging.logging import Logging
 
 
 class DbHandler(Thread):
     running = True
-    subscribed_event = ['gcp_state_changed', 'device_state_changed', 'iot_traffic', 'host_health', 'device_sensor_data']
+    subscribed_event = ['gcp_state_changed', 'device_state_changed', 'iot_traffic', 'host_health', 'device_sensor_data',
+                        'digital_twin']
 
     def __init__(self, queue: Queue, thread_event: Event) -> None:
         Thread.__init__(self)
@@ -15,6 +17,7 @@ class DbHandler(Thread):
         self.observer_publish_queue = queue
         self._thread_ready = thread_event
         self.observer_notify_queue = Queue(maxsize=100)
+        self.log = Logging(owner=__file__, config=True)
 
     def __del__(self) -> None:
         self.running = False
@@ -34,7 +37,8 @@ class DbHandler(Thread):
                       'device_state_changed': self.store_state_data,
                       'iot_traffic': self.add_document_row,
                       'host_health': self.add_document_row,
-                      'device_sensor_data': self.add_document_row}
+                      'device_sensor_data': self.add_document_row,
+                      'digital_twin': self.handle_digital_twin}
         return action_map.get(event, self.action_skip)
 
     @staticmethod
@@ -59,3 +63,18 @@ class DbHandler(Thread):
 
     def add_document_row(self, event: str, data: dict) -> None:
         self.mongo.insert(collection_name=event, data=data)
+
+    def handle_digital_twin(self, event: str, data: dict) -> None:
+        # digital_twin = device_name, status, location, technology, battery_level
+        action = data.get("action")
+        if action == "fetch_digital_twin":
+            pass
+            #todo: download twin
+        elif action == "update_digital_twin":
+            pass
+            # todo: Write to DB
+        else:
+            self.log.error(f"Unsupported action type {action}, from event {event}")
+
+
+

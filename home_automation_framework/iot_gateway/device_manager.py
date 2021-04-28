@@ -31,7 +31,7 @@ from home_automation_framework.logging.logging import Logging
 class DeviceManager(Thread):
     running = True
     update_time_sec = 600
-    subscribed_event = []
+    subscribed_event = ['digital_twin']
 
     def __init__(self, queue: Queue, thread_event: Event) -> None:
         Thread.__init__(self)
@@ -46,6 +46,9 @@ class DeviceManager(Thread):
     def run(self) -> None:
         self._thread_ready.set()
         while self.running:
+            queue_item = self._observer_notify_queue.get()
+            print(queue_item)
+
             """
             queue_item = self._observer_notify_queue.get()
             print(queue_item)
