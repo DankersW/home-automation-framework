@@ -2,6 +2,9 @@
 general:
   logging_mode: terminal  # Options: <terminal, file, db, test>
 
+framework:
+  events: ['gcp_state_changed', 'device_state_changed', 'iot_traffic', 'host_health', 'device_sensor_data']
+
 system_components:
   gcp: false
   mqtt_gateway: true

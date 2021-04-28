@@ -7,6 +7,7 @@ from home_automation_framework.iot_gateway.mqtt_gateway import MqttGateway
 from home_automation_framework.logging.logging import Logging
 from home_automation_framework.db.db_handler import DbHandler
 from home_automation_framework.host_health.health_monitor import HealthMonitor
+from home_automation_framework.iot_gateway.device_manager import DeviceManager
 
 
 class Subject:
@@ -35,9 +36,10 @@ class IotSubject:
     running = False
 
     def __init__(self) -> None:
-        events = ['gcp_state_changed', 'device_state_changed', 'iot_traffic', 'host_health', 'device_sensor_data']
         self.log = Logging(owner=__file__, config=True)
         self.config = ConfigurationParser().get_config()
+
+        events = self.config['framework']['events']
         self.subject = Subject(events)
 
         self.observer_queue = Queue(maxsize=100)
