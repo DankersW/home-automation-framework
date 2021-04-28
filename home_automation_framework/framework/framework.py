@@ -66,7 +66,8 @@ class IotSubject:
         object_mapper = {
             'mqtt_gateway': MqttGateway,
             'db': DbHandler,
-            'host_monitor': HealthMonitor
+            'host_monitor': HealthMonitor,
+            'device_manager': DeviceManager
         }
         return object_mapper.get(component_name)
 
