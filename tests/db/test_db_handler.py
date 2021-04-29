@@ -39,7 +39,8 @@ class TestDbHandler(TestCase):
     test_event = Event()
 
     def test_subscribed_events(self):
-        events = ['gcp_state_changed', 'device_state_changed', 'iot_traffic', 'host_health', 'device_sensor_data']
+        events = ['gcp_state_changed', 'device_state_changed', 'iot_traffic', 'host_health', 'device_sensor_data',
+                  'digital_twin']
         _events = DbHandler.subscribed_event
         self.assertEqual(_events, events)
 

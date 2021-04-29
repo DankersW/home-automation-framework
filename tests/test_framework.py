@@ -32,7 +32,11 @@ class MockLogging:
 
 
 class TestIotSubject(TestCase):
-    configuration = {'system_components': {'gcp': False, 'mqtt_gateway': True, 'db': True, 'host_monitor': True}}
+    configuration = {
+        'framework': {'events': ['gcp_state_changed', 'device_state_changed', 'iot_traffic',
+                                 'host_health', 'device_sensor_data', 'digital_twin']},
+        'system_components': {'gcp': False, 'mqtt_gateway': True, 'db': True, 'host_monitor': True}
+    }
 
     @mock.patch.object(IotSubject, 'start_observer_threats')
     @mock.patch.object(IotSubject, 'attach_observers')
