@@ -40,11 +40,8 @@ class MongoHandler:
             raise RuntimeError from err
         return db
 
-    def get(self, collection_name, device_name=None) -> list:
+    def get(self, collection_name, query: dict = None) -> list:
         collection = self.mongo_db[collection_name]
-        query = {}
-        if device_name:
-            query.update({'device': device_name})
         self.log.debug(f'Executing query {query!r} on collection {collection_name!r}')
         return list(collection.find(query))
 

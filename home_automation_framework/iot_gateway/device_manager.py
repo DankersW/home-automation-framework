@@ -45,9 +45,10 @@ class DeviceManager(Thread):
 
     def run(self) -> None:
         self._thread_ready.set()
+        self._fetch_digital_twin()
         while self.running:
             queue_item = self._observer_notify_queue.get()
-            print(queue_item)
+            print(f"tt: {queue_item}")
 
             """
             queue_item = self._observer_notify_queue.get()
@@ -59,6 +60,10 @@ class DeviceManager(Thread):
 
     def notify(self, msg: dict, event: str) -> None:
         self._observer_notify_queue.put(item=msg)
+
+    def _fetch_digital_twin(self):
+        item = {'event': 'digital_twin', 'message': {"action": "fetch_digital_twin"}}
+        self._observer_publish_queue.put(item)
 
 
 if __name__ == '__main__':
