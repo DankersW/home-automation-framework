@@ -6,6 +6,7 @@
 -  [ ] If an observer failed to start up, it needs to be removed from the observer list
 -  [ ] GBridge: re-write to use mqtt client
 -  [ ] Using an ObserverMessage object instead of a dict
+-  [ ] Create an observer msg that is passed between all observers
 
 ## IOT-gateway
 -  [ ] Integration tests of home automation, mocking input and checking the output 
