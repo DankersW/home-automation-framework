@@ -70,11 +70,10 @@ class DbHandler(Thread):
         if action == "fetch_digital_twin":
             self.log.info("Fetching digital twin from DB")
             self.get_data(document="digital_twin")
-            pass
-            #todo: download twin
         elif action == "update_digital_twin":
             pass
-            # todo: Write to DB
+        elif action == "retrieved_digital_twin":
+            pass
         else:
             self.log.error(f"Unsupported action type {action}, from event {event}")
 

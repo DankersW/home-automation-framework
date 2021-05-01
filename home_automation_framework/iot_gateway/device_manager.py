@@ -65,6 +65,13 @@ class DeviceManager(Thread):
         item = {'event': 'digital_twin', 'message': {"action": "fetch_digital_twin"}}
         self._observer_publish_queue.put(item)
 
+    def _action_handler(self):
+        actions = {
+            'fetch_digital_twin': None,
+            'update_digital_twin': None,
+            ''
+        }
+
 
 if __name__ == '__main__':
     test_queue = Queue(10)
