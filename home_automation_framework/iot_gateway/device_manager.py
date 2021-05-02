@@ -48,19 +48,9 @@ class DeviceManager(Thread):
         self._fetch_digital_twin()
         while self.running:
             queue_item = self._observer_notify_queue.get()
-
-            #if queue_item.get('action')
-
             print(f"tt: {queue_item}")
-            #self._action_handler(event=queue_item)
-
-            """
-            queue_item = self._observer_notify_queue.get()
-            print(queue_item)
-            item = {'event': 'host_health', 'message': "test"}
-            self._observer_publish_queue.put(item)
-            """
-            pass
+            if queue_item.get("action") == "retrieved_digital_twin":
+                self._hold_remote_digital_twin(data=queue_item)
 
     def notify(self, msg: dict, event: str) -> None:
         self._observer_notify_queue.put(item=msg)
@@ -69,20 +59,7 @@ class DeviceManager(Thread):
         item = {'event': 'digital_twin', 'message': {"action": "fetch_digital_twin"}}
         self._observer_publish_queue.put(item)
 
-    def _action_handler(self, event: str):
-        actions = {
-            'fetch_digital_twin': self._action_pass,
-            'update_digital_twin': self._action_pass,
-            'retrieved_digital_twin': self._create_local_digital_twin
-        }
-        action = actions.get(event, self._action_pass)
-        action(data=event)
-
-    def _action_pass(self, data: dict):
-        pass
-
-    def _create_local_digital_twin(self, data: dict):
-        #if online_digital_twin is None:
+    def _hold_remote_digital_twin(self, data: dict):
         self.log.debug("Fetched data from cloud")
         print(data)
 
