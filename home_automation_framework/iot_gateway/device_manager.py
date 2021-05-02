@@ -32,6 +32,7 @@ class DeviceManager(Thread):
     running = True
     update_time_sec = 600
     subscribed_event = ['digital_twin']
+    remote_digital_twin = []
 
     def __init__(self, queue: Queue, thread_event: Event) -> None:
         Thread.__init__(self)
@@ -61,8 +62,8 @@ class DeviceManager(Thread):
 
     def _hold_remote_digital_twin(self, data: dict):
         self.log.debug("Fetched data from cloud")
-        print(data)
-
+        self.remote_digital_twin = data.get("data")
+        self.log.info(f"Remote digitial twin: {self.remote_digital_twin}")
 
 if __name__ == '__main__':
     test_queue = Queue(10)
