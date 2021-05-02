@@ -7,6 +7,7 @@
 -  [ ] GBridge: re-write to use mqtt client
 -  [ ] Using an ObserverMessage object instead of a dict
 -  [ ] Create an observer msg that is passed between all observers
+-  [ ] Better logging info, debug showing which event is handeling what data.
 
 ## IOT-gateway
 -  [ ] Integration tests of home automation, mocking input and checking the output 
