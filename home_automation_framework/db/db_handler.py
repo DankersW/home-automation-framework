@@ -45,10 +45,8 @@ class DbHandler(Thread):
     def action_skip():
         pass
 
-    def get_data(self, document: str, ) -> None:
-        data = self.mongo.get(collection_name=document)
-        for item in data:
-            print(item)
+    def get_data(self, document: str, ) -> list:
+        return self.mongo.get(collection_name=document)
 
     def store_state_data(self, event: str, data: dict) -> None:
         object_id = self.mongo.check_existence_by_device_name('states', data.get('device_id'))
@@ -65,11 +63,13 @@ class DbHandler(Thread):
         self.mongo.insert(collection_name=event, data=data)
 
     def handle_digital_twin(self, event: str, data: dict) -> None:
-        # digital_twin = device_name, status, location, technology, battery_level
         action = data.get("action")
         if action == "fetch_digital_twin":
             self.log.info("Fetching digital twin from DB")
-            self.get_data(document="digital_twin")
+            digital_twin = self.get_data(document="digital_twin")
+            item = {'event': 'digital_twin',
+                    'message': {"action": "retrieved_digital_twin", "data": digital_twin}}
+            self.observer_publish_queue.put(item)
         elif action == "update_digital_twin":
             pass
         elif action == "retrieved_digital_twin":

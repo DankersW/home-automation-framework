@@ -48,7 +48,11 @@ class DeviceManager(Thread):
         self._fetch_digital_twin()
         while self.running:
             queue_item = self._observer_notify_queue.get()
+
+            #if queue_item.get('action')
+
             print(f"tt: {queue_item}")
+            #self._action_handler(event=queue_item)
 
             """
             queue_item = self._observer_notify_queue.get()
@@ -65,12 +69,22 @@ class DeviceManager(Thread):
         item = {'event': 'digital_twin', 'message': {"action": "fetch_digital_twin"}}
         self._observer_publish_queue.put(item)
 
-    def _action_handler(self):
+    def _action_handler(self, event: str):
         actions = {
-            'fetch_digital_twin': None,
-            'update_digital_twin': None,
-            ''
+            'fetch_digital_twin': self._action_pass,
+            'update_digital_twin': self._action_pass,
+            'retrieved_digital_twin': self._create_local_digital_twin
         }
+        action = actions.get(event, self._action_pass)
+        action(data=event)
+
+    def _action_pass(self, data: dict):
+        pass
+
+    def _create_local_digital_twin(self, data: dict):
+        #if online_digital_twin is None:
+        self.log.debug("Fetched data from cloud")
+        print(data)
 
 
 if __name__ == '__main__':
