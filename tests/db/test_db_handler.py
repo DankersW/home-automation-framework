@@ -10,7 +10,8 @@ class MockMongo:
     def __init__(self, db_name):
         print(db_name)
 
-    def get(self, collection_name, device_name=None):
+    @staticmethod
+    def get(collection_name, query: dict = None):
         return ['a', 'b']
 
     @staticmethod
@@ -81,7 +82,8 @@ class TestDbHandler(TestCase):
         mock_mongo.return_value = None
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
         db_handler.mongo = MockMongo
-        db_handler.get_data()
+        result = db_handler.get_data(document="abc")
+        self.assertEqual(result, ['a', 'b'])
 
     @mock.patch.object(MongoHandler, '__init__')
     def test_add_document_row(self, mock_mongo):
