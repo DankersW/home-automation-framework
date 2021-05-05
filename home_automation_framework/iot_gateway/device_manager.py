@@ -1,7 +1,4 @@
-# todo: create an event to read from mongodb
-# todo: mongo, fetch digital_twin docement
 # todo: define digital_twin document (status, location, technology, batterie level)
-# todo: setup basic skelethon
 
 """
 Flow:
