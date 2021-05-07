@@ -2,6 +2,7 @@ from queue import Queue
 from typing import Callable
 from threading import Event
 
+from home_automation_framework.framework.observer_message import ObserverMessage
 from home_automation_framework.utils.configuration_parser import ConfigurationParser
 from home_automation_framework.iot_gateway.mqtt_gateway import MqttGateway
 from home_automation_framework.logging.logging import Logging
@@ -83,13 +84,13 @@ class IotSubject:
         self.log.success(f'Started {len(observer_names)} observers. {observer_names}')
         self.running = True
 
-    def run(self):
+    def run(self) -> None:
         while self.running:
-            event = self.get_observer_events()
-            self.notify_observers(event=event)
+            msg = self.get_observer_events()
+            self.notify_observers(msg=msg)
 
-    def notify_observers(self, event):
-        self.subject.dispatch(**event)
+    def notify_observers(self, msg: ObserverMessage) -> None:
+        self.subject.dispatch(event=msg.event, message=msg)
 
-    def get_observer_events(self) -> dict:
+    def get_observer_events(self) -> ObserverMessage:
         return self.observer_queue.get()
