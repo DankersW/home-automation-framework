@@ -5,6 +5,7 @@ from time import time, sleep
 from datetime import datetime
 import subprocess
 
+from home_automation_framework.framework.observer_message import ObserverMessage
 from home_automation_framework.logging.logging import Logging
 
 
@@ -30,8 +31,8 @@ class HealthMonitor(Thread):
             start_time = time()
 
             host_data = self._fetch_host_data()
-            item = {'event': 'host_health', 'message': host_data}
-            self.observer_publish_queue.put(item)
+            msg = ObserverMessage(event="host_health", data=host_data)
+            self.observer_publish_queue.put(msg)
 
             sleep_time = self.update_time_sec - ((time() - start_time) % self.update_time_sec)
             sleep(sleep_time)
