@@ -22,4 +22,3 @@ class TestObserverMessage(TestCase):
         result = "ObserverMessage {'event': 'test', 'data': 'hello', 'subject': 'test 1', 'destination': None, 'source': 'TestObserverMessage'}"
         msg = ObserverMessage(event=event_name, data=data, subject=subject)
         self.assertEqual(str(msg), result)
-
