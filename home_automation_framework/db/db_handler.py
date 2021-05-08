@@ -2,6 +2,7 @@ from threading import Thread, Event
 from queue import Queue
 from typing import Callable
 
+from home_automation_framework.framework.observer_message import ObserverMessage
 from home_automation_framework.db.mongo_db import MongoHandler
 from home_automation_framework.logging.logging import Logging
 
@@ -29,7 +30,7 @@ class DbHandler(Thread):
             action = self.action_selector(event=item.get('event'))
             action(event=item.get('event'), data=item.get('msg'))
 
-    def notify(self, msg: dict, event: str) -> None:
+    def notify(self,  event: str, msg: ObserverMessage) -> None:
         self.observer_notify_queue.put({'event': event, 'msg': msg})
 
     def action_selector(self, event: str) -> Callable:

@@ -22,6 +22,7 @@ Flow:
 from threading import Thread, Event
 from queue import Queue
 
+from home_automation_framework.framework.observer_message import ObserverMessage
 from home_automation_framework.logging.logging import Logging
 
 
@@ -50,7 +51,7 @@ class DeviceManager(Thread):
             if queue_item.get("action") == "retrieved_digital_twin":
                 self._store_remote_digital_twin(data=queue_item)
 
-    def notify(self, msg: dict, event: str) -> None:
+    def notify(self, event: str, msg: ObserverMessage) -> None:
         self._observer_notify_queue.put(item=msg)
 
     def _fetch_digital_twin(self):

@@ -37,7 +37,7 @@ class HealthMonitor(Thread):
             sleep_time = self.update_time_sec - ((time() - start_time) % self.update_time_sec)
             sleep(sleep_time)
 
-    def notify(self, msg: dict, event: str) -> None:
+    def notify(self, event: str, msg: ObserverMessage) -> None:
         pass
 
     def _fetch_host_data(self) -> dict:
