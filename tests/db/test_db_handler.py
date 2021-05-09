@@ -4,6 +4,7 @@ from queue import Queue
 
 from home_automation_framework.db.db_handler import DbHandler
 from home_automation_framework.db.mongo_db import MongoHandler
+from home_automation_framework.framework.observer_message import ObserverMessage
 
 
 class MockMongo:
@@ -57,11 +58,13 @@ class TestDbHandler(TestCase):
     def test_notify(self, mock_mongo):
         mock_mongo.return_value = None
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
-        msg = {'test': 123}
+        data = {'test': 123}
         event = 'test'
-        db_handler.notify(msg=msg, event=event)
+        msg = ObserverMessage(event=event, data=data)
+        db_handler.notify(event=event, msg=msg)
         queue_item = db_handler.observer_notify_queue.get()
-        self.assertDictEqual(queue_item, {'event': 'test', 'msg': {'test': 123}})
+        self.assertEqual(queue_item.event, event)
+        self.assertEqual(queue_item.data, data)
 
     @mock.patch.object(MongoHandler, '__init__')
     def test_action_selector(self, mock_mongo):
@@ -90,7 +93,7 @@ class TestDbHandler(TestCase):
         mock_mongo.return_value = None
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
         db_handler.mongo = MockMongo
-        db_handler.add_document_row(event='pass', data={})
+        db_handler.add_document_row(event='pass', msg=ObserverMessage(event="pass", data=""))
 
     @mock.patch.object(MongoHandler, '__init__')
     def test_action_skip(self, mock_mongo):
@@ -104,11 +107,11 @@ class TestDbHandler(TestCase):
         mock_mongo.return_value = None
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
         db_handler.mongo = MockMongoDeviceNameExist
-        db_handler.store_state_data(event="", data={})
+        db_handler.store_state_data(event='pass', msg=ObserverMessage(event="pass", data={}))
 
     @mock.patch.object(MongoHandler, '__init__')
     def test_store_state_data_new(self, mock_mongo):
         mock_mongo.return_value = None
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
         db_handler.mongo = MockMongoNoDeviceNameExist
-        db_handler.store_state_data(event="", data={})
+        db_handler.store_state_data(event='pass', msg=ObserverMessage(event="pass", data={}))
