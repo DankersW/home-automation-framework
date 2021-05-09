@@ -1,8 +1,8 @@
 # Todo
 
 ## Needed
-- [ ] Create a framework_message object that is passed in between observers
 - [ ] Re-think the DB, useing device_objectId in other documents instead of a raw name
+- [ ] Bumb test coverage
 
 ## Features
 -  [ ] MQTT ping-pong message from client to framework and back to client, usefull to validate that the framework is working
