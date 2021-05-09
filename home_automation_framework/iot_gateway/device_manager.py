@@ -46,21 +46,21 @@ class DeviceManager(Thread):
         self._thread_ready.set()
         self._fetch_digital_twin()
         while self.running:
-            queue_item = self._observer_notify_queue.get()
-            print(f"tt: {queue_item}")
-            if queue_item.get("action") == "retrieved_digital_twin":
-                self._store_remote_digital_twin(data=queue_item)
+            queue_msg = self._observer_notify_queue.get()
+            print(f"tt: {queue_msg}")
+            if queue_msg.subject == "retrieved_digital_twin":
+                self._store_remote_digital_twin(data=queue_msg.data)
 
     def notify(self, event: str, msg: ObserverMessage) -> None:
         self._observer_notify_queue.put(item=msg)
 
     def _fetch_digital_twin(self):
-        item = {'event': 'digital_twin', 'message': {"action": "fetch_digital_twin"}}
-        self._observer_publish_queue.put(item)
+        msg = ObserverMessage(event="digital_twin", data={}, subject="fetch_digital_twin")
+        self._observer_publish_queue.put(msg)
 
     def _store_remote_digital_twin(self, data: dict):
         self.log.debug("Fetched data from cloud")
-        self.remote_digital_twin = data.get("data")
+        self.remote_digital_twin = data
         self.log.info(f"Remote digitial twin: {self.remote_digital_twin}")
 
 

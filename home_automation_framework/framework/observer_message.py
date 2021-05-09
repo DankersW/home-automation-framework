@@ -3,7 +3,7 @@ from inspect import stack
 
 
 class ObserverMessage:
-    def __init__(self, event: str, data: Union[str, dict], subject: str = None, destination: str = None) -> None:
+    def __init__(self, event: str, data: Union[str, dict, list], subject: str = None, destination: str = None) -> None:
         self.event = event
         self.data = data
         self.subject = subject

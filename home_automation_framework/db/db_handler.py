@@ -27,11 +27,12 @@ class DbHandler(Thread):
         self._thread_ready.set()
         while self.running:
             item = self.observer_notify_queue.get()
-            action = self.action_selector(event=item.get('event'))
-            action(event=item.get('event'), data=item.get('msg'))
+            print(item)
+            action = self.action_selector(event=item.event)
+            action(event=item.event, msg=item)
 
     def notify(self,  event: str, msg: ObserverMessage) -> None:
-        self.observer_notify_queue.put({'event': event, 'msg': msg})
+        self.observer_notify_queue.put(msg)
 
     def action_selector(self, event: str) -> Callable:
         action_map = {'gcp_state_changed': self.store_state_data,
@@ -49,34 +50,32 @@ class DbHandler(Thread):
     def get_data(self, document: str, ) -> list:
         return self.mongo.get(collection_name=document)
 
-    def store_state_data(self, event: str, data: dict) -> None:
-        object_id = self.mongo.check_existence_by_device_name('states', data.get('device_id'))
+    def store_state_data(self, event: str, msg: ObserverMessage) -> None:
+        object_id = self.mongo.check_existence_by_device_name('states', msg.data.get('device_id'))
         if object_id:
-            updated_data = {'$set': {'state': data.get('state'), 'event': event,
-                                     'change_source': data.get('event_type')}}
+            updated_data = {'$set': {'state': msg.data.get('state'), 'event': event,
+                                     'change_source': msg.data.get('event_type')}}
             self.mongo.update_object(collection_name='states', object_id=object_id, updated_values=updated_data)
         else:
-            document_data = {'device_id': data.get('device_id'), 'event': event, 'change_source': data.get('event'),
-                             'state': data.get('state')}
+            document_data = {'device_id': msg.data.get('device_id'), 'event': event, 'change_source': msg.data.get('event'),
+                             'state': msg.data.get('state')}
             self.mongo.insert(collection_name='states', data=document_data)
 
-    def add_document_row(self, event: str, data: dict) -> None:
-        self.mongo.insert(collection_name=event, data=data)
+    def add_document_row(self, event: str, msg: ObserverMessage) -> None:
+        self.mongo.insert(collection_name=event, data=msg.data)
 
-    def handle_digital_twin(self, event: str, data: dict) -> None:
-        action = data.get("action")
-        if action == "fetch_digital_twin":
+    def handle_digital_twin(self, event: str, msg: ObserverMessage) -> None:
+        if msg.subject == "fetch_digital_twin":
             self.log.info("Fetching digital twin from DB")
             digital_twin = self.get_data(document="digital_twin")
-            item = {'event': 'digital_twin',
-                    'message': {"action": "retrieved_digital_twin", "data": digital_twin}}
-            self.observer_publish_queue.put(item)
-        elif action == "update_digital_twin":
+            msg = ObserverMessage(event="digital_twin", data=digital_twin, subject="retrieved_digital_twin")
+            self.observer_publish_queue.put(msg)
+        elif msg.subject == "update_digital_twin":
             pass
-        elif action == "retrieved_digital_twin":
+        elif msg.subject == "retrieved_digital_twin":
             pass
         else:
-            self.log.error(f"Unsupported action type {action}, from event {event}")
+            self.log.error(f"Unsupported action type {msg.subject}, from event {event}")
 
 
 

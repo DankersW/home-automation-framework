@@ -29,7 +29,7 @@ class Subject:
 
     def dispatch(self, event, message) -> None:
         for _, callback in self.get_subscribers(event).items():
-            callback(message, event)
+            callback(event, message)
 
 
 class IotSubject:
@@ -90,6 +90,7 @@ class IotSubject:
             self.notify_observers(msg=msg)
 
     def notify_observers(self, msg: ObserverMessage) -> None:
+        print(msg)
         self.subject.dispatch(event=msg.event, message=msg)
 
     def get_observer_events(self) -> ObserverMessage:

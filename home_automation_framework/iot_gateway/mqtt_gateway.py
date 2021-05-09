@@ -62,9 +62,9 @@ class MqttGateway(Thread):
             self.log.warning('The MQTT message is not valid')
 
     def _log_mqtt_traffic(self, topic: str, payload: str) -> None:
-        msg = {'timestamp': datetime.now(), 'source': type(self).__name__, 'topic': topic, 'payload': payload}
-        traffic_item = {'event': 'iot_traffic', 'message': msg}
-        self._observer_publish_queue.put(traffic_item)
+        data = {'timestamp': datetime.now(), 'source': type(self).__name__, 'topic': topic, 'payload': payload}
+        msg = ObserverMessage(event="iot_traffic", data=data)
+        self._observer_publish_queue.put(msg)
 
     def _select_handler(self, event: str) -> Callable:
         handler_map = {
@@ -79,12 +79,12 @@ class MqttGateway(Thread):
     def _handle_state_change(self, msg: IotMessage) -> None:
         self.log.debug("Handling state event")
         message = {'device_id': msg.device_id, 'event_type': msg.event, 'state': msg.payload.get('state')}
-        item = {'event': 'device_state_changed', 'message': message}
+        item = ObserverMessage(event="device_state_changed", data=message)
         self._observer_publish_queue.put(item)
 
     def _handle_telemetry(self, msg: IotMessage) -> None:
         self.log.debug("Handling telemetry event")
         message = {'timestamp': datetime.now(), 'device_id': msg.device_id}
         message.update(msg.payload)
-        item = {'event': 'device_sensor_data', 'message': message}
+        item = ObserverMessage(event="device_sensor_data", data=message)
         self._observer_publish_queue.put(item)
