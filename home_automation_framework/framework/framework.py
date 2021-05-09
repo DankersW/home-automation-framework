@@ -90,7 +90,6 @@ class IotSubject:
             self.notify_observers(msg=msg)
 
     def notify_observers(self, msg: ObserverMessage) -> None:
-        print(msg)
         self.subject.dispatch(event=msg.event, message=msg)
 
     def get_observer_events(self) -> ObserverMessage:

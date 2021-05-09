@@ -27,7 +27,6 @@ class DbHandler(Thread):
         self._thread_ready.set()
         while self.running:
             item = self.observer_notify_queue.get()
-            print(item)
             action = self.action_selector(event=item.event)
             action(event=item.event, msg=item)
 
