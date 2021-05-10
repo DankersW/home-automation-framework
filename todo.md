@@ -3,6 +3,7 @@
 ## Needed
 - [ ] Re-think the DB, useing device_objectId in other documents instead of a raw name
 - [ ] Bumb test coverage
+- [ ] In the notify, remove the event function parameter
 
 ## Features
 -  [ ] MQTT ping-pong message from client to framework and back to client, usefull to validate that the framework is working
