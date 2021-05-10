@@ -69,12 +69,6 @@ class DbHandler(Thread):
             digital_twin = self.get_data(document="digital_twin")
             msg = ObserverMessage(event="digital_twin", data=digital_twin, subject="retrieved_digital_twin")
             self.observer_publish_queue.put(msg)
-        elif msg.subject == "update_digital_twin":
-            pass
-        elif msg.subject == "retrieved_digital_twin":
-            pass
-        else:
-            self.log.error(f"Unsupported action type {msg.subject}, from event {event}")
 
 
 
