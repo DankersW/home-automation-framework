@@ -45,6 +45,9 @@ class DeviceManager(Thread):
     def run(self) -> None:
         self._thread_ready.set()
         self._fetch_digital_twin()
+
+        # todo: create timer with callback
+
         while self.running:
             queue_msg = self._observer_notify_queue.get()
             if queue_msg.event == "digital_twin":
@@ -60,12 +63,27 @@ class DeviceManager(Thread):
     def _handle_digital_twin_event(self, msg: ObserverMessage):
         if msg.subject == "retrieved_digital_twin":
             self._store_remote_digital_twin(data=msg.data)
+        elif msg.subject == "device_status":
+            self._store_device_status(data=msg.data)
 
     def _store_remote_digital_twin(self, data: dict):
         self.remote_digital_twin = data
         self.log.success(f"Received remote digital twin")
         self.log.debug(f"Remote digital twin: {self.remote_digital_twin}")
 
+    def _store_device_status(self, data: dict):
+        device_id = data.get("device_id", "Unknown")
+        self.log.debug(f"Reveived device status from {device_id}")
+        # todo: store all status in a set (device_id, status)
+
+    def _timer_callback(self):
+        pass
+        # todo: clean status list
+        # todo: send out cmd to mqtt gateway to receive status
+        # todo: wait for a certain time
+        # todo: map the remote digital twin with the status set and create digital_twin dict
+        # todo: publish new digital twin to the cloud
+        # todo: restart timer if needed
 
 if __name__ == '__main__':
     test_queue = Queue(10)
