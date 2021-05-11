@@ -27,6 +27,7 @@ import time
 
 from home_automation_framework.framework.observer_message import ObserverMessage
 from home_automation_framework.logging.logging import Logging
+from home_automation_framework.utils.configuration_parser import ConfigurationParser
 
 
 class DeviceManager(Thread):
@@ -44,6 +45,8 @@ class DeviceManager(Thread):
         self._thread_ready = thread_event
         self._observer_notify_queue = Queue(maxsize=100)
         self.log = Logging(owner=__file__, config=True)
+        self.config = ConfigurationParser().get_config()
+        print(self.config)
 
     def __del__(self) -> None:
         self.running = False
@@ -80,12 +83,12 @@ class DeviceManager(Thread):
         self.log.debug(f"Remote digital twin: {self.remote_digital_twin}")
 
     def _store_device_status(self, data: dict):
-        device_id = data.get("device_id", "Unknown")
+        device_id = data.get("device_id", None)
         self.log.debug(f"Reveived device status from {device_id}")
         # todo: store all status in a set (device_id, status)
 
     def _timer_callback(self):
-
+        #poll_interval = self.config[]
         self._start_timer(callback=self._timer_callback)
         # todo: clean status list
         # todo: send out cmd to mqtt gateway to receive status

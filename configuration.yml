@@ -22,3 +22,6 @@ mqtt_gateway:
 
 mongo_db:
   host_ip: '127.0.0.1'
+
+device_manager:
+  poll_interval: 5  # seconds
