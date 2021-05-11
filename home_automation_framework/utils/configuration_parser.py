@@ -22,6 +22,6 @@ class ConfigurationParser:
         return Path.joinpath(project_home, 'configuration.yml')
 
     @staticmethod
-    def _yml_to_dict(file_path) -> Union[dict, list, None]:
+    def _yml_to_dict(file_path: Path) -> Union[dict, list, None]:
         with open(file_path) as yml_file:
             return yaml.safe_load(yml_file)
