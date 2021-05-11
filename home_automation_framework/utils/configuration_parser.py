@@ -13,8 +13,8 @@ class ConfigurationParser:
         return self._yml_to_dict(file_path=conf_file_path)
 
     def as_named_tuple(self) -> NamedTuple:
-        a = self.get_config()
-        print(a)
+        config = self.get_config()
+        return namedtuple("config", config.keys())(**config)
 
     def _get_path_to_conf_file(self) -> Path:
         dir_structure = path.normpath(Path.cwd()).split(sep)
