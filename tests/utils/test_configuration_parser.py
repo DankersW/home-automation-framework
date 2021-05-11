@@ -10,7 +10,7 @@ class TestConfigurationParser(unittest.TestCase):
     conf_parser = ConfigurationParser()
 
     def test_get_path_to_conf_file(self):
-        file_path = self.conf_parser.get_path_to_conf_file()
+        file_path = self.conf_parser._get_path_to_conf_file()
         if path.isfile(file_path):
             assert True
         else:
@@ -22,6 +22,6 @@ class TestConfigurationParser(unittest.TestCase):
         yml_path = Path.cwd().joinpath(filename)
         with open(yml_path, 'w') as file:
             yaml.dump(test_content, file)
-        result = self.conf_parser.yml_to_dict(file_path=yml_path)
+        result = self.conf_parser._yml_to_dict(file_path=yml_path)
         assert result == test_content
         remove(yml_path)

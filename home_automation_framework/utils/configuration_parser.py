@@ -1,6 +1,7 @@
 from pathlib import Path
 from os import path, sep
-from typing import Union
+from typing import Union, NamedTuple
+from collections import namedtuple
 import yaml
 
 
@@ -10,6 +11,10 @@ class ConfigurationParser:
     def get_config(self) -> dict:
         conf_file_path = self._get_path_to_conf_file()
         return self._yml_to_dict(file_path=conf_file_path)
+
+    def as_named_tuple(self) -> NamedTuple:
+        a = self.get_config()
+        print(a)
 
     def _get_path_to_conf_file(self) -> Path:
         dir_structure = path.normpath(Path.cwd()).split(sep)
