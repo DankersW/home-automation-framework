@@ -34,6 +34,7 @@ class DeviceManager(Thread):
     update_time_sec = 600
     subscribed_event = ['digital_twin']
     remote_digital_twin = []
+    poll_timer = None
 
     # todo: cleanup function order
 
@@ -57,6 +58,8 @@ class DeviceManager(Thread):
             queue_msg = self._observer_notify_queue.get()
             if queue_msg.event == "digital_twin":
                 self._handle_digital_twin_event(msg=queue_msg)
+
+        self.poll_timer.cancel()
 
     def notify(self, event: str, msg: ObserverMessage) -> None:
         self._observer_notify_queue.put(item=msg)
@@ -82,8 +85,8 @@ class DeviceManager(Thread):
         # todo: store all status in a set (device_id, status)
 
     def _timer_callback(self):
-        self.log.info("hello")
 
+        self._start_timer(callback=self._timer_callback)
         # todo: clean status list
         # todo: send out cmd to mqtt gateway to receive status
         # todo: wait for a certain time
@@ -91,9 +94,9 @@ class DeviceManager(Thread):
         # todo: publish new digital twin to the cloud
         # todo: restart timer if needed
 
-    @staticmethod
-    def _start_timer(callback: Callable) -> None:
-        Timer(interval=5, function=callback).start()
+    def _start_timer(self, callback: Callable) -> None:
+        self.poll_timer = Timer(interval=5, function=callback)
+        self.poll_timer.start()
 
 
 if __name__ == '__main__':
