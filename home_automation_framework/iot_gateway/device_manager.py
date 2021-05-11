@@ -35,6 +35,7 @@ class DeviceManager(Thread):
     update_time_sec = 600
     subscribed_event = ['digital_twin']
     remote_digital_twin = []
+    device_status_map = {}
     poll_timer = None
 
     # todo: cleanup function order
@@ -45,8 +46,9 @@ class DeviceManager(Thread):
         self._thread_ready = thread_event
         self._observer_notify_queue = Queue(maxsize=100)
         self.log = Logging(owner=__file__, config=True)
+
         self.config = ConfigurationParser().get_config()
-        print(self.config)
+        self.poll_interval = self.config["device_manager"]["poll_interval"]
 
     def __del__(self) -> None:
         self.running = False
@@ -55,7 +57,7 @@ class DeviceManager(Thread):
         self._thread_ready.set()
         self._fetch_digital_twin()
 
-        self._start_timer(callback=self._timer_callback)
+        self._start_timer(interval=self.poll_interval, callback=self._timer_callback)
 
         while self.running:
             queue_msg = self._observer_notify_queue.get()
@@ -84,21 +86,26 @@ class DeviceManager(Thread):
 
     def _store_device_status(self, data: dict):
         device_id = data.get("device_id", None)
-        self.log.debug(f"Reveived device status from {device_id}")
-        # todo: store all status in a set (device_id, status)
+        status = data.get("status", None)
+        self.log.debug(f"Reveived device status {status} from {device_id}")
+        if device_id and status:
+            self.device_status_map[device_id] = status
 
     def _timer_callback(self):
-        #poll_interval = self.config[]
-        self._start_timer(callback=self._timer_callback)
+        self.log.debug("Starting device status polling stage")
+        self.device_status_map = {}
+
+        if self.running:
+            self._start_timer(interval=self.poll_interval, callback=self._timer_callback)
+
         # todo: clean status list
         # todo: send out cmd to mqtt gateway to receive status
         # todo: wait for a certain time
         # todo: map the remote digital twin with the status set and create digital_twin dict
         # todo: publish new digital twin to the cloud
-        # todo: restart timer if needed
 
-    def _start_timer(self, callback: Callable) -> None:
-        self.poll_timer = Timer(interval=5, function=callback)
+    def _start_timer(self, interval: int, callback: Callable) -> None:
+        self.poll_timer = Timer(interval=interval, function=callback)
         self.poll_timer.start()
 
 
