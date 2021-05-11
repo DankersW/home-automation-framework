@@ -19,8 +19,11 @@ Flow:
 
 """
 
-from threading import Thread, Event
+from threading import Thread, Event, Timer
 from queue import Queue
+from typing import Callable
+
+import time
 
 from home_automation_framework.framework.observer_message import ObserverMessage
 from home_automation_framework.logging.logging import Logging
@@ -31,6 +34,8 @@ class DeviceManager(Thread):
     update_time_sec = 600
     subscribed_event = ['digital_twin']
     remote_digital_twin = []
+
+    # todo: cleanup function order
 
     def __init__(self, queue: Queue, thread_event: Event) -> None:
         Thread.__init__(self)
@@ -46,7 +51,7 @@ class DeviceManager(Thread):
         self._thread_ready.set()
         self._fetch_digital_twin()
 
-        # todo: create timer with callback
+        self._start_timer(callback=self._timer_callback)
 
         while self.running:
             queue_msg = self._observer_notify_queue.get()
@@ -77,13 +82,19 @@ class DeviceManager(Thread):
         # todo: store all status in a set (device_id, status)
 
     def _timer_callback(self):
-        pass
+        self.log.info("hello")
+
         # todo: clean status list
         # todo: send out cmd to mqtt gateway to receive status
         # todo: wait for a certain time
         # todo: map the remote digital twin with the status set and create digital_twin dict
         # todo: publish new digital twin to the cloud
         # todo: restart timer if needed
+
+    @staticmethod
+    def _start_timer(callback: Callable) -> None:
+        Timer(interval=5, function=callback).start()
+
 
 if __name__ == '__main__':
     test_queue = Queue(10)
