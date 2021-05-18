@@ -1,4 +1,3 @@
-# todo: define digital_twin document (status, location, technology, batterie level)
 
 """
 Flow:
@@ -38,8 +37,6 @@ class DeviceManager(Thread):
     device_status_map = {}
     poll_timer = None
 
-    # todo: cleanup function order
-
     def __init__(self, queue: Queue, thread_event: Event) -> None:
         Thread.__init__(self)
         self._observer_publish_queue = queue
@@ -54,10 +51,12 @@ class DeviceManager(Thread):
     def __del__(self) -> None:
         self.running = False
 
+    def notify(self, event: str, msg: ObserverMessage) -> None:
+        self._observer_notify_queue.put(item=msg)
+
     def run(self) -> None:
         self._thread_ready.set()
         self._fetch_digital_twin()
-
         self._start_timer(interval=self.poll_interval, callback=self._timer_callback)
 
         while self.running:
@@ -67,12 +66,13 @@ class DeviceManager(Thread):
 
         self.poll_timer.cancel()
 
-    def notify(self, event: str, msg: ObserverMessage) -> None:
-        self._observer_notify_queue.put(item=msg)
-
     def _fetch_digital_twin(self):
         msg = ObserverMessage(event="digital_twin", data={}, subject="fetch_digital_twin")
         self._observer_publish_queue.put(msg)
+
+    def _start_timer(self, interval: int, callback: Callable) -> None:
+        self.poll_timer = Timer(interval=interval, function=callback)
+        self.poll_timer.start()
 
     def _handle_digital_twin_event(self, msg: ObserverMessage):
         if msg.subject == "retrieved_digital_twin":
@@ -110,24 +110,22 @@ class DeviceManager(Thread):
         if self.running:
             self._start_timer(interval=self.poll_interval, callback=self._timer_callback)
 
+    def _publish_device_status_poll(self):
+        pass
+
     def _wait_for_status_messages(self, wait_period: Union[int, float]) -> None:
         self.log.debug(f"Starting waiting period of {wait_period} seconds")
         start_time = time()
         while self.running and (time() - start_time < wait_period):
             sleep(0.01)
-        print("done")
+        self.log.debug("Done waiting")
 
-    def _start_timer(self, interval: int, callback: Callable) -> None:
-        self.poll_timer = Timer(interval=interval, function=callback)
-        self.poll_timer.start()
-
-    def _publish_device_status_poll(self):
+    def _update_digital_twin_with_device_status(self):
+        # todo: define digital_twin document (status, location, technology, batterie level)
+        # TODO: Lock the status recource
         pass
 
     def _publish_digital_twin(self):
-        pass
-
-    def _update_digital_twin_with_device_status(self):
         pass
 
 
