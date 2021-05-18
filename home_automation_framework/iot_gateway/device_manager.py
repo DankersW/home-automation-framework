@@ -22,8 +22,8 @@ Flow:
 from threading import Thread, Event, Timer
 from queue import Queue
 from typing import Callable
-
-import time
+from time import time, sleep
+from typing import Union
 
 from home_automation_framework.framework.observer_message import ObserverMessage
 from home_automation_framework.logging.logging import Logging
@@ -49,6 +49,7 @@ class DeviceManager(Thread):
 
         self.config = ConfigurationParser().get_config()
         self.poll_interval = self.config["device_manager"]["poll_interval"]
+        self.wait_period = self.config["device_manager"]["wait_period"]
 
     def __del__(self) -> None:
         self.running = False
@@ -95,14 +96,21 @@ class DeviceManager(Thread):
         self.log.debug("Starting device status polling stage")
         self.device_status_map = {}
 
+        self._wait_for_status_messages(wait_period=self.wait_period)
+
         if self.running:
             self._start_timer(interval=self.poll_interval, callback=self._timer_callback)
 
-        # todo: clean status list
         # todo: send out cmd to mqtt gateway to receive status
         # todo: wait for a certain time
         # todo: map the remote digital twin with the status set and create digital_twin dict
         # todo: publish new digital twin to the cloud
+
+    def _wait_for_status_messages(self, wait_period: Union[int, float]) -> None:
+        start_time = time()
+        while self.running and (time() - start_time < wait_period):
+            sleep(0.01)
+        print("done")
 
     def _start_timer(self, interval: int, callback: Callable) -> None:
         self.poll_timer = Timer(interval=interval, function=callback)

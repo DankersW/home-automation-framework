@@ -32,3 +32,11 @@ class TestDeviceManager(TestCase):
         self.assertEqual(device_manager.remote_digital_twin, moch_dt)
         device_manager.running = False
         device_manager.notify(msg=ObserverMessage(data="", event=""), event="")
+
+    def test_wait_for_status_messages_not_running(self):
+        device_manager = DeviceManager(queue=self.test_queue, thread_event=self.default_event)
+        device_manager._wait_for_status_messages(wait_period=0.5)
+        
+
+    # turn of mid run
+    # run for x sec
