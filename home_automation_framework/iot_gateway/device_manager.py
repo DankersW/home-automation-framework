@@ -96,17 +96,22 @@ class DeviceManager(Thread):
         self.log.debug("Starting device status polling stage")
         self.device_status_map = {}
 
+        # TODO
+        self._publish_device_status_poll()
+
         self._wait_for_status_messages(wait_period=self.wait_period)
+
+        # TODO
+        self._update_digital_twin_with_device_status()
+
+        # TODO
+        self._publish_digital_twin()
 
         if self.running:
             self._start_timer(interval=self.poll_interval, callback=self._timer_callback)
 
-        # todo: send out cmd to mqtt gateway to receive status
-        # todo: wait for a certain time
-        # todo: map the remote digital twin with the status set and create digital_twin dict
-        # todo: publish new digital twin to the cloud
-
     def _wait_for_status_messages(self, wait_period: Union[int, float]) -> None:
+        self.log.debug(f"Starting waiting period of {wait_period} seconds")
         start_time = time()
         while self.running and (time() - start_time < wait_period):
             sleep(0.01)
@@ -115,6 +120,15 @@ class DeviceManager(Thread):
     def _start_timer(self, interval: int, callback: Callable) -> None:
         self.poll_timer = Timer(interval=interval, function=callback)
         self.poll_timer.start()
+
+    def _publish_device_status_poll(self):
+        pass
+
+    def _publish_digital_twin(self):
+        pass
+
+    def _update_digital_twin_with_device_status(self):
+        pass
 
 
 if __name__ == '__main__':
