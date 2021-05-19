@@ -56,7 +56,8 @@ class DbHandler(Thread):
                                      'change_source': msg.data.get('event_type')}}
             self.mongo.update_object(collection_name='states', object_id=object_id, updated_values=updated_data)
         else:
-            document_data = {'device_id': msg.data.get('device_id'), 'event': event, 'change_source': msg.data.get('event'),
+            document_data = {'device_id': msg.data.get('device_id'), 'event': event,
+                             'change_source': msg.data.get('event'),
                              'state': msg.data.get('state')}
             self.mongo.insert(collection_name='states', data=document_data)
 
