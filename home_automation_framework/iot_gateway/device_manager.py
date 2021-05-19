@@ -114,14 +114,27 @@ class DeviceManager(Thread):
         start_time = time()
         while self.running and (time() - start_time < wait_period):
             sleep(0.01)
-        self.log.debug("Done waiting")
+        self.log.debug("Waiting period over")
 
     def _create_digital_twin_from_device_status(self) -> Union[None, List[dict]]:
         if not self.device_status_map and not self.remote_digital_twin:
             self.log.debug("No digital twin created since remote and local twin are empty")
             return None
+        """
+        digital_twin = []
+        for remote_item in self.remote_digital_twin:
+            if remote_item["device_id"] in self.device_status_map:
+                # add new device
+                helper = remote_item
+                helper["device_id"] = self.device_status_map["device_id"]
+                digital_twin.append(helper)
+            else
+                item = {"status": status, "location": None, "technology": None, "battery_level": None}
+                digital_twin.append(item)
+        """
         # todo: define digital_twin document (status, location, technology, batterie level)
         # TODO: Lock the status recource
+        # TODO: if new items added, call to fetch remote twin again
         print("hello")
 
     def _publish_digital_twin(self, twin: Union[list, dict]) -> None:
