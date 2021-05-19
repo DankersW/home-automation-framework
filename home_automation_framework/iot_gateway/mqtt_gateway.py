@@ -27,7 +27,7 @@ class MqttGateway(Thread):
         self.mqtt_client = MqttClient(config=config, connect_callback=self.on_connect, message_callback=self.on_message)
         if not self.mqtt_client.connect():
             # todo: unscribcribe from subject
-            print("unsubcribe itself")
+            self.log.critical("TODO: Unsubscribe itself form framework")
 
     def __del__(self):
         self.running = False
