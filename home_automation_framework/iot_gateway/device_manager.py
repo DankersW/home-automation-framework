@@ -97,21 +97,19 @@ class DeviceManager(Thread):
         self.log.debug("Starting device status polling stage")
         self.device_status_map = {}
 
-        # TODO
         self._publish_device_status_poll()
 
         self._wait_for_status_messages(wait_period=self.wait_period)
 
         # TODO
-        self._update_digital_twin_with_device_status()
+        digital_twin = self._update_digital_twin_with_device_status()
 
-        # TODO
-        self._publish_digital_twin()
-
+        self._publish_digital_twin(twin=digital_twin)
         self._start_timer(interval=self.poll_interval, callback=self._timer_callback)
 
     def _publish_device_status_poll(self):
-        pass
+        msg = ObserverMessage(event="digital_twin", data={}, subject="poll_devices")
+        self._observer_publish_queue.put(msg)
 
     def _wait_for_status_messages(self, wait_period: Union[int, float]) -> None:
         self.log.debug(f"Starting waiting period of {wait_period} seconds")
@@ -125,8 +123,9 @@ class DeviceManager(Thread):
         # TODO: Lock the status recource
         pass
 
-    def _publish_digital_twin(self):
-        pass
+    def _publish_digital_twin(self, twin: Union[list, dict]) -> None:
+        msg = ObserverMessage(event="digital_twin", data=twin, subject="save_digital_twin")
+        self._observer_publish_queue.put(msg)
 
 
 if __name__ == '__main__':

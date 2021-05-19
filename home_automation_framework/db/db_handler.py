@@ -70,6 +70,9 @@ class DbHandler(Thread):
             digital_twin = self.get_data(document="digital_twin")
             msg = ObserverMessage(event="digital_twin", data=digital_twin, subject="retrieved_digital_twin")
             self.observer_publish_queue.put(msg)
-
+        elif msg.subject == "save_digital_twin":
+            # todo: save message, loop all data in the twin, if we have a objectId, save update the field,
+            # TODO: if not, create new entry
+            self.log.critical(f"todo: save message - {msg.data}")
 
 
