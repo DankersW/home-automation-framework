@@ -72,3 +72,17 @@ class TestDeviceManager(TestCase):
 
         execution_time = end_time - start_time
         self.assertLess(execution_time, wait_period)
+
+    def test_create_digital_twin_from_device_status_both_remote_and_local_none(self):
+        device_manager = DeviceManager(queue=self.test_queue, thread_event=self.default_event)
+        device_manager.device_status_map = {}
+        device_manager.remote_digital_twin = []
+        result = device_manager._create_digital_twin_from_device_status()
+        self.assertIsNone(result)
+
+    def test_create_digital_twin_from_device_status_(self):
+        device_manager = DeviceManager(queue=self.test_queue, thread_event=self.default_event)
+        device_manager.device_status_map = {}
+        device_manager.remote_digital_twin = []
+        result = device_manager._create_digital_twin_from_device_status()
+        self.assertIsNone(result)

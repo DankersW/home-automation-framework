@@ -20,9 +20,8 @@ Flow:
 
 from threading import Thread, Event, Timer
 from queue import Queue
-from typing import Callable
+from typing import Callable, Union, List
 from time import time, sleep
-from typing import Union
 
 from home_automation_framework.framework.observer_message import ObserverMessage
 from home_automation_framework.logging.logging import Logging
@@ -71,9 +70,8 @@ class DeviceManager(Thread):
         self._observer_publish_queue.put(msg)
 
     def _start_timer(self, interval: int, callback: Callable) -> None:
-        if self.running:
-            self.poll_timer = Timer(interval=interval, function=callback)
-            self.poll_timer.start()
+        self.poll_timer = Timer(interval=interval, function=callback)
+        self.poll_timer.start()
 
     def _handle_digital_twin_event(self, msg: ObserverMessage):
         if msg.subject == "retrieved_digital_twin":
@@ -98,13 +96,13 @@ class DeviceManager(Thread):
         self.device_status_map = {}
 
         self._publish_device_status_poll()
-
         self._wait_for_status_messages(wait_period=self.wait_period)
 
         # TODO
-        digital_twin = self._update_digital_twin_with_device_status()
+        digital_twin = self._create_digital_twin_from_device_status()
+        if digital_twin:
+            self._publish_digital_twin(twin=digital_twin)
 
-        self._publish_digital_twin(twin=digital_twin)
         self._start_timer(interval=self.poll_interval, callback=self._timer_callback)
 
     def _publish_device_status_poll(self):
@@ -118,10 +116,13 @@ class DeviceManager(Thread):
             sleep(0.01)
         self.log.debug("Done waiting")
 
-    def _update_digital_twin_with_device_status(self):
+    def _create_digital_twin_from_device_status(self) -> Union[None, List[dict]]:
+        if not self.device_status_map and not self.remote_digital_twin:
+            self.log.debug("No digital twin created since remote and local twin are empty")
+            return None
         # todo: define digital_twin document (status, location, technology, batterie level)
         # TODO: Lock the status recource
-        pass
+        print("hello")
 
     def _publish_digital_twin(self, twin: Union[list, dict]) -> None:
         msg = ObserverMessage(event="digital_twin", data=twin, subject="save_digital_twin")
