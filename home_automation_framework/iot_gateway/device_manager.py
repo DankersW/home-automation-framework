@@ -71,8 +71,9 @@ class DeviceManager(Thread):
         self._observer_publish_queue.put(msg)
 
     def _start_timer(self, interval: int, callback: Callable) -> None:
-        self.poll_timer = Timer(interval=interval, function=callback)
-        self.poll_timer.start()
+        if self.running:
+            self.poll_timer = Timer(interval=interval, function=callback)
+            self.poll_timer.start()
 
     def _handle_digital_twin_event(self, msg: ObserverMessage):
         if msg.subject == "retrieved_digital_twin":
@@ -107,8 +108,7 @@ class DeviceManager(Thread):
         # TODO
         self._publish_digital_twin()
 
-        if self.running:
-            self._start_timer(interval=self.poll_interval, callback=self._timer_callback)
+        self._start_timer(interval=self.poll_interval, callback=self._timer_callback)
 
     def _publish_device_status_poll(self):
         pass
