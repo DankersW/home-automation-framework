@@ -18,7 +18,7 @@ Flow:
 
 """
 
-from threading import Thread, Event, Timer
+from threading import Thread, Event, Timer, Lock
 from queue import Queue
 from typing import Callable, Union, List
 from time import time, sleep
@@ -46,6 +46,7 @@ class DeviceManager(Thread):
         self.config = ConfigurationParser().get_config()
         self.poll_interval = self.config["device_manager"]["poll_interval"]
         self.wait_period = self.config["device_manager"]["wait_period"]
+        self.device_map_lock = Lock()
 
     def __del__(self) -> None:
         self.running = False
@@ -129,21 +130,24 @@ class DeviceManager(Thread):
             self.log.debug("No digital twin created since remote and local twin are empty")
             return None
 
+        self.device_map_lock.acquire()
+        device_status_map = self.device_status_map.copy()
+        self.device_map_lock.release()
+
         digital_twin = []
         for remote_item in self.remote_digital_twin:
             device_id = remote_item["device_name"]
             helper = remote_item
-            if device_id in self.device_status_map:
-                helper["active"] = self.device_status_map[device_id]
-                del self.device_status_map[device_id]
+            if device_id in device_status_map:
+                helper["active"] = device_status_map[device_id]
+                del device_status_map[device_id]
             digital_twin.append(helper)
 
-        for new_device in self.device_status_map:
+        for new_device in device_status_map:
             new_item = {"device_name": new_device, "status": True, "location": None,
                         "technology": None, "battery_level": None}
             digital_twin.append(new_item)
 
-        # TODO: Lock the status recource
         return digital_twin
 
     def _publish_digital_twin(self, twin: Union[list, dict]) -> None:
