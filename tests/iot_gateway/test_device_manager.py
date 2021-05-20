@@ -80,9 +80,67 @@ class TestDeviceManager(TestCase):
         result = device_manager._create_digital_twin_from_device_status()
         self.assertIsNone(result)
 
-    def test_create_digital_twin_from_device_status_(self):
+    def test_create_digital_twin_from_device_status_unit_still_active(self):
+        remote_twin = [{"_id": "ObjectId('6089b77907384800073936a6')", "device_name": 'test_device',
+                        "active": True, "location": 'on-desk', "technology": 'WI-FI', "battery_level": 'USB-power'},
+                       {"_id": "ObjectId('6089b77907384800073936a6')", "device_name": 'test_device_17',
+                        "active": True, "location": 'on-desk', "technology": 'WI-FI', "battery_level": 'USB-power'}
+                       ]
+        correct_dt = remote_twin
         device_manager = DeviceManager(queue=self.test_queue, thread_event=self.default_event)
-        device_manager.device_status_map = {}
+        device_manager.device_status_map = {"test_device": True, "test_device_17": True}
+        device_manager.remote_digital_twin = remote_twin
+        result = device_manager._create_digital_twin_from_device_status()
+        self.assertListEqual(correct_dt, result)
+
+    def test_create_digital_twin_from_device_status_one_offline(self):
+        remote_twin = [{"device_name": 'test_device', "active": True}, {"device_name": 'test_device_1', "active": True}]
+        correct_dt = [{"device_name": 'test_device', "active": True}, {"device_name": 'test_device_1', "active": False}]
+        device_manager = DeviceManager(queue=self.test_queue, thread_event=self.default_event)
+        device_manager.device_status_map = {"test_device": True, "test_device_1": False}
+        device_manager.remote_digital_twin = remote_twin
+        result = device_manager._create_digital_twin_from_device_status()
+        self.assertListEqual(correct_dt, result)
+
+    def test_create_digital_twin_from_device_status_new_device(self):
+        correct_dt = [{'device_name': 'new_device', 'status': True, 'location': None, 'technology': None,
+                       'battery_level': None}]
+        device_manager = DeviceManager(queue=self.test_queue, thread_event=self.default_event)
+        device_manager.device_status_map = {"new_device": True}
         device_manager.remote_digital_twin = []
         result = device_manager._create_digital_twin_from_device_status()
-        self.assertIsNone(result)
+        self.assertListEqual(result, correct_dt)
+
+    def test_create_digital_twin_from_device_status_one_old_one_new_device(self):
+        remote_twin = {"_id": "ObjectId('6089b77907384800073936a6')", "device_name": 'test_device', "active": True,
+                       "location": 'on-desk', "technology": 'WI-FI', "battery_level": 'USB-power'}
+        correct_dt = [remote_twin,
+                      {'device_name': 'new_device', 'status': True, 'location': None,
+                       'technology': None, 'battery_level': None}]
+        device_manager = DeviceManager(queue=self.test_queue, thread_event=self.default_event)
+        device_manager.device_status_map = {"new_device": True}
+        device_manager.remote_digital_twin = [remote_twin]
+        result = device_manager._create_digital_twin_from_device_status()
+        self.assertListEqual(result, correct_dt)
+
+    def test_generate_device_map_from_remote_twin_emtpy_twin(self):
+        device_manager = DeviceManager(queue=self.test_queue, thread_event=self.default_event)
+        device_manager.remote_digital_twin = []
+        device_map = device_manager._generate_device_map_from_remote_twin()
+        self.assertDictEqual(device_map, {})
+
+    def test_generate_device_map_from_remote_twin_correct_twin_structure(self):
+        correct_map = {"test_device": False}
+        device_manager = DeviceManager(queue=self.test_queue, thread_event=self.default_event)
+        device_manager.remote_digital_twin = [{"_id": "ObjectId('6089b77907384800073936a6')",
+                                               "device_name": 'test_device', "active": True, "location": 'on-desk',
+                                               "technology": 'WI-FI', "battery_level": 'USB-power'}]
+        device_map = device_manager._generate_device_map_from_remote_twin()
+        self.assertDictEqual(device_map, correct_map)
+
+    def test_generate_device_map_from_remote_twin_multi_items(self):
+        correct_map = {"test_device": False, "abc": False}
+        device_manager = DeviceManager(queue=self.test_queue, thread_event=self.default_event)
+        device_manager.remote_digital_twin = [{"device_name": 'test_device'}, {"device_name": "abc"}]
+        device_map = device_manager._generate_device_map_from_remote_twin()
+        self.assertDictEqual(device_map, correct_map)

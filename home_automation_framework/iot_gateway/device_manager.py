@@ -93,7 +93,7 @@ class DeviceManager(Thread):
 
     def _timer_callback(self):
         self.log.debug("Starting device status polling stage")
-        self.device_status_map = {}
+        self.device_status_map = self._generate_device_map_from_remote_twin()
 
         self._publish_device_status_poll()
         self._wait_for_status_messages(wait_period=self.wait_period)
@@ -102,8 +102,16 @@ class DeviceManager(Thread):
         digital_twin = self._create_digital_twin_from_device_status()
         if digital_twin:
             self._publish_digital_twin(twin=digital_twin)
+            self._fetch_digital_twin()
 
         self._start_timer(interval=self.poll_interval, callback=self._timer_callback)
+
+    def _generate_device_map_from_remote_twin(self) -> dict:
+        device_map = {}
+        for twin_item in self.remote_digital_twin:
+            device_name = twin_item["device_name"]
+            device_map[device_name] = False
+        return device_map
 
     def _publish_device_status_poll(self):
         msg = ObserverMessage(event="digital_twin", data={}, subject="poll_devices")
@@ -120,22 +128,23 @@ class DeviceManager(Thread):
         if not self.device_status_map and not self.remote_digital_twin:
             self.log.debug("No digital twin created since remote and local twin are empty")
             return None
-        """
+
         digital_twin = []
         for remote_item in self.remote_digital_twin:
-            if remote_item["device_id"] in self.device_status_map:
-                # add new device
-                helper = remote_item
-                helper["device_id"] = self.device_status_map["device_id"]
-                digital_twin.append(helper)
-            else
-                item = {"status": status, "location": None, "technology": None, "battery_level": None}
-                digital_twin.append(item)
-        """
-        # todo: define digital_twin document (status, location, technology, batterie level)
+            device_id = remote_item["device_name"]
+            helper = remote_item
+            if device_id in self.device_status_map:
+                helper["active"] = self.device_status_map[device_id]
+                del self.device_status_map[device_id]
+            digital_twin.append(helper)
+
+        for new_device in self.device_status_map:
+            new_item = {"device_name": new_device, "status": True, "location": None,
+                        "technology": None, "battery_level": None}
+            digital_twin.append(new_item)
+
         # TODO: Lock the status recource
-        # TODO: if new items added, call to fetch remote twin again
-        print("hello")
+        return digital_twin
 
     def _publish_digital_twin(self, twin: Union[list, dict]) -> None:
         msg = ObserverMessage(event="digital_twin", data=twin, subject="save_digital_twin")
