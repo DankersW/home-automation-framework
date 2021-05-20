@@ -8,7 +8,7 @@ framework:
 system_components:
   gcp: false
   mqtt_gateway: false
-  db: false
+  db: true
   host_monitor: false
   device_manager: true
 
@@ -24,5 +24,5 @@ mongo_db:
   host_ip: '127.0.0.1'
 
 device_manager:
-  poll_interval: 5  # Interval in seconds that the device_manager polls devices
-  wait_period: 2  # Time in sec spend waiting for status messages
+  poll_interval: 25  # Interval in seconds that the device_manager polls devices
+  wait_period: 10  # Time in sec spend waiting for status messages

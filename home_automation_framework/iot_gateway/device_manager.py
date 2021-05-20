@@ -35,6 +35,7 @@ class DeviceManager(Thread):
     remote_digital_twin = []
     device_status_map = {}
     poll_timer = None
+    new_devices = False
 
     def __init__(self, queue: Queue, thread_event: Event) -> None:
         Thread.__init__(self)
@@ -103,7 +104,10 @@ class DeviceManager(Thread):
         digital_twin = self._create_digital_twin_from_device_status()
         if digital_twin:
             self._publish_digital_twin(twin=digital_twin)
+
+        if self.new_devices:
             self._fetch_digital_twin()
+            self.new_devices = False
 
         self._start_timer(interval=self.poll_interval, callback=self._timer_callback)
 
@@ -147,6 +151,7 @@ class DeviceManager(Thread):
             new_item = {"device_name": new_device, "status": True, "location": None,
                         "technology": None, "battery_level": None}
             digital_twin.append(new_item)
+            self.new_devices = True
 
         return digital_twin
 
