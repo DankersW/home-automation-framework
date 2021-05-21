@@ -77,15 +77,10 @@ class DbHandler(Thread):
     def _save_digital_twin(self, twin: list):
         self.log.info("Uploading updated digital twin")
         for twin_item in twin:
-            print(twin_item)
-            twin_item.pop("_id", None)
             query = {'device_name': twin_item.get("device_name")}
             object_id = self.mongo.check_existence_by_device_name('digital_twin', query=query)
-            print(object_id)
             if object_id:
                 data = {'$set': twin_item}
-                print("update")
                 self.mongo.update_object(collection_name='digital_twin', object_id=object_id, updated_values=data)
             else:
-                print("instert")
                 self.mongo.insert(collection_name='digital_twin', data=twin_item)
