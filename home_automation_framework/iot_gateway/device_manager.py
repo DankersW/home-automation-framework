@@ -127,7 +127,7 @@ class DeviceManager(Thread):
             digital_twin.append(helper)
 
         for new_device in device_status_map:
-            new_item = {"device_name": new_device, "status": True, "location": None,
+            new_item = {"device_name": new_device, "active": True, "location": None,
                         "technology": None, "battery_level": None}
             digital_twin.append(new_item)
             self.new_devices = True
