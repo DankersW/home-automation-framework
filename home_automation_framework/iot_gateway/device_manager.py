@@ -1,23 +1,3 @@
-
-"""
-Flow:
-    init
-        download digital twin from db
-        create local digital-twin struct with status zero-d
-        create device_status_poll_timer with callback
-
-    device_status_poll_timer_cb
-        send out status_request msg to all units
-        wait for x minutes to getter responses
-        plublish digital-twin status to db
-        zero twin struct
-        start timer
-
-    start
-        listen for messages, on message update digital twin wih status to active
-
-"""
-
 from threading import Thread, Event, Timer, Lock
 from queue import Queue
 from typing import Callable, Union, List
