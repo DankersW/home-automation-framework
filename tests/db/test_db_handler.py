@@ -115,3 +115,12 @@ class TestDbHandler(TestCase):
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
         db_handler.mongo = MockMongoNoDeviceNameExist
         db_handler.store_state_data(event='pass', msg=ObserverMessage(event="pass", data={}))
+
+    @mock.patch.object(MongoHandler, '__init__')
+    def test_save_digital_twin(self, mock_mongo):
+        mock_mongo.return_value = None
+        twin = [{'_id': "ObjectId('6089b77907384800073936a6')", 'device_name': 'test_device', 'active': False,
+                 'location': 'on-desk', 'technology': 'WI-FI', 'battery_level': 'USB-power'}]
+        db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
+        db_handler.mongo = MockMongo
+        db_handler._save_digital_twin(twin=twin)

@@ -50,7 +50,8 @@ class DbHandler(Thread):
         return self.mongo.get(collection_name=document)
 
     def store_state_data(self, event: str, msg: ObserverMessage) -> None:
-        object_id = self.mongo.check_existence_by_device_name('states', msg.data.get('device_id'))
+        query = {'device_id': msg.data.get('device_id')}
+        object_id = self.mongo.check_existence_by_device_name('states', query=query)
         if object_id:
             updated_data = {'$set': {'state': msg.data.get('state'), 'event': event,
                                      'change_source': msg.data.get('event_type')}}
@@ -71,8 +72,20 @@ class DbHandler(Thread):
             msg = ObserverMessage(event="digital_twin", data=digital_twin, subject="retrieved_digital_twin")
             self.observer_publish_queue.put(msg)
         elif msg.subject == "save_digital_twin":
-            # todo: save message, loop all data in the twin, if we have a objectId, save update the field,
-            # TODO: if not, create new entry
-            self.log.critical(f"todo: save message - {msg.data}")
+            self._save_digital_twin(twin=msg.data)
 
-
+    def _save_digital_twin(self, twin: list):
+        self.log.info("Uploading updated digital twin")
+        for twin_item in twin:
+            print(twin_item)
+            twin_item.pop("_id", None)
+            query = {'device_name': twin_item.get("device_name")}
+            object_id = self.mongo.check_existence_by_device_name('digital_twin', query=query)
+            print(object_id)
+            if object_id:
+                data = {'$set': twin_item}
+                print("update")
+                self.mongo.update_object(collection_name='digital_twin', object_id=object_id, updated_values=data)
+            else:
+                print("instert")
+                self.mongo.insert(collection_name='digital_twin', data=twin_item)

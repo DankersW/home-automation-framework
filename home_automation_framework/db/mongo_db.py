@@ -56,9 +56,8 @@ class MongoHandler:
         collection.update_one(query, updated_values)
         self.log.debug(f'Data with ID {object_id!r} in collection {collection_name!r} updated successfully')
 
-    def check_existence_by_device_name(self, collection_name: str, device_name: str) -> Union[str, None]:
+    def check_existence_by_device_name(self, collection_name: str, query: dict) -> Union[str, None]:
         collection = self.mongo_db[collection_name]
-        query = {'device_id': device_name}
         data = collection.find_one(query)
         if isinstance(data, dict):
             return data.get('_id')
