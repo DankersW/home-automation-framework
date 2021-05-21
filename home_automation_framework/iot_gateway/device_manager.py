@@ -100,7 +100,6 @@ class DeviceManager(Thread):
         self._publish_device_status_poll()
         self._wait_for_status_messages(wait_period=self.wait_period)
 
-        # TODO
         digital_twin = self._create_digital_twin_from_device_status()
         if digital_twin:
             self._publish_digital_twin(twin=digital_twin)
