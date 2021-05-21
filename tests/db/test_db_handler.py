@@ -26,13 +26,13 @@ class MockMongo:
 
 class MockMongoDeviceNameExist(MockMongo):
     @staticmethod
-    def check_existence_by_device_name(collection_name: str, device_name: str):
+    def check_existence_by_device_name(collection_name: str, query: str):
         return True
 
 
 class MockMongoNoDeviceNameExist(MockMongo):
     @staticmethod
-    def check_existence_by_device_name(collection_name: str, device_name: str):
+    def check_existence_by_device_name(collection_name: str, query: str):
         return False
 
 
@@ -122,5 +122,5 @@ class TestDbHandler(TestCase):
         twin = [{'_id': "ObjectId('6089b77907384800073936a6')", 'device_name': 'test_device', 'active': False,
                  'location': 'on-desk', 'technology': 'WI-FI', 'battery_level': 'USB-power'}]
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
-        db_handler.mongo = MockMongo
+        db_handler.mongo = MockMongoDeviceNameExist
         db_handler._save_digital_twin(twin=twin)

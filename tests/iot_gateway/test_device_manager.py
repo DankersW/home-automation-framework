@@ -103,7 +103,7 @@ class TestDeviceManager(TestCase):
         self.assertListEqual(correct_dt, result)
 
     def test_create_digital_twin_from_device_status_new_device(self):
-        correct_dt = [{'device_name': 'new_device', 'status': True, 'location': None, 'technology': None,
+        correct_dt = [{'device_name': 'new_device', 'active': True, 'location': None, 'technology': None,
                        'battery_level': None}]
         device_manager = DeviceManager(queue=self.test_queue, thread_event=self.default_event)
         device_manager.device_status_map = {"new_device": True}
@@ -115,7 +115,7 @@ class TestDeviceManager(TestCase):
         remote_twin = {"_id": "ObjectId('6089b77907384800073936a6')", "device_name": 'test_device', "active": True,
                        "location": 'on-desk', "technology": 'WI-FI', "battery_level": 'USB-power'}
         correct_dt = [remote_twin,
-                      {'device_name': 'new_device', 'status': True, 'location': None,
+                      {'device_name': 'new_device', 'active': True, 'location': None,
                        'technology': None, 'battery_level': None}]
         device_manager = DeviceManager(queue=self.test_queue, thread_event=self.default_event)
         device_manager.device_status_map = {"new_device": True}
