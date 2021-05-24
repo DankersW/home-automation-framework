@@ -2,10 +2,14 @@
 general:
   logging_mode: db  # Options: <terminal, file, db, test>
 
+framework:
+  events: ['gcp_state_changed', 'device_state_changed', 'iot_traffic', 'host_health', 'device_sensor_data', 'digital_twin']
+
 system_components:
   mqtt_gateway: true
   db: true
   host_monitor: true
+  device_manager: true
 
 logging:
   file_log_folder: 'C:\Users\woute\development\logs'
@@ -17,3 +21,7 @@ mqtt_gateway:
 
 mongo_db:
   host_ip: 'mongo'
+
+device_manager:
+  poll_interval: 3000  # Interval in seconds that the device_manager polls devices
+  wait_period: 600  # Time in sec spend waiting for status messages
