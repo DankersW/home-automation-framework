@@ -25,7 +25,6 @@ class DeviceManager(Thread):
 
         self.config = ConfigurationParser().get_config()
         self.poll_interval = self.config["device_manager"]["poll_interval"]
-        self.wait_period = self.config["device_manager"]["wait_period"]
         self.device_map_lock = Lock()
 
     def __del__(self) -> None:
@@ -78,7 +77,8 @@ class DeviceManager(Thread):
         self.device_status_map = self._generate_device_map_from_remote_twin()
 
         self._publish_device_status_poll()
-        self._wait_for_status_messages(wait_period=self.wait_period)
+        wait_period = self.config["device_manager"]["wait_period"]
+        self._wait_for_status_messages(wait_period=wait_period)
 
         digital_twin = self._create_digital_twin_from_device_status()
         if digital_twin:
