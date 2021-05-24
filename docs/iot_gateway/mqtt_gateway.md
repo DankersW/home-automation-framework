@@ -33,7 +33,7 @@ Message payload can be in JSON format or in binary
 
 `system` Framework requesting
 - **topic**: iot/devices/framework/system
-- **payload**: {"event": "poll info"}
+- **payload**: {"event": "poll"}
 
 
 

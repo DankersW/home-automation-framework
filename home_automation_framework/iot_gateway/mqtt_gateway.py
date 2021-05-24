@@ -70,7 +70,8 @@ class MqttGateway(Thread):
     def _select_handler(self, event: str) -> Callable:
         handler_map = {
             'state': self._handle_state_change,
-            'telemetry': self._handle_telemetry
+            'telemetry': self._handle_telemetry,
+            'system': self._handle_system
         }
         return handler_map.get(event, self._unknown_event)
 
@@ -90,6 +91,14 @@ class MqttGateway(Thread):
         item = ObserverMessage(event="device_sensor_data", data=message)
         self._observer_publish_queue.put(item)
 
+    def _handle_system(self, msg: IotMessage) -> None:
+        self.log.debug(f"Handling system message from device {msg.device_id}")
+        if msg.device_id != "framework":
+            message = {'device_id': msg.device_id}
+            message.update(msg.payload)
+            item = ObserverMessage(event="digital_twin", data=message, subject="device_status")
+            self._observer_publish_queue.put(item)
+
     def _handle_digital_twin_event(self, msg: ObserverMessage):
         if msg.subject == "poll_devices":
-            self.log.critical("todo, send poll")
+            self.mqtt_client.publish(topic="iot/devices/framework/system", msg={"event": "poll"})

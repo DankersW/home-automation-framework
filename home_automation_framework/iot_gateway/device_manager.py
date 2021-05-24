@@ -68,8 +68,8 @@ class DeviceManager(Thread):
 
     def _store_device_status(self, data: dict):
         device_id = data.get("device_id", None)
-        status = data.get("status", None)
-        self.log.debug(f"Reveived device status {status} from {device_id}")
+        status = data.get("active", None)
+        self.log.debug(f"Received device status {status} from {device_id}")
         if device_id and status:
             self.device_status_map[device_id] = status
 
