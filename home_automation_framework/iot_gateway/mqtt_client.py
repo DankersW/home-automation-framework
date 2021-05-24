@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Union
 from json import dumps
 
 from paho.mqtt import client as paho_mqtt
@@ -55,7 +55,7 @@ class MqttClient:
         payload = message.payload.decode("utf-8")
         self._on_message_callback(topic=topic, payload=payload)
 
-    def publish(self, topic: str, msg: dict) -> bool:
+    def publish(self, topic: str, msg: Union[dict, str]) -> bool:
         self.log.debug(f'Publishing message {msg!r} on topic {topic!r}')
         message_info = self._mqtt_client.publish(topic=topic, payload=dumps(msg), qos=1)
         if message_info.rc != 0:
