@@ -1,7 +1,9 @@
 from typing import Union
 from inspect import stack
+from dataclasses import dataclass
 
 
+@dataclass
 class ObserverMessage:
     def __init__(self, event: str, data: Union[str, dict, list], subject: str = None, destination: str = None) -> None:
         self.event = event
