@@ -10,7 +10,6 @@ from home_automation_framework.utils.configuration_parser import ConfigurationPa
 
 class DeviceManager(Thread):
     running = True
-    update_time_sec = 600
     subscribed_event = ['digital_twin']
     remote_digital_twin = []
     device_status_map = {}
@@ -33,6 +32,7 @@ class DeviceManager(Thread):
         self.running = False
 
     def notify(self, event: str, msg: ObserverMessage) -> None:
+        self.log.debug(f"Received event {event} on notify")
         self._observer_notify_queue.put(item=msg)
 
     def run(self) -> None:
@@ -63,7 +63,7 @@ class DeviceManager(Thread):
 
     def _store_remote_digital_twin(self, data: dict):
         self.remote_digital_twin = data
-        self.log.success(f"Received remote digital twin")
+        self.log.success("Received remote digital twin")
         self.log.debug(f"Remote digital twin: {self.remote_digital_twin}")
 
     def _store_device_status(self, data: dict):
@@ -113,9 +113,8 @@ class DeviceManager(Thread):
             self.log.debug("No digital twin created since remote and local twin are empty")
             return None
 
-        self.device_map_lock.acquire()
-        device_status_map = self.device_status_map.copy()
-        self.device_map_lock.release()
+        with self.device_map_lock:
+            device_status_map = self.device_status_map.copy()
 
         digital_twin = []
         for remote_item in self.remote_digital_twin:
@@ -137,11 +136,3 @@ class DeviceManager(Thread):
     def _publish_digital_twin(self, twin: Union[list, dict]) -> None:
         msg = ObserverMessage(event="digital_twin", data=twin, subject="save_digital_twin")
         self._observer_publish_queue.put(msg)
-
-
-if __name__ == '__main__':
-    test_queue = Queue(10)
-    t_event = Event()
-    dm = DeviceManager(test_queue, thread_event=t_event)
-    dm.start()
-
