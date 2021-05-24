@@ -16,9 +16,3 @@
 ## Bugs 
 -  [ ] If an observer failed to start up, it needs to be removed from the observer list
 -  [ ] Writing to DB locally and from docker the time is different, locally correct time, via docker -2 hours timestamp
-
-## PR
-- gateway: send out status message
-- gateway: receive status message from units
-- gateway: send unit status message to device-manager
-- db: save digital_twin
