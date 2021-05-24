@@ -31,6 +31,7 @@ class DbHandler(Thread):
             action(event=item.event, msg=item)
 
     def notify(self,  event: str, msg: ObserverMessage) -> None:
+        self.log.debug(f"Received event {event} on notify")
         self.observer_notify_queue.put(msg)
 
     def action_selector(self, event: str) -> Callable:
@@ -66,6 +67,7 @@ class DbHandler(Thread):
         self.mongo.insert(collection_name=event, data=msg.data)
 
     def handle_digital_twin(self, event: str, msg: ObserverMessage) -> None:
+        self.log.debug(f"Handling event {event}, remove me")
         if msg.subject == "fetch_digital_twin":
             self.log.info("Fetching digital twin from DB")
             digital_twin = self.get_data(document="digital_twin")
