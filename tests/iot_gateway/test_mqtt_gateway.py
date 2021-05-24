@@ -28,10 +28,10 @@ class TestMqttGateway(TestCase):
         emtpy_queue(queue=self.test_queue)
         mqtt_gateway._log_mqtt_traffic(topic=topic, payload=payload)
         result = self.test_queue.get()
-        self.assertEqual(result['event'], 'iot_traffic')
-        self.assertEqual(result['message']['source'], 'MqttGateway')
-        self.assertEqual(result['message']['topic'], topic)
-        self.assertEqual(result['message']['payload'], payload)
+        self.assertEqual(result.event, "iot_traffic")
+        self.assertEqual(result.data['source'], "MqttGateway")
+        self.assertEqual(result.data['topic'], topic)
+        self.assertEqual(result.data['payload'], payload)
 
     @mock.patch("home_automation_framework.iot_gateway.mqtt_client.MqttClient")
     def test_unknown_event(self, mock_mqtt_client):
@@ -53,10 +53,10 @@ class TestMqttGateway(TestCase):
         emtpy_queue(queue=self.test_queue)
         mqtt_gateway._handle_state_change(msg=mock_iot_message)
         result = self.test_queue.get()
-        self.assertEqual(result['event'], 'device_state_changed')
-        self.assertEqual(result['message']['device_id'], mock_iot_message.device_id)
-        self.assertEqual(result['message']['event_type'], mock_iot_message.event)
-        self.assertEqual(result['message']['state'], True)
+        self.assertEqual(result.event, "device_state_changed")
+        self.assertEqual(result.data['device_id'], mock_iot_message.device_id)
+        self.assertEqual(result.data['event_type'], mock_iot_message.event)
+        self.assertEqual(result.data['state'], True)
 
     @mock.patch("home_automation_framework.iot_gateway.mqtt_client.MqttClient")
     def test_get_message_handler_state_changed(self, mock_mqtt_client):
@@ -91,10 +91,10 @@ class TestMqttGateway(TestCase):
         mqtt_gateway.on_message(topic=topic, payload=json_data)
 
         iot_traffic_event = self.test_queue.get()
-        self.assertEqual(iot_traffic_event['event'], 'iot_traffic')
-        self.assertEqual(iot_traffic_event['message']['source'], 'MqttGateway')
-        self.assertEqual(iot_traffic_event['message']['topic'], topic)
-        self.assertEqual(iot_traffic_event['message']['payload'], json_data)
+        self.assertEqual(iot_traffic_event.event, "iot_traffic")
+        self.assertEqual(iot_traffic_event.data['source'], "MqttGateway")
+        self.assertEqual(iot_traffic_event.data['topic'], topic)
+        self.assertEqual(iot_traffic_event.data['payload'], json_data)
 
         self.assertTrue(self.test_queue.empty())
 
@@ -111,10 +111,10 @@ class TestMqttGateway(TestCase):
         mqtt_gateway.on_message(topic=topic, payload=json_data)
 
         iot_traffic_event = self.test_queue.get()
-        self.assertEqual(iot_traffic_event['event'], 'iot_traffic')
-        self.assertEqual(iot_traffic_event['message']['source'], 'MqttGateway')
-        self.assertEqual(iot_traffic_event['message']['topic'], topic)
-        self.assertEqual(iot_traffic_event['message']['payload'], json_data)
+        self.assertEqual(iot_traffic_event.event, "iot_traffic")
+        self.assertEqual(iot_traffic_event.data['source'], "MqttGateway")
+        self.assertEqual(iot_traffic_event.data['topic'], topic)
+        self.assertEqual(iot_traffic_event.data['payload'], json_data)
 
         self.assertTrue(self.test_queue.empty())
 

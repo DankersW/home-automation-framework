@@ -5,6 +5,7 @@ from time import time, sleep
 from datetime import datetime
 import subprocess
 
+from home_automation_framework.framework.observer_message import ObserverMessage
 from home_automation_framework.logging.logging import Logging
 
 
@@ -30,13 +31,13 @@ class HealthMonitor(Thread):
             start_time = time()
 
             host_data = self._fetch_host_data()
-            item = {'event': 'host_health', 'message': host_data}
-            self.observer_publish_queue.put(item)
+            msg = ObserverMessage(event="host_health", data=host_data)
+            self.observer_publish_queue.put(msg)
 
             sleep_time = self.update_time_sec - ((time() - start_time) % self.update_time_sec)
             sleep(sleep_time)
 
-    def notify(self, msg: dict, event: str) -> None:
+    def notify(self, event: str, msg: ObserverMessage) -> None:
         pass
 
     def _fetch_host_data(self) -> dict:
@@ -67,8 +68,8 @@ class HealthMonitor(Thread):
     def poll_cpu_load(self) -> float:
         cpu_command = ["cat", "/proc/stat"]
         try:
-            process_result = subprocess.Popen(cpu_command, stdout=subprocess.PIPE)
-            proc_stat, _ = process_result.communicate()
+            with subprocess.Popen(cpu_command, stdout=subprocess.PIPE) as process_result:
+                proc_stat, _ = process_result.communicate()
             cpu_data = proc_stat.decode('utf-8').split('\n')[0].split()[1:-1]
             cpu_data = [int(field) for field in cpu_data]
             cpu_usage = ((cpu_data[0] + cpu_data[2]) * 100 / (cpu_data[0] + cpu_data[2] + cpu_data[3]))

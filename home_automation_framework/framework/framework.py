@@ -2,11 +2,13 @@ from queue import Queue
 from typing import Callable
 from threading import Event
 
+from home_automation_framework.framework.observer_message import ObserverMessage
 from home_automation_framework.utils.configuration_parser import ConfigurationParser
 from home_automation_framework.iot_gateway.mqtt_gateway import MqttGateway
 from home_automation_framework.logging.logging import Logging
 from home_automation_framework.db.db_handler import DbHandler
 from home_automation_framework.host_health.health_monitor import HealthMonitor
+from home_automation_framework.iot_gateway.device_manager import DeviceManager
 
 
 class Subject:
@@ -27,7 +29,7 @@ class Subject:
 
     def dispatch(self, event, message) -> None:
         for _, callback in self.get_subscribers(event).items():
-            callback(message, event)
+            callback(event, message)
 
 
 class IotSubject:
@@ -35,9 +37,10 @@ class IotSubject:
     running = False
 
     def __init__(self) -> None:
-        events = ['gcp_state_changed', 'device_state_changed', 'iot_traffic', 'host_health', 'device_sensor_data']
         self.log = Logging(owner=__file__, config=True)
         self.config = ConfigurationParser().get_config()
+
+        events = self.config['framework']['events']
         self.subject = Subject(events)
 
         self.observer_queue = Queue(maxsize=100)
@@ -64,7 +67,8 @@ class IotSubject:
         object_mapper = {
             'mqtt_gateway': MqttGateway,
             'db': DbHandler,
-            'host_monitor': HealthMonitor
+            'host_monitor': HealthMonitor,
+            'device_manager': DeviceManager
         }
         return object_mapper.get(component_name)
 
@@ -80,13 +84,13 @@ class IotSubject:
         self.log.success(f'Started {len(observer_names)} observers. {observer_names}')
         self.running = True
 
-    def run(self):
+    def run(self) -> None:
         while self.running:
-            event = self.get_observer_events()
-            self.notify_observers(event=event)
+            msg = self.get_observer_events()
+            self.notify_observers(msg=msg)
 
-    def notify_observers(self, event):
-        self.subject.dispatch(**event)
+    def notify_observers(self, msg: ObserverMessage) -> None:
+        self.subject.dispatch(event=msg.event, message=msg)
 
-    def get_observer_events(self) -> dict:
+    def get_observer_events(self) -> ObserverMessage:
         return self.observer_queue.get()

@@ -7,11 +7,12 @@ from home_automation_framework.iot_gateway.mqtt_client import MqttClient
 from home_automation_framework.iot_gateway.iot_message import IotMessage
 from home_automation_framework.logging.logging import Logging
 from home_automation_framework.utils.configuration_parser import ConfigurationParser
+from home_automation_framework.framework.observer_message import ObserverMessage
 
 
 class MqttGateway(Thread):
     running = False
-    subscribed_event = ['gcp_state_changed']
+    subscribed_event = ['gcp_state_changed', 'digital_twin']
 
     def __init__(self, queue, thread_event: Event):
         Thread.__init__(self)
@@ -26,7 +27,7 @@ class MqttGateway(Thread):
         self.mqtt_client = MqttClient(config=config, connect_callback=self.on_connect, message_callback=self.on_message)
         if not self.mqtt_client.connect():
             # todo: unscribcribe from subject
-            print("unsubcribe itself")
+            self.log.critical("TODO: Unsubscribe itself form framework")
 
     def __del__(self):
         self.running = False
@@ -35,9 +36,11 @@ class MqttGateway(Thread):
         self._thread_ready.set()
         while self.running:
             queue_item = self._observer_notify_queue.get()
-            print(queue_item)
+            if queue_item.event == "digital_twin":
+                self._handle_digital_twin_event(msg=queue_item)
 
-    def notify(self, msg, _event):
+    def notify(self, event: str, msg: ObserverMessage):
+        self.log.debug(f"Received event {event} on notify")
         self._observer_notify_queue.put(item=msg)
 
     def get_mqtt_config(self) -> dict:
@@ -61,14 +64,15 @@ class MqttGateway(Thread):
             self.log.warning('The MQTT message is not valid')
 
     def _log_mqtt_traffic(self, topic: str, payload: str) -> None:
-        msg = {'timestamp': datetime.now(), 'source': type(self).__name__, 'topic': topic, 'payload': payload}
-        traffic_item = {'event': 'iot_traffic', 'message': msg}
-        self._observer_publish_queue.put(traffic_item)
+        data = {'timestamp': datetime.now(), 'source': type(self).__name__, 'topic': topic, 'payload': payload}
+        msg = ObserverMessage(event="iot_traffic", data=data)
+        self._observer_publish_queue.put(msg)
 
     def _select_handler(self, event: str) -> Callable:
         handler_map = {
             'state': self._handle_state_change,
-            'telemetry': self._handle_telemetry
+            'telemetry': self._handle_telemetry,
+            'system': self._handle_system
         }
         return handler_map.get(event, self._unknown_event)
 
@@ -78,12 +82,24 @@ class MqttGateway(Thread):
     def _handle_state_change(self, msg: IotMessage) -> None:
         self.log.debug("Handling state event")
         message = {'device_id': msg.device_id, 'event_type': msg.event, 'state': msg.payload.get('state')}
-        item = {'event': 'device_state_changed', 'message': message}
+        item = ObserverMessage(event="device_state_changed", data=message)
         self._observer_publish_queue.put(item)
 
     def _handle_telemetry(self, msg: IotMessage) -> None:
         self.log.debug("Handling telemetry event")
         message = {'timestamp': datetime.now(), 'device_id': msg.device_id}
         message.update(msg.payload)
-        item = {'event': 'device_sensor_data', 'message': message}
+        item = ObserverMessage(event="device_sensor_data", data=message)
         self._observer_publish_queue.put(item)
+
+    def _handle_system(self, msg: IotMessage) -> None:
+        self.log.debug(f"Handling system message from device {msg.device_id}")
+        if msg.device_id != "framework":
+            message = {'device_id': msg.device_id}
+            message.update(msg.payload)
+            item = ObserverMessage(event="digital_twin", data=message, subject="device_status")
+            self._observer_publish_queue.put(item)
+
+    def _handle_digital_twin_event(self, msg: ObserverMessage):
+        if msg.subject == "poll_devices":
+            self.mqtt_client.publish(topic="iot/devices/framework/system", msg={"event": "poll"})

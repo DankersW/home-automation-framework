@@ -34,7 +34,7 @@ class TestHostHealth(TestCase):
         self.assertEqual(self.health_monitor.poll_system_temp(), float(mock_temp) / 1000)
         delete_file(file=file_path)
 
-    @mock.patch('subprocess.Popen')
+    @mock.patch('subprocess.Popen.__enter__')
     def test_poll_cpu_load_correct(self, mock_popen):
         """ Test parsing of cpu data, correct data """
         process_mock = mock.Mock()
@@ -44,7 +44,7 @@ class TestHostHealth(TestCase):
         mock_popen.return_value = process_mock
         self.assertEqual(self.health_monitor.poll_cpu_load(), 14.482)
 
-    @mock.patch('subprocess.Popen')
+    @mock.patch('subprocess.Popen.__enter__')
     def test_poll_cpu_load_corrupt_data(self, mock_popen):
         """ Test parsing of cpu data, corrupt data """
         process_mock = mock.Mock()

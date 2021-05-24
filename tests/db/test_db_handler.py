@@ -4,13 +4,15 @@ from queue import Queue
 
 from home_automation_framework.db.db_handler import DbHandler
 from home_automation_framework.db.mongo_db import MongoHandler
+from home_automation_framework.framework.observer_message import ObserverMessage
 
 
 class MockMongo:
     def __init__(self, db_name):
         print(db_name)
 
-    def get(self, collection_name, device_name=None):
+    @staticmethod
+    def get(collection_name, query: dict = None):
         return ['a', 'b']
 
     @staticmethod
@@ -24,13 +26,13 @@ class MockMongo:
 
 class MockMongoDeviceNameExist(MockMongo):
     @staticmethod
-    def check_existence_by_device_name(collection_name: str, device_name: str):
+    def check_existence_by_device_name(collection_name: str, query: str):
         return True
 
 
 class MockMongoNoDeviceNameExist(MockMongo):
     @staticmethod
-    def check_existence_by_device_name(collection_name: str, device_name: str):
+    def check_existence_by_device_name(collection_name: str, query: str):
         return False
 
 
@@ -39,7 +41,8 @@ class TestDbHandler(TestCase):
     test_event = Event()
 
     def test_subscribed_events(self):
-        events = ['gcp_state_changed', 'device_state_changed', 'iot_traffic', 'host_health', 'device_sensor_data']
+        events = ['gcp_state_changed', 'device_state_changed', 'iot_traffic', 'host_health', 'device_sensor_data',
+                  'digital_twin']
         _events = DbHandler.subscribed_event
         self.assertEqual(_events, events)
 
@@ -55,11 +58,13 @@ class TestDbHandler(TestCase):
     def test_notify(self, mock_mongo):
         mock_mongo.return_value = None
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
-        msg = {'test': 123}
+        data = {'test': 123}
         event = 'test'
-        db_handler.notify(msg=msg, event=event)
+        msg = ObserverMessage(event=event, data=data)
+        db_handler.notify(event=event, msg=msg)
         queue_item = db_handler.observer_notify_queue.get()
-        self.assertDictEqual(queue_item, {'event': 'test', 'msg': {'test': 123}})
+        self.assertEqual(queue_item.event, event)
+        self.assertEqual(queue_item.data, data)
 
     @mock.patch.object(MongoHandler, '__init__')
     def test_action_selector(self, mock_mongo):
@@ -80,14 +85,15 @@ class TestDbHandler(TestCase):
         mock_mongo.return_value = None
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
         db_handler.mongo = MockMongo
-        db_handler.get_data()
+        result = db_handler.get_data(document="abc")
+        self.assertEqual(result, ['a', 'b'])
 
     @mock.patch.object(MongoHandler, '__init__')
     def test_add_document_row(self, mock_mongo):
         mock_mongo.return_value = None
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
         db_handler.mongo = MockMongo
-        db_handler.add_document_row(event='pass', data={})
+        db_handler.add_document_row(event='pass', msg=ObserverMessage(event="pass", data=""))
 
     @mock.patch.object(MongoHandler, '__init__')
     def test_action_skip(self, mock_mongo):
@@ -101,11 +107,20 @@ class TestDbHandler(TestCase):
         mock_mongo.return_value = None
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
         db_handler.mongo = MockMongoDeviceNameExist
-        db_handler.store_state_data(event="", data={})
+        db_handler.store_state_data(event='pass', msg=ObserverMessage(event="pass", data={}))
 
     @mock.patch.object(MongoHandler, '__init__')
     def test_store_state_data_new(self, mock_mongo):
         mock_mongo.return_value = None
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
         db_handler.mongo = MockMongoNoDeviceNameExist
-        db_handler.store_state_data(event="", data={})
+        db_handler.store_state_data(event='pass', msg=ObserverMessage(event="pass", data={}))
+
+    @mock.patch.object(MongoHandler, '__init__')
+    def test_save_digital_twin(self, mock_mongo):
+        mock_mongo.return_value = None
+        twin = [{'_id': "ObjectId('6089b77907384800073936a6')", 'device_name': 'test_device', 'active': False,
+                 'location': 'on-desk', 'technology': 'WI-FI', 'battery_level': 'USB-power'}]
+        db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
+        db_handler.mongo = MockMongoDeviceNameExist
+        db_handler._save_digital_twin(twin=twin)
