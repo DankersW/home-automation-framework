@@ -68,8 +68,8 @@ class HealthMonitor(Thread):
     def poll_cpu_load(self) -> float:
         cpu_command = ["cat", "/proc/stat"]
         try:
-            process_result = subprocess.Popen(cpu_command, stdout=subprocess.PIPE)
-            proc_stat, _ = process_result.communicate()
+            with subprocess.Popen(cpu_command, stdout=subprocess.PIPE) as process_result:
+                proc_stat, _ = process_result.communicate()
             cpu_data = proc_stat.decode('utf-8').split('\n')[0].split()[1:-1]
             cpu_data = [int(field) for field in cpu_data]
             cpu_usage = ((cpu_data[0] + cpu_data[2]) * 100 / (cpu_data[0] + cpu_data[2] + cpu_data[3]))
