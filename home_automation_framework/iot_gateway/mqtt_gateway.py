@@ -12,7 +12,7 @@ from home_automation_framework.framework.observer_message import ObserverMessage
 
 class MqttGateway(Thread):
     running = False
-    subscribed_event = ['gcp_state_changed']
+    subscribed_event = ['gcp_state_changed', 'digital_twin']
 
     def __init__(self, queue, thread_event: Event):
         Thread.__init__(self)
@@ -36,7 +36,8 @@ class MqttGateway(Thread):
         self._thread_ready.set()
         while self.running:
             queue_item = self._observer_notify_queue.get()
-            print(queue_item)
+            if queue_item.event == "digital_twin":
+                self._handle_digital_twin_event(msg=queue_item)
 
     def notify(self, event: str, msg: ObserverMessage):
         self._observer_notify_queue.put(item=msg)
@@ -88,3 +89,7 @@ class MqttGateway(Thread):
         message.update(msg.payload)
         item = ObserverMessage(event="device_sensor_data", data=message)
         self._observer_publish_queue.put(item)
+
+    def _handle_digital_twin_event(self, msg: ObserverMessage):
+        if msg.subject == "poll_devices":
+            self.log.critical("todo, send poll")

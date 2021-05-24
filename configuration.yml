@@ -7,7 +7,7 @@ framework:
 
 system_components:
   gcp: false
-  mqtt_gateway: false
+  mqtt_gateway: true
   db: true
   host_monitor: false
   device_manager: true
