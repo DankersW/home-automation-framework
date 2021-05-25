@@ -61,7 +61,7 @@ class TestDbHandler(TestCase):
         data = {'test': 123}
         event = 'test'
         msg = ObserverMessage(event=event, data=data)
-        db_handler.notify(event=event, msg=msg)
+        db_handler.notify(msg=msg)
         queue_item = db_handler.observer_notify_queue.get()
         self.assertEqual(queue_item.event, event)
         self.assertEqual(queue_item.data, data)
