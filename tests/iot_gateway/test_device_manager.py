@@ -27,11 +27,11 @@ class TestDeviceManager(TestCase):
         device_manager.start()
         moch_dt = ["abc"]
         notify_msg = ObserverMessage(event="digital_twin", subject="retrieved_digital_twin", data=moch_dt)
-        device_manager.notify(msg=notify_msg, event="")
+        device_manager.notify(msg=notify_msg)
         sleep(0.5)
         self.assertEqual(device_manager.remote_digital_twin, moch_dt)
         device_manager.running = False
-        device_manager.notify(msg=ObserverMessage(data="", event=""), event="")
+        device_manager.notify(msg=ObserverMessage(data="", event=""))
 
     def test_wait_for_status_messages_not_running(self):
         wait_period = 0.5

@@ -3,7 +3,6 @@
 ## Needed
 - [ ] Re-think the DB, useing device_objectId in other documents instead of a raw name
 - [ ] Bumb test coverage
-- [ ] In the notify, remove the event function parameter
 - [ ] Rewrite mongo and db_handler in a proper way
 
 ## Features

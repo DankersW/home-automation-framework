@@ -27,9 +27,9 @@ class Subject:
     def unregister(self, event, obs_object) -> None:
         del self.get_subscribers(event)[obs_object]
 
-    def dispatch(self, event, message) -> None:
-        for _, callback in self.get_subscribers(event).items():
-            callback(event, message)
+    def dispatch(self, message) -> None:
+        for _, callback in self.get_subscribers(message.event).items():
+            callback(message)
 
 
 class IotSubject:
@@ -90,7 +90,7 @@ class IotSubject:
             self.notify_observers(msg=msg)
 
     def notify_observers(self, msg: ObserverMessage) -> None:
-        self.subject.dispatch(event=msg.event, message=msg)
+        self.subject.dispatch(message=msg)
 
     def get_observer_events(self) -> ObserverMessage:
         return self.observer_queue.get()

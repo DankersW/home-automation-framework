@@ -37,7 +37,7 @@ class HealthMonitor(Thread):
             sleep_time = self.update_time_sec - ((time() - start_time) % self.update_time_sec)
             sleep(sleep_time)
 
-    def notify(self, event: str, msg: ObserverMessage) -> None:
+    def notify(self, msg: ObserverMessage) -> None:
         pass
 
     def _fetch_host_data(self) -> dict:
@@ -79,10 +79,3 @@ class HealthMonitor(Thread):
         except ValueError as error:
             self.log.error(f'Parsing of the data went wrong: {error}')
         return 0
-
-
-if __name__ == '__main__':
-    test_queue = Queue(10)
-    t_event = Event()
-    hm = HealthMonitor(test_queue, thread_event=t_event)
-    hm.start()

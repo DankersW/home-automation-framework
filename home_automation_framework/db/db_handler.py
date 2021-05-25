@@ -30,8 +30,7 @@ class DbHandler(Thread):
             action = self.action_selector(event=item.event)
             action(event=item.event, msg=item)
 
-    def notify(self,  event: str, msg: ObserverMessage) -> None:
-        self.log.debug(f"Received event {event} on notify")
+    def notify(self, msg: ObserverMessage) -> None:
         self.observer_notify_queue.put(msg)
 
     def action_selector(self, event: str) -> Callable:

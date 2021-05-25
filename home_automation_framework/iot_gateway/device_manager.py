@@ -30,8 +30,7 @@ class DeviceManager(Thread):
     def __del__(self) -> None:
         self.running = False
 
-    def notify(self, event: str, msg: ObserverMessage) -> None:
-        self.log.debug(f"Received event {event} on notify")
+    def notify(self, msg: ObserverMessage) -> None:
         self._observer_notify_queue.put(item=msg)
 
     def run(self) -> None:
