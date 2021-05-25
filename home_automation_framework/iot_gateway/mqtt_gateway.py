@@ -39,8 +39,7 @@ class MqttGateway(Thread):
             if queue_item.event == "digital_twin":
                 self._handle_digital_twin_event(msg=queue_item)
 
-    def notify(self, event: str, msg: ObserverMessage):
-        self.log.debug(f"Received event {event} on notify")
+    def notify(self, msg: ObserverMessage):
         self._observer_notify_queue.put(item=msg)
 
     def get_mqtt_config(self) -> dict:
