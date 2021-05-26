@@ -2,14 +2,14 @@
 
  **All topics**
 
-| Topic                             | Event type    | Info                                         |   |   |
-|-----------------------------------|---------------|----------------------------------------------|---|---|
-| iot/devices/<device-id>/command   | Command       | Used for changing the State of the device    |   |   |
-| iot/devices/<device-id>/config    | Configuration | Used for changing the settings of the device |   |   |
-| iot/devices/<device-id>/telemetry | Telemetry     | Used by the device to send streaming data (sensor)    |   |   |
-| iot/devices/<device-id>/state     | State         | Used by the device to upload state changes   |   |   |
-| iot/devices/<device-id>/system    | System        | Used by the system to poll and report for information about the system   |   |   |
-
+| Topic                             | Event type    | Info                                         |
+|-----------------------------------|---------------|----------------------------------------------|
+| iot/devices/<device-id>/command   | Command       | Used for changing the State of the device |
+| iot/devices/<device-id>/config    | Configuration | Used for changing the settings of the device |
+| iot/devices/<device-id>/telemetry | Telemetry     | Used by the device to send streaming data (sensor) |    
+| iot/devices/<device-id>/state     | State         | Used by the device to upload state changes |
+| iot/devices/<device-id>/system    | System        | Used by the system to poll and report for information about the system |  
+| iot/verification                  | Verification  | Used to verify uptime of the framework |
 ## Message payload
 Message payload can be in JSON format or in binary
 ```json
@@ -35,5 +35,7 @@ Message payload can be in JSON format or in binary
 - **topic**: iot/devices/framework/system
 - **payload**: {"event": "poll"}
 
-
+`verification`
+- **topic**: iot/verification
+- **payload**: {"event": "ping"}
 
