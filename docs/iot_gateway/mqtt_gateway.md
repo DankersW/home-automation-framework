@@ -36,6 +36,6 @@ Message payload can be in JSON format or in binary
 - **payload**: {"event": "poll"}
 
 `verification`
-- **topic**: iot/verification
-- **payload**: {"event": "ping"}
+- **topic**: iot/devices/system/verification
+- **payload**: {"action": "ping"}
 
