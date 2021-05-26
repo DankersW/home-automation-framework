@@ -71,7 +71,8 @@ class MqttGateway(Thread):
         handler_map = {
             'state': self._handle_state_change,
             'telemetry': self._handle_telemetry,
-            'system': self._handle_system
+            'system': self._handle_system,
+            'verification': self._handle_verification
         }
         return handler_map.get(event, self._unknown_event)
 
@@ -98,6 +99,11 @@ class MqttGateway(Thread):
             message.update(msg.payload)
             item = ObserverMessage(event="digital_twin", data=message, subject="device_status")
             self._observer_publish_queue.put(item)
+
+    def _handle_verification(self, msg: IotMessage) -> None:
+        self.log.debug(f"Handling verification event {msg.event}")
+        if msg.payload.get("action") == "ping":
+            self.mqtt_client.publish(topic="iot/devices/system/verification", msg={"action": "pong"})
 
     def _handle_digital_twin_event(self, msg: ObserverMessage):
         if msg.subject == "poll_devices":
