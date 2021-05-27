@@ -66,15 +66,23 @@ class DbHandler(Thread):
         self.mongo.insert(collection_name=msg.event, data=msg.data)
 
     def handle_digital_twin(self, msg: ObserverMessage) -> None:
-        if msg.subject == "fetch_digital_twin":
-            self.log.info("Fetching digital twin from DB")
-            digital_twin = self.get_data(document="digital_twin")
-            msg = ObserverMessage(event="digital_twin", data=digital_twin, subject="retrieved_digital_twin")
-            self.observer_publish_queue.put(msg)
-        elif msg.subject == "save_digital_twin":
-            self._save_digital_twin(twin=msg.data)
+        action = self.get_digital_twin_action(sub_event=msg.subject)
+        action(msg.data)
 
-    def _save_digital_twin(self, twin: list):
+    def get_digital_twin_action(self, sub_event: str) -> Callable:
+        action_map = {
+            "fetch_digital_twin": self._fetch_digital_twin,
+            "save_digital_twin": self._save_digital_twin
+        }
+        return action_map.get(sub_event, self.action_skip)
+
+    def _fetch_digital_twin(self, _) -> None:
+        self.log.info("Fetching digital twin from DB")
+        digital_twin = self.get_data(document="digital_twin")
+        msg = ObserverMessage(event="digital_twin", data=digital_twin, subject="retrieved_digital_twin")
+        self.observer_publish_queue.put(msg)
+
+    def _save_digital_twin(self, twin: list) -> None:
         self.log.info("Uploading updated digital twin")
         for twin_item in twin:
             query = {'device_name': twin_item.get("device_name")}
