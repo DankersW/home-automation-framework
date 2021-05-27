@@ -28,7 +28,7 @@ class DbHandler(Thread):
         while self.running:
             item = self.observer_notify_queue.get()
             action = self.action_selector(event=item.event)
-            action(event=item.event, msg=item)
+            action(msg=item)
 
     def notify(self, msg: ObserverMessage) -> None:
         self.observer_notify_queue.put(msg)
@@ -49,24 +49,23 @@ class DbHandler(Thread):
     def get_data(self, document: str, ) -> list:
         return self.mongo.get(collection_name=document)
 
-    def store_state_data(self, event: str, msg: ObserverMessage) -> None:
+    def store_state_data(self, msg: ObserverMessage) -> None:
         query = {'device_id': msg.data.get('device_id')}
         object_id = self.mongo.check_existence_by_device_name('states', query=query)
         if object_id:
-            updated_data = {'$set': {'state': msg.data.get('state'), 'event': event,
+            updated_data = {'$set': {'state': msg.data.get('state'), 'event': msg.event,
                                      'change_source': msg.data.get('event_type')}}
             self.mongo.update_object(collection_name='states', object_id=object_id, updated_values=updated_data)
         else:
-            document_data = {'device_id': msg.data.get('device_id'), 'event': event,
+            document_data = {'device_id': msg.data.get('device_id'), 'event': msg.event,
                              'change_source': msg.data.get('event'),
                              'state': msg.data.get('state')}
             self.mongo.insert(collection_name='states', data=document_data)
 
-    def add_document_row(self, event: str, msg: ObserverMessage) -> None:
-        self.mongo.insert(collection_name=event, data=msg.data)
+    def add_document_row(self, msg: ObserverMessage) -> None:
+        self.mongo.insert(collection_name=msg.event, data=msg.data)
 
-    def handle_digital_twin(self, event: str, msg: ObserverMessage) -> None:
-        self.log.debug(f"Handling event {event}, remove me")
+    def handle_digital_twin(self, msg: ObserverMessage) -> None:
         if msg.subject == "fetch_digital_twin":
             self.log.info("Fetching digital twin from DB")
             digital_twin = self.get_data(document="digital_twin")

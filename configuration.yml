@@ -9,7 +9,7 @@ system_components:
   gcp: false
   mqtt_gateway: true
   db: false
-  host_monitor: false
+  host_monitor: true
   device_manager: false
 
 logging:
