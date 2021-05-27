@@ -6,6 +6,9 @@ from home_automation_framework.framework.observer_message import ObserverMessage
 from home_automation_framework.db.mongo_db import MongoHandler
 from home_automation_framework.logging.logging import Logging
 
+# todo: move more logic into the mongo db
+# todo: let mongo except list and let it check if stuff already excist
+
 
 class DbHandler(Thread):
     running = True
