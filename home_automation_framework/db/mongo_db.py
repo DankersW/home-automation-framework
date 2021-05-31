@@ -50,13 +50,13 @@ class MongoHandler:
         data_id = collection.insert_one(data)
         self.log.debug(f'Inserted {data!r} into {collection_name!r} with ID {data_id}')
 
-    def update_object(self, collection_name, object_id, updated_values):
+    def update(self, collection_name, object_id, updated_values):
         collection = self.mongo_db[collection_name]
         query = {'_id': object_id}
         collection.update_one(query, updated_values)
         self.log.debug(f'Data with ID {object_id!r} in collection {collection_name!r} updated successfully')
 
-    def check_existence_by_device_name(self, collection_name: str, query: dict) -> Union[str, None]:
+    def check_existence_by_query(self, collection_name: str, query: dict) -> Union[str, None]:
         collection = self.mongo_db[collection_name]
         data = collection.find_one(query)
         if isinstance(data, dict):

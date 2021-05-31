@@ -52,13 +52,14 @@ class DbHandler(Thread):
     def get_data(self, document: str, ) -> list:
         return self.mongo.get(collection_name=document)
 
+    # todo
     def store_state_data(self, msg: ObserverMessage) -> None:
         query = {'device_id': msg.data.get('device_id')}
-        object_id = self.mongo.check_existence_by_device_name('states', query=query)
+        object_id = self.mongo.check_existence_by_query(collection_name='states', query=query)
         if object_id:
             updated_data = {'$set': {'state': msg.data.get('state'), 'event': msg.event,
                                      'change_source': msg.data.get('event_type')}}
-            self.mongo.update_object(collection_name='states', object_id=object_id, updated_values=updated_data)
+            self.mongo.update(collection_name='states', object_id=object_id, updated_values=updated_data)
         else:
             document_data = {'device_id': msg.data.get('device_id'), 'event': msg.event,
                              'change_source': msg.data.get('event'),
@@ -68,10 +69,12 @@ class DbHandler(Thread):
     def add_document_row(self, msg: ObserverMessage) -> None:
         self.mongo.insert(collection_name=msg.event, data=msg.data)
 
+    # todo
     def handle_digital_twin(self, msg: ObserverMessage) -> None:
         action = self.get_digital_twin_action(sub_event=msg.subject)
         action(msg.data)
 
+    # todo: combine with above
     def get_digital_twin_action(self, sub_event: str) -> Callable:
         action_map = {
             "fetch_digital_twin": self._fetch_digital_twin,
@@ -85,13 +88,21 @@ class DbHandler(Thread):
         msg = ObserverMessage(event="digital_twin", data=digital_twin, subject="retrieved_digital_twin")
         self.observer_publish_queue.put(msg)
 
+    # todo
     def _save_digital_twin(self, twin: list) -> None:
         self.log.info("Uploading updated digital twin")
         for twin_item in twin:
             query = {'device_name': twin_item.get("device_name")}
-            object_id = self.mongo.check_existence_by_device_name('digital_twin', query=query)
+            object_id = self.mongo.check_existence_by_query('digital_twin', query=query)
             if object_id:
                 data = {'$set': twin_item}
-                self.mongo.update_object(collection_name='digital_twin', object_id=object_id, updated_values=data)
+                self.mongo.update(collection_name='digital_twin', object_id=object_id, updated_values=data)
             else:
                 self.mongo.insert(collection_name='digital_twin', data=twin_item)
+
+
+if __name__ == '__main__':
+    queue = Queue(10)
+    event = Event()
+    db_handler = DbHandler(queue=queue, thread_event=event)
+
