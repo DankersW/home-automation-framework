@@ -1,3 +1,4 @@
+import time
 from threading import Thread, Event
 from queue import Queue
 from typing import Callable
@@ -29,7 +30,9 @@ class DbHandler(Thread):
     def run(self) -> None:
         self._thread_ready.set()
         while self.running:
+            print("waiting")
             item = self.observer_notify_queue.get()
+            print(item)
             action = self.action_selector(event=item.event)
             action(msg=item)
 
@@ -105,4 +108,5 @@ if __name__ == '__main__':
     queue = Queue(10)
     event = Event()
     db_handler = DbHandler(queue=queue, thread_event=event)
-
+    twin = [{'_id': "ObjectId('6089b77907384800073936a6')", 'device_name': 'test_device', 'active': False, 'location': 'on-desk', 'technology': 'WI-FI', 'battery_level': 'USB-power'}]
+    db_handler._save_digital_twin(twin)

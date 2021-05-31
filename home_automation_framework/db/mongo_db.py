@@ -56,6 +56,14 @@ class MongoHandler:
         collection.update_one(query, updated_values)
         self.log.debug(f'Data with ID {object_id!r} in collection {collection_name!r} updated successfully')
 
+    def write(self, collection_name: str, data: Union[list, dict], key: str):
+        """ Add's data if it does not exist, else update that data based on key """
+
+        # todo unpack list
+
+        _id = self.check_existence_by_query(collection_name=collection_name, )
+
+
     def check_existence_by_query(self, collection_name: str, query: dict) -> Union[str, None]:
         collection = self.mongo_db[collection_name]
         data = collection.find_one(query)
