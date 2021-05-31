@@ -61,7 +61,9 @@ class MongoHandler:
 
         # todo unpack list
 
-        _id = self.check_existence_by_query(collection_name=collection_name, )
+    def _write(self, collection: str, data: dict, key: str):
+        pass
+        _id = self.check_existence_by_query(collection_name=collection_name, check_existence)
 
 
     def check_existence_by_query(self, collection_name: str, query: dict) -> Union[str, None]:
