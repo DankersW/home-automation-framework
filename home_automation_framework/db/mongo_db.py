@@ -21,12 +21,12 @@ class MongoHandler:
         pwd: str = 'mongo_admin_iot'
         url: str = f'mongodb://{user}:{pwd}@{host}/'
 
-    def __init__(self, db_name):
+    def __init__(self, db_name: str) -> None:
         self.config = ConfigurationParser().get_config()
         self.log = Logging(owner=__file__, config=True)
         self.mongo_db = self.connect_to_db(db_name=db_name)
 
-    def connect_to_db(self, db_name):
+    def connect_to_db(self, db_name: str) -> MongoClient:
         mongo_host = self.config['mongo_db']['host_ip']
         mongo_url = self.MongoConfLocal.url.replace(self.MongoConfLocal.host, mongo_host)
 
@@ -40,17 +40,17 @@ class MongoHandler:
             raise RuntimeError from err
         return db
 
-    def get(self, collection_name, query: dict = None) -> list:
+    def get(self, collection_name: str, query: dict = None) -> list:
         collection = self.mongo_db[collection_name]
         self.log.debug(f'Executing query {query!r} on collection {collection_name!r}')
         return list(collection.find(query))
 
-    def insert(self, collection_name, data):
+    def insert(self, collection_name: str, data: dict) -> None:
         collection = self.mongo_db[collection_name]
         data_id = collection.insert_one(data)
         self.log.debug(f'Inserted {data!r} into {collection_name!r} with ID {data_id}')
 
-    def update(self, collection_name, object_id, updated_values):
+    def update(self, collection_name: str, object_id: str, updated_values: dict) -> None:
         collection = self.mongo_db[collection_name]
         query = {'_id': object_id}
         collection.update_one(query, updated_values)
