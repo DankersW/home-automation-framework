@@ -58,12 +58,16 @@ class MongoHandler:
 
     def write(self, collection_name: str, data: Union[list, dict], key: str):
         """ Add's data if it does not exist, else update that data based on key """
-
-        # todo unpack list
+        if isinstance(data, list):
+            for entry in data:
+                self._write(collection=collection_name, data=entry, key=key)
+        else:
+            self._write(collection=collection_name, data=data, key=key)
 
     def _write(self, collection: str, data: dict, key: str):
         pass
-        _id = self.check_existence_by_query(collection_name=collection_name, check_existence)
+        print(data)
+        #_id = self.check_existence_by_query(collection_name=collection_name, check_existence)
 
 
     def check_existence_by_query(self, collection_name: str, query: dict) -> Union[str, None]:
@@ -72,3 +76,7 @@ class MongoHandler:
         if isinstance(data, dict):
             return data.get('_id')
         return None
+
+if __name__ == '__main__':
+    mongo = MongoHandler(db_name='iot_db')
+    mongo.write(collection_name="test", data={'a': 2}, key='a')
