@@ -68,9 +68,9 @@ class MongoHandler:
         query = {key: data.get(key, None)}
         object_id = self.get_first_object_id_from_query(collection_name=collection, query=query)
         if object_id:
-            print("update")
+
         else:
-            print("insert")
+            self.insert(collection_name=collection, data=data)
 
     def get_first_object_id_from_query(self, collection_name: str, query: dict) -> Union[str, None]:
         collection = self.mongo_db[collection_name]
