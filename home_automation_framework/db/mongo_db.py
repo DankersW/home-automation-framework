@@ -68,7 +68,8 @@ class MongoHandler:
         query = {key: data.get(key, None)}
         object_id = self.get_first_object_id_from_query(collection_name=collection, query=query)
         if object_id:
-
+            values = {'$set': data}
+            self.update(collection_name=collection, object_id=object_id, updated_values=values)
         else:
             self.insert(collection_name=collection, data=data)
 
@@ -81,5 +82,5 @@ class MongoHandler:
 
 if __name__ == '__main__':
     mongo = MongoHandler(db_name='iot_db')
-    data = [{"device_name": "test_device1"},{"device_name": "test_device"}]
+    data = [{"device_name": "test_device4"},{"device_name": "test_device2", 'active': False}]
     mongo.write(collection_name="digital_twin", data=data, key='device_name')
