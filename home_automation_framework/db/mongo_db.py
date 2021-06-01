@@ -56,7 +56,7 @@ class MongoHandler:
         collection.update_one(query, updated_values)
         self.log.debug(f'Data with ID {object_id!r} in collection {collection_name!r} updated successfully')
 
-    def write(self, collection_name: str, data: Union[list, dict], key: str):
+    def write(self, collection_name: str, data: Union[list, dict], key: str) -> None:
         """ Add's data if it does not exist, else update that data based on key """
         if isinstance(data, list):
             for entry in data:
@@ -64,13 +64,15 @@ class MongoHandler:
         else:
             self._write(collection=collection_name, data=data, key=key)
 
-    def _write(self, collection: str, data: dict, key: str):
-        pass
-        print(data)
-        #_id = self.check_existence_by_query(collection_name=collection_name, check_existence)
+    def _write(self, collection: str, data: dict, key: str) -> None:
+        query = {key: data.get(key, None)}
+        object_id = self.get_first_object_id_from_query(collection_name=collection, query=query)
+        if object_id:
+            print("update")
+        else:
+            print("insert")
 
-
-    def check_existence_by_query(self, collection_name: str, query: dict) -> Union[str, None]:
+    def get_first_object_id_from_query(self, collection_name: str, query: dict) -> Union[str, None]:
         collection = self.mongo_db[collection_name]
         data = collection.find_one(query)
         if isinstance(data, dict):
@@ -79,4 +81,5 @@ class MongoHandler:
 
 if __name__ == '__main__':
     mongo = MongoHandler(db_name='iot_db')
-    mongo.write(collection_name="test", data={'a': 2}, key='a')
+    data = [{"device_name": "test_device1"},{"device_name": "test_device"}]
+    mongo.write(collection_name="digital_twin", data=data, key='device_name')
