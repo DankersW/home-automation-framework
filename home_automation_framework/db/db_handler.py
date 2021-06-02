@@ -91,17 +91,10 @@ class DbHandler(Thread):
         msg = ObserverMessage(event="digital_twin", data=digital_twin, subject="retrieved_digital_twin")
         self.observer_publish_queue.put(msg)
 
-    # todo
+    # todo: remove object_id from all data we send out, publish adapter
     def _save_digital_twin(self, twin: list) -> None:
         self.log.info("Uploading updated digital twin")
-        for twin_item in twin:
-            query = {'device_name': twin_item.get("device_name")}
-            object_id = self.mongo.check_existence_by_query('digital_twin', query=query)
-            if object_id:
-                data = {'$set': twin_item}
-                self.mongo.update(collection_name='digital_twin', object_id=object_id, updated_values=data)
-            else:
-                self.mongo.insert(collection_name='digital_twin', data=twin_item)
+        self.mongo.write(collection_name='digital_twin', data=twin, key='device_name')
 
 
 if __name__ == '__main__':

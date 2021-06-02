@@ -9,12 +9,6 @@ from home_automation_framework.logging.logging import Logging
 
 class MongoHandler:
     @dataclass
-    class MongoConfCloud:
-        admin_pwd: str = 'testlabadmin'
-        db: str = 'home_automation'
-        url: str = f'mongodb+srv://admin:{admin_pwd}@cluster0.jedhb.gcp.mongodb.net/{db}?retryWrites=true&w=majority'
-
-    @dataclass
     class MongoConfLocal:
         host: str = 'host_ip'
         user: str = 'admin'
