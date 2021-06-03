@@ -7,10 +7,10 @@ framework:
 
 system_components:
   gcp: false
-  mqtt_gateway: false
+  mqtt_gateway: true
   db: true
-  host_monitor: false
-  device_manager: false
+  host_monitor: true
+  device_manager: true
 
 logging:
   file_log_folder: 'C:\Users\woute\development\logs'

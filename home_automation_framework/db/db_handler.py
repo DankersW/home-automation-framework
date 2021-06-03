@@ -1,4 +1,3 @@
-import time
 from threading import Thread, Event
 from queue import Queue
 from typing import Callable
@@ -6,9 +5,6 @@ from typing import Callable
 from home_automation_framework.framework.observer_message import ObserverMessage
 from home_automation_framework.db.mongo_db import MongoHandler
 from home_automation_framework.logging.logging import Logging
-
-# todo: move more logic into the mongo db
-# todo: let mongo except list and let it check if stuff already excist
 
 
 class DbHandler(Thread):
@@ -51,8 +47,6 @@ class DbHandler(Thread):
         pass
 
     def get_document_data(self, document: str) -> list:
-        data = self.mongo.get(collection_name=document)
-
         return self.mongo.get(collection_name=document)
 
     def store_state_data(self, msg: ObserverMessage) -> None:
@@ -63,26 +57,21 @@ class DbHandler(Thread):
     def add_document_row(self, msg: ObserverMessage) -> None:
         self.mongo.insert(collection_name=msg.event, data=msg.data)
 
-    # todo
     def handle_digital_twin(self, msg: ObserverMessage) -> None:
-        action = self.get_digital_twin_action(sub_event=msg.subject)
-        action(msg.data)
+        if msg.subject == "fetch_digital_twin":
+            self._fetch_digital_twin()
+        elif msg.subject == "save_digital_twin":
+            self._save_digital_twin(twin=msg.data)
+        else:
+            self.action_skip()
 
-    # todo: combine with above
-    def get_digital_twin_action(self, sub_event: str) -> Callable:
-        action_map = {
-            "fetch_digital_twin": self._fetch_digital_twin,
-            "save_digital_twin": self._save_digital_twin
-        }
-        return action_map.get(sub_event, self.action_skip)
-
-    def _fetch_digital_twin(self, _) -> None:
+    def _fetch_digital_twin(self) -> None:
         self.log.info("Fetching digital twin from DB")
-        digital_twin = self.get_document_data(document="digital_twin")
+        twin_data = self.get_document_data(document="digital_twin")
+        digital_twin = self._outbound_adapter(data=twin_data)
         msg = ObserverMessage(event="digital_twin", data=digital_twin, subject="retrieved_digital_twin")
         self.observer_publish_queue.put(msg)
 
-    # todo: remove object_id from all data we send out, publish adapter
     def _save_digital_twin(self, twin: list) -> None:
         self.log.info("Uploading updated digital twin")
         self.mongo.write(collection_name='digital_twin', data=twin, key='device_name')
