@@ -79,5 +79,6 @@ class DbHandler(Thread):
     @staticmethod
     def _outbound_adapter(data: list) -> list:
         """ Removes the object_id field from each data entry, preping the data for transportation """
-        [entry.pop("_id", None) for entry in data]
+        for entry in data
+            entry.pop("_id", None)
         return data
