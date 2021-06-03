@@ -30,9 +30,7 @@ class DbHandler(Thread):
     def run(self) -> None:
         self._thread_ready.set()
         while self.running:
-            print("waiting")
             item = self.observer_notify_queue.get()
-            print(item)
             action = self.action_selector(event=item.event)
             action(msg=item)
 
@@ -52,22 +50,15 @@ class DbHandler(Thread):
     def action_skip():
         pass
 
-    def get_data(self, document: str, ) -> list:
+    def get_document_data(self, document: str) -> list:
+        data = self.mongo.get(collection_name=document)
+
         return self.mongo.get(collection_name=document)
 
-    # todo
     def store_state_data(self, msg: ObserverMessage) -> None:
-        query = {'device_id': msg.data.get('device_id')}
-        object_id = self.mongo.check_existence_by_query(collection_name='states', query=query)
-        if object_id:
-            updated_data = {'$set': {'state': msg.data.get('state'), 'event': msg.event,
-                                     'change_source': msg.data.get('event_type')}}
-            self.mongo.update(collection_name='states', object_id=object_id, updated_values=updated_data)
-        else:
-            document_data = {'device_id': msg.data.get('device_id'), 'event': msg.event,
-                             'change_source': msg.data.get('event'),
-                             'state': msg.data.get('state')}
-            self.mongo.insert(collection_name='states', data=document_data)
+        document_data = {'device_id': msg.data.get('device_id'), 'event': msg.event,
+                         'change_source': msg.data.get('event'), 'state': msg.data.get('state')}
+        self.mongo.write(collection_name="states", data=document_data, key="device_id")
 
     def add_document_row(self, msg: ObserverMessage) -> None:
         self.mongo.insert(collection_name=msg.event, data=msg.data)
@@ -87,7 +78,7 @@ class DbHandler(Thread):
 
     def _fetch_digital_twin(self, _) -> None:
         self.log.info("Fetching digital twin from DB")
-        digital_twin = self.get_data(document="digital_twin")
+        digital_twin = self.get_document_data(document="digital_twin")
         msg = ObserverMessage(event="digital_twin", data=digital_twin, subject="retrieved_digital_twin")
         self.observer_publish_queue.put(msg)
 
@@ -96,10 +87,16 @@ class DbHandler(Thread):
         self.log.info("Uploading updated digital twin")
         self.mongo.write(collection_name='digital_twin', data=twin, key='device_name')
 
+    @staticmethod
+    def _outbound_adapter(data: list) -> list:
+        """ Removes the object_id field from each data entry, preping the data for transportation """
+        [entry.pop("_id", None) for entry in data]
+        return data
+
 
 if __name__ == '__main__':
     queue = Queue(10)
     event = Event()
     db_handler = DbHandler(queue=queue, thread_event=event)
-    twin = [{'_id': "ObjectId('6089b77907384800073936a6')", 'device_name': 'test_device', 'active': False, 'location': 'on-desk', 'technology': 'WI-FI', 'battery_level': 'USB-power'}]
-    db_handler._save_digital_twin(twin)
+    twin = [{'_id': "ObjectId('6089b77907384800073936a6')", 'device_name': 'test_device', 'active': False, 'location': 'on-desk', 'technology': 'WI-FI', 'battery_level': 'USB-power'}, {'a': 12, '_id': 'abc'}]
+    print(db_handler._outbound_adapter(twin))
