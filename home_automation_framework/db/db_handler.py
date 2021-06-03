@@ -81,11 +81,3 @@ class DbHandler(Thread):
         """ Removes the object_id field from each data entry, preping the data for transportation """
         [entry.pop("_id", None) for entry in data]
         return data
-
-
-if __name__ == '__main__':
-    queue = Queue(10)
-    event = Event()
-    db_handler = DbHandler(queue=queue, thread_event=event)
-    twin = [{'_id': "ObjectId('6089b77907384800073936a6')", 'device_name': 'test_device', 'active': False, 'location': 'on-desk', 'technology': 'WI-FI', 'battery_level': 'USB-power'}, {'a': 12, '_id': 'abc'}]
-    print(db_handler._outbound_adapter(twin))
