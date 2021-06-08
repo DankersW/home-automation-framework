@@ -152,7 +152,7 @@ class TestDbHandler(TestCase):
 
     @mock.patch.object(DbHandler, "action_skip")
     @mock.patch.object(MongoHandler, '__init__')
-    def test_handle_digital_twin_save_event(self, mock_mongo, mock_skip):
+    def test_handle_digital_twin_save_event_fake(self, mock_mongo, mock_skip):
         mock_mongo.return_value = None
         mock_skip.return_value = None
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
