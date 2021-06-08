@@ -77,9 +77,3 @@ class MongoHandler:
         if isinstance(data, dict):
             return data.get('_id')
         return None
-
-
-if __name__ == '__main__':
-    mongo = MongoHandler(db_name='iot_db')
-    data = [{"device_name": "test_device4"},{"device_name": "test_device2", 'active': False}]
-    mongo.write(collection_name="digital_twin", data=data, key='device_name')
