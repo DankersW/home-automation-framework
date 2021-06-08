@@ -25,7 +25,7 @@ class MongoHandler:
         mongo_url = self.MongoConfLocal.url.replace(self.MongoConfLocal.host, mongo_host)
 
         try:
-            client = MongoClient(mongo_url)
+            client = self.get_mongo_client(url=mongo_url)
             client.server_info()
             db = client[db_name]
             self.log.success(f'Connected to MongoDB {db_name!r} at {mongo_url}')
@@ -33,6 +33,10 @@ class MongoHandler:
             self.log.critical(f'Connection MongoDB error at {mongo_url} with error: {err}')
             raise RuntimeError from err
         return db
+
+    @staticmethod
+    def get_mongo_client(url: str) -> MongoClient:
+        return MongoClient(url)
 
     def get(self, collection_name: str, query: dict = None) -> list:
         collection = self.mongo_db[collection_name]
