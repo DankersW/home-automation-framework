@@ -65,6 +65,7 @@ class MongoHandler:
     def _write(self, collection: str, data: dict, key: str) -> None:
         query = {key: data.get(key, None)}
         object_id = self.get_first_object_id_from_query(collection_name=collection, query=query)
+        print(object_id)
         if object_id:
             values = {'$set': data}
             self.update(collection_name=collection, object_id=object_id, updated_values=values)

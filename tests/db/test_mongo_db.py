@@ -128,3 +128,25 @@ class TestMongoDb(TestCase):
         mock_write.return_value = None
         mongo = MongoHandler("db_name")
         mongo.write("", [], "")
+
+    @mock.patch.object(MongoHandler, "get_first_object_id_from_query")
+    @mock.patch.object(MongoHandler, "insert")
+    @mock.patch.object(MongoHandler, "connect_to_db")
+    def test__write_insert(self, mock_connect, mock_insert, mock_query):
+        mock_connect.return_value = MockMongoClient
+        mock_insert.return_value = None
+        mock_query.return_value = None
+        mongo = MongoHandler("db_name")
+        mongo._write("", {}, "")
+        self.assertTrue(mock_insert.called)
+
+    @mock.patch.object(MongoHandler, "get_first_object_id_from_query")
+    @mock.patch.object(MongoHandler, "update")
+    @mock.patch.object(MongoHandler, "connect_to_db")
+    def test__write_insert(self, mock_connect, mock_update, mock_query):
+        mock_connect.return_value = MockMongoClient
+        mock_update.return_value = None
+        mock_query.return_value = True
+        mongo = MongoHandler("db_name")
+        mongo._write("", {}, "")
+        self.assertTrue(mock_update.called)
