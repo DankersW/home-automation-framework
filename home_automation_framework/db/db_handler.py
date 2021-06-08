@@ -28,7 +28,7 @@ class DbHandler(Thread):
         while self.running:
             item = self.observer_notify_queue.get()
             action = self.action_selector(event=item.event)
-            action(event=item.event, msg=item)
+            action(msg=item)
 
     def notify(self, msg: ObserverMessage) -> None:
         self.observer_notify_queue.put(msg)
@@ -46,42 +46,39 @@ class DbHandler(Thread):
     def action_skip():
         pass
 
-    def get_data(self, document: str, ) -> list:
+    def get_document_data(self, document: str) -> list:
         return self.mongo.get(collection_name=document)
 
-    def store_state_data(self, event: str, msg: ObserverMessage) -> None:
-        query = {'device_id': msg.data.get('device_id')}
-        object_id = self.mongo.check_existence_by_device_name('states', query=query)
-        if object_id:
-            updated_data = {'$set': {'state': msg.data.get('state'), 'event': event,
-                                     'change_source': msg.data.get('event_type')}}
-            self.mongo.update_object(collection_name='states', object_id=object_id, updated_values=updated_data)
-        else:
-            document_data = {'device_id': msg.data.get('device_id'), 'event': event,
-                             'change_source': msg.data.get('event'),
-                             'state': msg.data.get('state')}
-            self.mongo.insert(collection_name='states', data=document_data)
+    def store_state_data(self, msg: ObserverMessage) -> None:
+        document_data = {'device_id': msg.data.get('device_id'), 'event': msg.event,
+                         'change_source': msg.data.get('event'), 'state': msg.data.get('state')}
+        self.mongo.write(collection_name="states", data=document_data, key="device_id")
 
-    def add_document_row(self, event: str, msg: ObserverMessage) -> None:
-        self.mongo.insert(collection_name=event, data=msg.data)
+    def add_document_row(self, msg: ObserverMessage) -> None:
+        self.mongo.insert(collection_name=msg.event, data=msg.data)
 
-    def handle_digital_twin(self, event: str, msg: ObserverMessage) -> None:
-        self.log.debug(f"Handling event {event}, remove me")
+    def handle_digital_twin(self, msg: ObserverMessage) -> None:
         if msg.subject == "fetch_digital_twin":
-            self.log.info("Fetching digital twin from DB")
-            digital_twin = self.get_data(document="digital_twin")
-            msg = ObserverMessage(event="digital_twin", data=digital_twin, subject="retrieved_digital_twin")
-            self.observer_publish_queue.put(msg)
+            self._fetch_digital_twin()
         elif msg.subject == "save_digital_twin":
             self._save_digital_twin(twin=msg.data)
+        else:
+            self.action_skip()
 
-    def _save_digital_twin(self, twin: list):
+    def _fetch_digital_twin(self) -> None:
+        self.log.info("Fetching digital twin from DB")
+        twin_data = self.get_document_data(document="digital_twin")
+        digital_twin = self._outbound_adapter(data=twin_data)
+        msg = ObserverMessage(event="digital_twin", data=digital_twin, subject="retrieved_digital_twin")
+        self.observer_publish_queue.put(msg)
+
+    def _save_digital_twin(self, twin: list) -> None:
         self.log.info("Uploading updated digital twin")
-        for twin_item in twin:
-            query = {'device_name': twin_item.get("device_name")}
-            object_id = self.mongo.check_existence_by_device_name('digital_twin', query=query)
-            if object_id:
-                data = {'$set': twin_item}
-                self.mongo.update_object(collection_name='digital_twin', object_id=object_id, updated_values=data)
-            else:
-                self.mongo.insert(collection_name='digital_twin', data=twin_item)
+        self.mongo.write(collection_name='digital_twin', data=twin, key='device_name')
+
+    @staticmethod
+    def _outbound_adapter(data: list) -> list:
+        """ Removes the object_id field from each data entry, preping the data for transportation """
+        for entry in data:
+            entry.pop("_id", None)
+        return data

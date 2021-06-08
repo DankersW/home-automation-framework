@@ -5,6 +5,7 @@ from queue import Queue
 from home_automation_framework.db.db_handler import DbHandler
 from home_automation_framework.db.mongo_db import MongoHandler
 from home_automation_framework.framework.observer_message import ObserverMessage
+from tests.helper_functions import emtpy_queue
 
 
 class MockMongo:
@@ -21,6 +22,10 @@ class MockMongo:
 
     @staticmethod
     def update_object(collection_name, object_id, updated_values):
+        pass
+
+    @staticmethod
+    def write(collection_name, data, key):
         pass
 
 
@@ -85,7 +90,7 @@ class TestDbHandler(TestCase):
         mock_mongo.return_value = None
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
         db_handler.mongo = MockMongo
-        result = db_handler.get_data(document="abc")
+        result = db_handler.get_document_data(document="abc")
         self.assertEqual(result, ['a', 'b'])
 
     @mock.patch.object(MongoHandler, '__init__')
@@ -93,7 +98,7 @@ class TestDbHandler(TestCase):
         mock_mongo.return_value = None
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
         db_handler.mongo = MockMongo
-        db_handler.add_document_row(event='pass', msg=ObserverMessage(event="pass", data=""))
+        db_handler.add_document_row(msg=ObserverMessage(event="pass", data=""))
 
     @mock.patch.object(MongoHandler, '__init__')
     def test_action_skip(self, mock_mongo):
@@ -107,20 +112,71 @@ class TestDbHandler(TestCase):
         mock_mongo.return_value = None
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
         db_handler.mongo = MockMongoDeviceNameExist
-        db_handler.store_state_data(event='pass', msg=ObserverMessage(event="pass", data={}))
+        db_handler.store_state_data(msg=ObserverMessage(event="pass", data={}))
 
     @mock.patch.object(MongoHandler, '__init__')
     def test_store_state_data_new(self, mock_mongo):
         mock_mongo.return_value = None
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
         db_handler.mongo = MockMongoNoDeviceNameExist
-        db_handler.store_state_data(event='pass', msg=ObserverMessage(event="pass", data={}))
+        db_handler.store_state_data(msg=ObserverMessage(event="pass", data={}))
 
     @mock.patch.object(MongoHandler, '__init__')
     def test_save_digital_twin(self, mock_mongo):
         mock_mongo.return_value = None
-        twin = [{'_id': "ObjectId('6089b77907384800073936a6')", 'device_name': 'test_device', 'active': False,
+        twin = [{'device_name': 'test_device', 'active': False,
                  'location': 'on-desk', 'technology': 'WI-FI', 'battery_level': 'USB-power'}]
         db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
         db_handler.mongo = MockMongoDeviceNameExist
         db_handler._save_digital_twin(twin=twin)
+
+    @mock.patch.object(DbHandler, "_fetch_digital_twin")
+    @mock.patch.object(MongoHandler, '__init__')
+    def test_handle_digital_twin_fetch_event(self, mock_mongo, mock_fetch_dt):
+        mock_mongo.return_value = None
+        mock_fetch_dt.return_value = None
+        db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
+        msg = ObserverMessage("digital_twin", [], subject="fetch_digital_twin")
+        db_handler.handle_digital_twin(msg)
+        self.assertTrue(mock_fetch_dt.called)
+
+    @mock.patch.object(DbHandler, "_save_digital_twin")
+    @mock.patch.object(MongoHandler, '__init__')
+    def test_handle_digital_twin_save_event(self, mock_mongo, mock_save_dt):
+        mock_mongo.return_value = None
+        mock_save_dt.return_value = None
+        db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
+        msg = ObserverMessage("digital_twin", [], subject="save_digital_twin")
+        db_handler.handle_digital_twin(msg)
+        self.assertTrue(mock_save_dt.called)
+
+    @mock.patch.object(DbHandler, "action_skip")
+    @mock.patch.object(MongoHandler, '__init__')
+    def test_handle_digital_twin_save_event_fake(self, mock_mongo, mock_skip):
+        mock_mongo.return_value = None
+        mock_skip.return_value = None
+        db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
+        msg = ObserverMessage("digital_twin", [], subject="fake subject")
+        db_handler.handle_digital_twin(msg)
+        self.assertTrue(mock_skip.called)
+
+    @mock.patch.object(DbHandler, "_outbound_adapter")
+    @mock.patch.object(DbHandler, "get_document_data")
+    @mock.patch.object(MongoHandler, '__init__')
+    def test_fetch_digital_twin(self, mock_mongo, mock_get_doc_data, mock_adapter):
+        mock_mongo.return_value = None
+        mock_get_doc_data.return_value = None
+        mock_adapter.return_value = "test"
+        db_handler = DbHandler(queue=self.test_queue, thread_event=self.test_event)
+        emtpy_queue(queue=self.test_queue)
+        db_handler._fetch_digital_twin()
+        item = self.test_queue.get()
+        correct_msg = ObserverMessage(event="digital_twin", data="test", subject="retrieved_digital_twin")
+        correct_msg.source = "DbHandler"
+        self.assertEqual(correct_msg, item)
+
+    def test__outbound_adapter(self):
+        data = [{'a': 1, 'b': 1, '_id': 'something'}, {'c': 3, '_id': 'something'}]
+        correct = [{'a': 1, 'b': 1}, {'c': 3}]
+        result = DbHandler._outbound_adapter(data=data)
+        self.assertEqual(result, correct)

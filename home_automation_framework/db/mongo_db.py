@@ -9,29 +9,23 @@ from home_automation_framework.logging.logging import Logging
 
 class MongoHandler:
     @dataclass
-    class MongoConfCloud:
-        admin_pwd: str = 'testlabadmin'
-        db: str = 'home_automation'
-        url: str = f'mongodb+srv://admin:{admin_pwd}@cluster0.jedhb.gcp.mongodb.net/{db}?retryWrites=true&w=majority'
-
-    @dataclass
     class MongoConfLocal:
         host: str = 'host_ip'
         user: str = 'admin'
         pwd: str = 'mongo_admin_iot'
         url: str = f'mongodb://{user}:{pwd}@{host}/'
 
-    def __init__(self, db_name):
+    def __init__(self, db_name: str) -> None:
         self.config = ConfigurationParser().get_config()
         self.log = Logging(owner=__file__, config=True)
         self.mongo_db = self.connect_to_db(db_name=db_name)
 
-    def connect_to_db(self, db_name):
+    def connect_to_db(self, db_name: str) -> MongoClient:
         mongo_host = self.config['mongo_db']['host_ip']
         mongo_url = self.MongoConfLocal.url.replace(self.MongoConfLocal.host, mongo_host)
 
         try:
-            client = MongoClient(mongo_url)
+            client = self.get_mongo_client(url=mongo_url)
             client.server_info()
             db = client[db_name]
             self.log.success(f'Connected to MongoDB {db_name!r} at {mongo_url}')
@@ -40,23 +34,45 @@ class MongoHandler:
             raise RuntimeError from err
         return db
 
-    def get(self, collection_name, query: dict = None) -> list:
+    @staticmethod
+    def get_mongo_client(url: str) -> MongoClient:
+        return MongoClient(url)
+
+    def get(self, collection_name: str, query: dict = None) -> list:
         collection = self.mongo_db[collection_name]
         self.log.debug(f'Executing query {query!r} on collection {collection_name!r}')
         return list(collection.find(query))
 
-    def insert(self, collection_name, data):
+    def insert(self, collection_name: str, data: dict) -> None:
         collection = self.mongo_db[collection_name]
         data_id = collection.insert_one(data)
         self.log.debug(f'Inserted {data!r} into {collection_name!r} with ID {data_id}')
 
-    def update_object(self, collection_name, object_id, updated_values):
+    def update(self, collection_name: str, object_id: str, updated_values: dict) -> None:
         collection = self.mongo_db[collection_name]
         query = {'_id': object_id}
         collection.update_one(query, updated_values)
         self.log.debug(f'Data with ID {object_id!r} in collection {collection_name!r} updated successfully')
 
-    def check_existence_by_device_name(self, collection_name: str, query: dict) -> Union[str, None]:
+    def write(self, collection_name: str, data: Union[list, dict], key: str) -> None:
+        """ Add's data if it does not exist, else update that data based on key """
+        if isinstance(data, list):
+            for entry in data:
+                self._write(collection=collection_name, data=entry, key=key)
+        else:
+            self._write(collection=collection_name, data=data, key=key)
+
+    def _write(self, collection: str, data: dict, key: str) -> None:
+        query = {key: data.get(key, None)}
+        object_id = self.get_first_object_id_from_query(collection_name=collection, query=query)
+        print(object_id)
+        if object_id:
+            values = {'$set': data}
+            self.update(collection_name=collection, object_id=object_id, updated_values=values)
+        else:
+            self.insert(collection_name=collection, data=data)
+
+    def get_first_object_id_from_query(self, collection_name: str, query: dict) -> Union[str, None]:
         collection = self.mongo_db[collection_name]
         data = collection.find_one(query)
         if isinstance(data, dict):

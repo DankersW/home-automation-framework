@@ -8,9 +8,9 @@ framework:
 system_components:
   gcp: false
   mqtt_gateway: true
-  db: false
-  host_monitor: false
-  device_manager: false
+  db: true
+  host_monitor: true
+  device_manager: true
 
 logging:
   file_log_folder: 'C:\Users\woute\development\logs'

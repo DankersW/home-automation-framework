@@ -1,8 +1,6 @@
 # Todo
 
 ## Needed
-- [ ] Bumb test coverage
-- [ ] Rewrite mongo and db_handler in a proper way
 
 ## Features
 -  [ ] Better logging info, debug showing which event is handeling what data.
