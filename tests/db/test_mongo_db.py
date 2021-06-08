@@ -28,12 +28,17 @@ class MockMongoClient(Enum):
     def find(query):
         return [1, 2, 3]
 
+    @staticmethod
+    def find_one(_):
+        return {'_id': "1"}
+
     def insert_one(self, data):
         self.saved_data = data
 
     @staticmethod
     def update_one(_,__):
         pass
+
 
 class MockMongoClientFail:
     def __init__(self, _):
@@ -42,6 +47,18 @@ class MockMongoClientFail:
     @staticmethod
     def server_info():
         raise errors.ServerSelectionTimeoutError
+
+
+class MockMongoClientFindOne(Enum):
+    db_name = "name"
+    mock_collection = MockCollection()
+
+    def __init__(self, _):
+        pass
+
+    @staticmethod
+    def find_one(_):
+        return None
 
 
 class TestMongoDb(TestCase):
@@ -83,8 +100,31 @@ class TestMongoDb(TestCase):
         mongo.update(collection_name="mock_collection", object_id="", updated_values={"abc": 123})
 
     @mock.patch.object(MongoHandler, "connect_to_db")
-    def test_dumy(self, mock_connect):
+    def test_get_first_object_id_from_query(self, mock_connect):
         mock_connect.return_value = MockMongoClient
         mongo = MongoHandler("db_name")
+        result = mongo.get_first_object_id_from_query(collection_name="mock_collection",query={"abc": 123})
+        self.assertEqual(result, "1")
 
+    @mock.patch.object(MongoHandler, "connect_to_db")
+    def test_get_first_object_id_from_query_fail(self, mock_connect):
+        mock_connect.return_value = MockMongoClientFindOne
+        mongo = MongoHandler("db_name")
+        result = mongo.get_first_object_id_from_query(collection_name="mock_collection", query={"abc": 123})
+        self.assertIsNone(result)
 
+    @mock.patch.object(MongoHandler, "_write")
+    @mock.patch.object(MongoHandler, "connect_to_db")
+    def test_write(self, mock_connect, mock_write):
+        mock_connect.return_value = MockMongoClient
+        mock_write.return_value = None
+        mongo = MongoHandler("db_name")
+        mongo.write("", {}, "")
+
+    @mock.patch.object(MongoHandler, "_write")
+    @mock.patch.object(MongoHandler, "connect_to_db")
+    def test_write_list(self, mock_connect, mock_write):
+        mock_connect.return_value = MockMongoClient
+        mock_write.return_value = None
+        mongo = MongoHandler("db_name")
+        mongo.write("", [], "")
