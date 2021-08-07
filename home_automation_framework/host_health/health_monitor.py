@@ -70,7 +70,7 @@ class HealthMonitor(Thread):
         try:
             with subprocess.Popen(cpu_command, stdout=subprocess.PIPE) as process_result:
                 proc_stat, _ = process_result.communicate()
-            cpu_data = proc_stat.decode('utf-8').split('\n')[0].split()[1:-1]
+            cpu_data = proc_stat.decode('utf-8').split('\n', maxsplit=1)[0].split()[1:-1]
             cpu_data = [int(field) for field in cpu_data]
             cpu_usage = ((cpu_data[0] + cpu_data[2]) * 100 / (cpu_data[0] + cpu_data[2] + cpu_data[3]))
             return round(cpu_usage, 3)
