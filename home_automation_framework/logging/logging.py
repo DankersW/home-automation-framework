@@ -69,7 +69,7 @@ class Logging:
         return None
 
     def _write_to_file(self, log_msg):
-        with open(self.filename, "a") as file:
+        with open(self.filename, "a", encoding="utf8") as file:
             file.write(log_msg + '\n')
         file.close()
 
