@@ -13,7 +13,7 @@ from home_automation_framework.iot_gateway.device_manager import DeviceManager
 
 class Subject:
     def __init__(self, events) -> None:
-        self.events = {event: dict() for event in events}
+        self.events = {event: {} for event in events}
 
     def get_subscribers(self, event) -> dict:
         return self.events[event]
