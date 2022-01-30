@@ -20,7 +20,7 @@ class TestConfigurationParser(TestCase):
         test_content = {'a': 123, 'b': 456}
         filename = 'test.yaml'
         yml_path = Path.cwd().joinpath(filename)
-        with open(yml_path, 'w') as file:
+        with open(yml_path, 'w', encoding="utf8") as file:
             yaml.dump(test_content, file)
         result = self.conf_parser._yml_to_dict(file_path=yml_path)
         self.assertDictEqual(result, test_content)
