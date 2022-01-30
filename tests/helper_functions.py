@@ -6,7 +6,7 @@ from typing import Union, NamedTuple, Any
 
 
 def create_test_file_with_data(file: Path, data: str) -> None:
-    with open(file, 'w') as file:
+    with open(file, 'w', encoding="utf8") as file:
         file.write(data)
 
 

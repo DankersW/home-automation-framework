@@ -6,9 +6,9 @@ name: build_docker
 
 on:
   push:
-    branches: master
+    branches: [master]
     tags:
-      - 'v*.*.*'
+      - '*.*.*'
 
 jobs:
   buildx:

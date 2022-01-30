@@ -28,5 +28,5 @@ class ConfigurationParser:
 
     @staticmethod
     def _yml_to_dict(file_path: Path) -> Union[dict, list, None]:
-        with open(file_path) as yml_file:
+        with open(file_path, encoding="utf8") as yml_file:
             return yaml.safe_load(yml_file)

@@ -11,7 +11,7 @@ from home_automation_framework.logging.logging import Logging
 
 class HealthMonitor(Thread):
     running = True
-    update_time_sec = 600
+    update_time_sec = 6000
     subscribed_event = []
 
     def __init__(self, queue: Queue, thread_event: Event) -> None:
@@ -55,7 +55,7 @@ class HealthMonitor(Thread):
     def poll_system_temp(self) -> float:
         temp_file = self._get_temperature_file()
         try:
-            with open(temp_file) as file:
+            with open(temp_file, encoding="utf8") as file:
                 return float(file.readline()) / 1000
         except FileNotFoundError:
             self.log.critical(f'Temperature file {temp_file!r} does not exist')

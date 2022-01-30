@@ -36,7 +36,7 @@ def create_jwt(project_id, private_key_file, algorithm):
         'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
         'aud': project_id
     }
-    with open(private_key_file, 'r') as f:
+    with open(private_key_file, 'r', encoding="utf8") as f:
         private_key = f.read()
     return jwt.encode(token, private_key, algorithm=algorithm)
 

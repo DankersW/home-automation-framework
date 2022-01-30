@@ -13,7 +13,7 @@ system_components:
 
 logging:
   file_log_folder: 'C:\Users\woute\development\logs'
-  min_log_level: info
+  min_log_level: warning
   log_collection_name: logs
 
 mqtt_gateway:
@@ -23,5 +23,5 @@ mongo_db:
   host_ip: 'mongo'
 
 device_manager:
-  poll_interval: 3000  # Interval in seconds that the device_manager polls devices
+  poll_interval: 6000  # Interval in seconds that the device_manager polls devices
   wait_period: 600  # Time in sec spend waiting for status messages
