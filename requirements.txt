@@ -3,7 +3,7 @@
 ###### Requirements with Version Specifiers ######
 paho-mqtt == 1.5.1
 PyJWT >= 1.7.1
-cryptography == 3.3.2
+cryptography == 39.0.1
 PyYAML >= 5.3.1
 pymongo == 3.11.0
 mongoengine == 0.20.0
